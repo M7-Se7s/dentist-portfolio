@@ -1,0 +1,165 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+.navContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.brand span {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.navLinks {
+  display: flex;
+  gap: 2rem;
+}
+
+.navLinks a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.navLinks a:hover, .navLinks a.active {
+  color: var(--primary-color);
+}
+
+.navLinks a:hover::after, .navLinks a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--secondary-color);
+  border-radius: 2px;
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.contactBtn {
+  background-color: var(--primary-color);
+  color: var(--white);
+  padding: 0.5rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.contactBtn:hover {
+  background-color: #0a4055;
+  transform: translateY(-2px);
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.contactBtnMobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+    z-index: 1001; /* Keep above overlay and drawer */
+  }
+  
+  .desktopContact {
+    display: none;
+  }
+
+  .navLinks {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: var(--white);
+    flex-direction: column;
+    padding: 5rem 0 0 0;
+    gap: 0;
+    box-shadow: -4px 0 15px rgba(0,0,0,0.05);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+  }
+
+  .navLinksOpen {
+    transform: translateX(0);
+  }
+
+  .navLinks a {
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid #f1f5f9;
+    width: 100%;
+    font-size: 1.1rem;
+  }
+
+  .navLinks a.active::after {
+    display: none;
+  }
+  
+  .navLinks a.active {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+  }
+
+  .contactBtnMobile {
+    display: block;
+    background-color: var(--primary-color);
+    color: var(--white) !important;
+    text-align: center;
+    font-weight: 600;
+    margin: 2rem 2rem;
+    width: calc(100% - 4rem) !important;
+    border-radius: 8px;
+    padding: 0.75rem !important;
+  }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.4);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+.overlayOpen {
+  opacity: 1;
+  pointer-events: auto;
+}

@@ -1,0 +1,239 @@
+.section {
+  padding: 5rem 0;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.sectionHeader h2 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-family: var(--font-heading);
+}
+
+.divider {
+  width: 60px;
+  height: 4px;
+  background-color: var(--secondary-color);
+  margin: 0 auto 1.5rem;
+  border-radius: 2px;
+}
+
+.sectionHeader p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ---------------------------
+   Personal Hero Section
+--------------------------- */
+.hero {
+  background: linear-gradient(135deg, rgba(14, 94, 122, 0.05) 0%, rgba(255, 255, 255, 1) 100%);
+  padding: 4rem 0 0 0; /* No bottom padding to let the image sit on the baseline */
+  overflow: hidden;
+}
+
+.heroContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  position: relative;
+}
+
+.heroText {
+  flex: 1;
+  padding-bottom: 4rem;
+  z-index: 2;
+}
+
+.badge {
+  display: inline-block;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(14, 94, 122, 0.1);
+}
+
+.hero h1 {
+  font-size: 4rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-heading);
+  line-height: 1.1;
+}
+
+.heroSubtitle {
+  font-size: 1.5rem;
+  color: var(--secondary-color);
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.heroBio {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  max-width: 500px;
+}
+
+.heroActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.heroImageWrapper {
+  flex: 1;
+  position: relative;
+  height: 600px; /* Fixed height for the hero image */
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 20px 20px 0 0;
+  box-shadow: var(--shadow-lg);
+}
+
+.heroPlaceholder {
+  width: 100%;
+  height: 100%;
+  background-color: #CBD5E1;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748B;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* ---------------------------
+   Areas of Focus Grid
+--------------------------- */
+.focusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.focusCard {
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.focusCard:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+}
+
+.focusIcon {
+  width: 64px;
+  height: 64px;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.focusCard h3 {
+  color: var(--text-dark);
+  font-size: 1.25rem;
+}
+
+@media (max-width: 992px) {
+  .heroContainer {
+    flex-direction: column;
+    text-align: center;
+    gap: 2rem;
+  }
+  
+  .heroText {
+    order: 2;
+  }
+  
+  .heroBio {
+    margin: 0 auto 2rem;
+  }
+  
+  .heroActions {
+    justify-content: center;
+  }
+  
+  .heroImageWrapper {
+    order: 1;
+    height: 450px;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+    flex: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero {
+    padding-top: 2rem;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.2rem;
+  }
+
+  .heroBio {
+    font-size: 1rem;
+  }
+
+  .heroActions {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .heroActions a {
+    width: 100%;
+  }
+
+  .heroImageWrapper {
+    height: 300px;
+    width: 100%;
+  }
+
+  .sectionHeader h2 {
+    font-size: 2rem;
+  }
+
+  .section {
+    padding: 3rem 0;
+  }
+
+  .caseCardContent {
+    text-align: center;
+  }
+}
