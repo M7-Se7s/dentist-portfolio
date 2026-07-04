@@ -109,6 +109,23 @@ export default function DashboardPage() {
             <button className={styles.cvUpdateBtn}>Update Experience</button>
           </div>
 
+          {/* Profile Edit Card */}
+          <div className={styles.cvQuickEditCard}>
+            <div className={styles.cvQuickEditHeader}>
+              <h3>Professional Profile</h3>
+              <Link href="/admin/dashboard/profile" className={styles.editIconBtn}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+              </Link>
+            </div>
+            <div className={styles.cvCardSubtitle}>PUBLIC BIOGRAPHY</div>
+            <p style={{fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.5', marginTop: '0.5rem', marginBottom: '1.5rem'}}>
+              Update your main biography and philosophy quote displayed on the Professional Profile page.
+            </p>
+            <Link href="/admin/dashboard/profile" className={styles.cvUpdateBtn} style={{display: 'inline-block', textAlign: 'center', textDecoration: 'none'}}>
+              Edit Profile
+            </Link>
+          </div>
+
           {/* Analytics Card */}
           <div className={styles.analyticsCard}>
             <div className={styles.analyticsIcon}>

@@ -68,9 +68,9 @@ export default function Home() {
             </div>
           </div>
           <div className={styles.heroImageWrapper}>
-            {profile?.heroImageUrl ? (
+            {profile?.homeImageUrl ? (
               <Image 
-                src={profile.heroImageUrl} 
+                src={profile.homeImageUrl} 
                 alt="Dr. Mohamed Shaaban" 
                 fill 
                 className={styles.heroImage} 
@@ -85,17 +85,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Preview */}
+      {/* Profile Preview */}
       <section className={styles.section} style={{backgroundColor: 'var(--white)'}}>
         <div className="container" style={{maxWidth: '800px', textAlign: 'center'}}>
           <h2 style={{fontSize: '2rem', color: 'var(--primary-color)', marginBottom: '1.5rem', fontFamily: 'var(--font-heading)'}}>
-            About Me
+            Professional Profile
           </h2>
           <p style={{fontSize: '1.2rem', color: 'var(--text-muted)', lineHeight: '1.8', marginBottom: '2rem'}}>
-            I am a general dentist with a strong interest in restorative dentistry and aesthetic treatment. I enjoy working in collaborative clinical environments where continuous learning and patient-centered care are priorities.
+            {profile?.biography ? profile.biography.split('\n')[0] : 'I am Dr. Mohamed El Sayed Mohamed Shabaan, a General Dentist with more than two years of post-internship clinical experience, providing comprehensive dental care across multiple private dental clinics in Egypt.'}
           </p>
-          <Link href="/about" style={{color: 'var(--secondary-color)', fontWeight: '600', textDecoration: 'none', fontSize: '1.1rem'}}>
-            Read More &rarr;
+          <Link href="/profile" style={{color: 'var(--secondary-color)', fontWeight: '600', textDecoration: 'none', fontSize: '1.1rem'}}>
+            View Full Profile &rarr;
           </Link>
         </div>
       </section>

@@ -59,7 +59,7 @@ export default function Navbar() {
 
         <div className={`${styles.navLinks} ${menuOpen ? styles.navLinksOpen : ''}`}>
           <Link href="/" className={pathname === '/' ? styles.active : ''} onClick={() => setMenuOpen(false)}>Home</Link>
-          <Link href="/about" className={pathname === '/about' ? styles.active : ''} onClick={() => setMenuOpen(false)}>About</Link>
+          <Link href="/profile" className={pathname === '/profile' ? styles.active : ''} onClick={() => setMenuOpen(false)}>Professional Profile</Link>
           <Link href="/cases" className={pathname === '/cases' ? styles.active : ''} onClick={() => setMenuOpen(false)}>Cases</Link>
           <Link href="/cv" className={pathname === '/cv' ? styles.active : ''} onClick={() => setMenuOpen(false)}>CV</Link>
           <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className={styles.contactBtnMobile} onClick={() => setMenuOpen(false)}>
