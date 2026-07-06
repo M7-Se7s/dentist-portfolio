@@ -1,25 +1,48 @@
+.navbarSpacer {
+  height: 92px;
+}
+
+@media (max-width: 768px) {
+  .navbarSpacer {
+    height: 77px;
+  }
+}
+
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 100;
   box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
 
 .navContainer {
-  max-width: 1200px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 1rem 3rem;
+  padding: 1rem var(--container-padding-x);
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .brand {
+  flex: 1;
+  display: flex;
   font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--primary-color);
   text-decoration: none;
+}
+
+.logoImage {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  transition: height var(--transition-fast);
 }
 
 .brand span {
@@ -30,9 +53,12 @@
 .navLinks {
   display: flex;
   gap: 2rem;
+  align-items: center;
+  flex: 2;
+  justify-content: center;
 }
 
-.navLinks a {
+.navLink {
   text-decoration: none;
   color: var(--text-muted);
   font-weight: 500;
@@ -41,11 +67,11 @@
   position: relative;
 }
 
-.navLinks a:hover, .navLinks a.active {
+.navLink:hover, .navLink.active {
   color: var(--primary-color);
 }
 
-.navLinks a:hover::after, .navLinks a.active::after {
+.navLink:hover::after, .navLink.active::after {
   content: '';
   position: absolute;
   bottom: -4px;
@@ -54,7 +80,6 @@
   height: 2px;
   background-color: var(--secondary-color);
   border-radius: 2px;
-  animation: fadeIn 0.2s ease-out forwards;
 }
 
 .contactBtn {
@@ -73,6 +98,36 @@
   transform: translateY(-2px);
 }
 
+.rightActions {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+}
+
+.desktopLangBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.desktopLangBtn:hover {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.mobileLangContainer {
+  display: none;
+}
+
 .hamburger {
   display: none;
   background: none;
@@ -82,18 +137,14 @@
   padding: 0.5rem;
 }
 
-.contactBtnMobile {
-  display: none;
-}
-
 @media (max-width: 768px) {
+  .logoImage {
+    height: 45px;
+  }
+
   .hamburger {
     display: block;
     z-index: 1001; /* Keep above overlay and drawer */
-  }
-  
-  .desktopContact {
-    display: none;
   }
 
   .navLinks {
@@ -116,32 +167,51 @@
     transform: translateX(0);
   }
 
-  .navLinks a {
+  .navLink {
     padding: 1.2rem 2rem;
     border-bottom: 1px solid #f1f5f9;
     width: 100%;
     font-size: 1.1rem;
+    display: block;
   }
 
-  .navLinks a.active::after {
+  .navLink.active::after {
     display: none;
   }
   
-  .navLinks a.active {
+  .navLink.active {
     background-color: var(--primary-light);
     color: var(--primary-color);
   }
 
-  .contactBtnMobile {
-    display: block;
-    background-color: var(--primary-color);
-    color: var(--white) !important;
-    text-align: center;
-    font-weight: 600;
-    margin: 2rem 2rem;
-    width: calc(100% - 4rem) !important;
-    border-radius: 8px;
-    padding: 0.75rem !important;
+  .desktopLangBtn {
+    display: none;
+  }
+
+  .mobileLangContainer {
+    display: flex;
+    margin-top: auto;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    justify-content: flex-start;
+  }
+
+  .mobileLangBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    transition: color var(--transition-fast);
+  }
+
+  .mobileLangBtn:active {
+    color: var(--primary-color);
   }
 }
 

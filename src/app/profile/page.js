@@ -62,7 +62,7 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
 
   return (
     <main style={{backgroundColor: '#F8FAFC', minHeight: 'calc(100vh - 80px)', padding: '5rem 0'}}>
-      <div className="container" style={{maxWidth: '1100px'}}>
+      <div className="container">
         
         <section className={styles.profileSection}>
           <div className={styles.profileGrid}>

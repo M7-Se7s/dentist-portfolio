@@ -59,7 +59,7 @@ export default function CasesGallery() {
   };
 
   return (
-    <main style={{backgroundColor: 'var(--white)'}}>
+    <main style={{backgroundColor: 'var(--background)'}}>
       {/* 1. Small Hero Section */}
       <div className={styles.pageHeader}>
         <div className="container">

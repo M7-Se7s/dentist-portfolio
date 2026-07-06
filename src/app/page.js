@@ -137,7 +137,7 @@ export default function Home() {
       {/* Final CTA */}
       <section id="contact" className={styles.section} style={{backgroundColor: 'var(--primary-color)', color: 'var(--white)', textAlign: 'center'}}>
         <div className="container">
-          <h2 style={{fontSize: '2.5rem', marginBottom: '2rem', color: 'var(--white)', fontFamily: 'var(--font-heading)'}}>
+          <h2 style={{fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '2rem', color: 'var(--white)', fontFamily: 'var(--font-heading)'}}>
             Interested in working together?
           </h2>
           <div style={{display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap'}}>

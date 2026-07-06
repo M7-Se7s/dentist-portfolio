@@ -36,43 +36,56 @@ export default function Navbar() {
   const name = profile?.name || "Dr. Mohamed Shaaban";
 
   return (
-    <nav className={`${styles.navbar} glass animate-fadeIn`}>
-      <div className={styles.navContainer}>
+    <>
+      <div className={styles.navbarSpacer}></div>
+      <nav className={`${styles.navbar} glass animate-fadeIn`}>
+        <div className={styles.navContainer}>
         <Link href="/" className={styles.brand} onClick={() => setMenuOpen(false)}>
-          <div style={{display: 'flex', flexDirection: 'column'}}>
-            <span>Dr. Mohamed Shaaban</span>
-            <span style={{fontSize: '0.8rem', fontWeight: '400', color: 'var(--text-muted)'}}>General Dentist</span>
-          </div>
+          <img src="/logo.png?v=2" alt="Dr. Mohamed Shaaban Logo" className={styles.logoImage} />
         </Link>
         
-        <button className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className={`${styles.navLinks} ${menuOpen ? styles.navLinksOpen : ''}`}>
+          <Link href="/" className={`${styles.navLink} ${pathname === '/' ? styles.active : ''}`} onClick={() => setMenuOpen(false)}>Home</Link>
+          <Link href="/profile" className={`${styles.navLink} ${pathname === '/profile' ? styles.active : ''}`} onClick={() => setMenuOpen(false)}>Professional Profile</Link>
+          <Link href="/cases" className={`${styles.navLink} ${pathname === '/cases' ? styles.active : ''}`} onClick={() => setMenuOpen(false)}>Cases</Link>
+          <Link href="/cv" className={`${styles.navLink} ${pathname === '/cv' ? styles.active : ''}`} onClick={() => setMenuOpen(false)}>CV</Link>
+
+          <div className={styles.mobileLangContainer}>
+            <button className={styles.mobileLangBtn} aria-label="Change Language" onClick={() => setMenuOpen(false)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span>Change Language</span>
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.rightActions}>
+          <button className={styles.desktopLangBtn} aria-label="Change Language" title="Change Language">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </button>
+          <button className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
             {menuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             )}
-          </svg>
-        </button>
+          </button>
+        </div>
 
         <div className={`${styles.overlay} ${menuOpen ? styles.overlayOpen : ''}`} onClick={() => setMenuOpen(false)}></div>
-
-        <div className={`${styles.navLinks} ${menuOpen ? styles.navLinksOpen : ''}`}>
-          <Link href="/" className={pathname === '/' ? styles.active : ''} onClick={() => setMenuOpen(false)}>Home</Link>
-          <Link href="/profile" className={pathname === '/profile' ? styles.active : ''} onClick={() => setMenuOpen(false)}>Professional Profile</Link>
-          <Link href="/cases" className={pathname === '/cases' ? styles.active : ''} onClick={() => setMenuOpen(false)}>Cases</Link>
-          <Link href="/cv" className={pathname === '/cv' ? styles.active : ''} onClick={() => setMenuOpen(false)}>CV</Link>
-          <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className={styles.contactBtnMobile} onClick={() => setMenuOpen(false)}>
-            Download CV
-          </a>
-        </div>
-        
-        <div className={styles.desktopContact}>
-          <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className={styles.contactBtn}>
-            Download CV
-          </a>
-        </div>
       </div>
     </nav>
+    </>
   );
 }
