@@ -59,8 +59,9 @@ export default function DashboardLayout({ children }) {
       {/* Left Sidebar */}
       <aside className={`${styles.sidebar} ${isMobileDrawerOpen ? styles.sidebarOpen : ''} ${isDesktopSidebarCollapsed ? styles.sidebarCollapsed : ''} animate-fadeIn`}>
         <div className={styles.logoContainer}>
-          {/* Change MS to an <Image src="/logo.png" ... /> once the user exports their .ai file */}
-          <div className={styles.logoAvatar}>MS</div>
+          <div className={styles.logoAvatar} style={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
+            <Image src="/logo.png" alt="Logo" width={48} height={48} style={{ objectFit: 'contain' }} priority />
+          </div>
           <div>
             <h2 className={styles.sidebarTitle} style={{marginBottom: 0, paddingBottom: 0, borderBottom: 'none'}}>Dr. Mohamed<br/>Shaaban</h2>
             <p className={styles.sidebarRole} style={{marginTop: '0.25rem', opacity: 0.8, fontSize: '0.85rem', color: '#fff'}}>Clinical Specialist</p>
@@ -103,7 +104,9 @@ export default function DashboardLayout({ children }) {
         
         <div className={styles.sidebarProfile}>
           <div className={styles.profileInfo}>
-            <div className={styles.profileAvatar}>MS</div>
+            <div className={styles.profileAvatar}>
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            </div>
             <div className={styles.profileDetails}>
               <span className={styles.profileName}>Dr. M. Shaaban</span>
               <span className={styles.profileRole}>Admin</span>

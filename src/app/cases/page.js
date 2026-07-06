@@ -48,6 +48,10 @@ export default function CasesGallery() {
 
   const filteredCases = cases.filter(caseItem => {
     if (activeFilter === "All") return true;
+    // Handle both old schema (category string) and new schema (categories array)
+    if (caseItem.categories && Array.isArray(caseItem.categories)) {
+      return caseItem.categories.includes(activeFilter);
+    }
     return caseItem.category === activeFilter;
   });
 
@@ -100,13 +104,15 @@ export default function CasesGallery() {
                   <div key={caseItem.id} className={styles.caseCard}>
                     <div className={styles.imageWrapper}>
                       <ImageSlider 
-                        beforeImage={caseItem.beforeImageUrl} 
-                        afterImage={caseItem.afterImageUrl} 
+                        beforeImage={caseItem.beforeImage || caseItem.beforeImageUrl} 
+                        afterImage={caseItem.afterImage || caseItem.afterImageUrl} 
                       />
                     </div>
                     <div className={styles.caseInfo}>
                       {/* 4. Category Badge & Title */}
-                      <span className={styles.caseCategory}>{caseItem.category || "General"}</span>
+                      <span className={styles.caseCategory}>
+                        {caseItem.categories && caseItem.categories.length > 0 ? caseItem.categories[0] : (caseItem.category || "General")}
+                      </span>
                       <Link href={`/cases/${caseItem.id}`} style={{textDecoration: 'none', display: 'inline-block'}}>
                         <h3 className={styles.caseTitle}>{caseItem.title}</h3>
                       </Link>

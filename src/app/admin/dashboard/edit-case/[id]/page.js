@@ -3,9 +3,10 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import styles from '../../../admin.module.css';
-
+import SortableGallery from '../../../../components/SortableGallery';
 import { casesService } from '../../../../../lib/services/casesService';
+import imageCompression from 'browser-image-compression';
+import styles from '../../../admin.module.css';
 
 const AVAILABLE_CATEGORIES = [
   'General', 'Esthetic', 'Composite', 'Prosthodontics', 'Endodontics', 'Surgery', 'Orthodontics', 'Periodontics', 'Pediatric'
@@ -31,7 +32,8 @@ export default function EditCasePage({ params }) {
     treatmentPlan: '',
     procedureNotes: '',
     isDraft: false,
-    images: []
+    images: [],
+    steps: []
   });
 
   // Load Case Data
@@ -46,7 +48,14 @@ export default function EditCasePage({ params }) {
           setFormData({ 
             ...caseData,
             categories: caseData.categories || [],
-            images: caseData.images || []
+            images: caseData.images || [],
+            steps: (caseData.steps || []).map(step => ({ 
+              ...step, 
+              id: step.id || Math.random().toString(36).substr(2, 9), 
+              files: [], 
+              previews: [],
+              existingImages: step.images || []
+            }))
           });
         } else if (isMounted) {
           // Fallback if not found
@@ -80,11 +89,127 @@ export default function EditCasePage({ params }) {
     });
   };
 
+  // Step Handlers
+  const handleAddStep = () => {
+    setFormData(prev => ({
+      ...prev,
+      steps: [...prev.steps, { id: Math.random().toString(36).substr(2, 9), title: '', description: '', files: [], previews: [], existingImages: [] }]
+    }));
+  };
+
+  const handleRemoveStep = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      steps: prev.steps.filter(step => step.id !== id)
+    }));
+  };
+
+  const handleStepChange = (id, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      steps: prev.steps.map(step => step.id === id ? { ...step, [field]: value } : step)
+    }));
+  };
+
+  const handleStepImageChange = (id, e) => {
+    const files = Array.from(e.target.files);
+    if (!files || files.length === 0) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      steps: prev.steps.map(step => {
+        if (step.id === id) {
+          const newPreviews = files.map(file => URL.createObjectURL(file));
+          return {
+            ...step,
+            files: [...(step.files || []), ...files],
+            previews: [...(step.previews || []), ...newPreviews]
+          };
+        }
+        return step;
+      })
+    }));
+  };
+
+  const handleRemoveStepNewImage = (stepId, indexToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      steps: prev.steps.map(step => {
+        if (step.id === stepId) {
+          return {
+            ...step,
+            files: step.files.filter((_, i) => i !== indexToRemove),
+            previews: step.previews.filter((_, i) => i !== indexToRemove)
+          };
+        }
+        return step;
+      })
+    }));
+  };
+  
+  const handleRemoveStepExistingImage = (stepId, indexToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      steps: prev.steps.map(step => {
+        if (step.id === stepId) {
+          return {
+            ...step,
+            existingImages: step.existingImages.filter((_, i) => i !== indexToRemove)
+          };
+        }
+        return step;
+      })
+    }));
+  };
+
   const handleSave = async (asDraft = false) => {
     setIsSaving(true);
     
     try {
-      const updatedData = { ...formData, isDraft: asDraft };
+      const uploadImage = async (file) => {
+        if (!file) return null;
+        
+        let fileToUpload = file;
+        try {
+          const options = {
+            maxSizeMB: 8,
+            maxWidthOrHeight: 2048,
+            useWebWorker: true,
+          };
+          fileToUpload = await imageCompression(file, options);
+        } catch (error) {
+          console.warn('Compression failed, using original', error);
+        }
+
+        const formData = new FormData();
+        formData.append('file', fileToUpload);
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error('Upload API returned an error:', res.status, errorText);
+          throw new Error(`Upload failed (${res.status}): ${errorText}`);
+        }
+        const data = await res.json();
+        return data.url;
+      };
+
+      const finalSteps = [];
+      for (const step of formData.steps) {
+        const stepImages = [...(step.existingImages || [])];
+        if (step.files) {
+          for (const file of step.files) {
+            const url = await uploadImage(file);
+            if (url) stepImages.push(url);
+          }
+        }
+        finalSteps.push({
+          title: step.title,
+          description: step.description,
+          images: stepImages
+        });
+      }
+
+      const updatedData = { ...formData, isDraft: asDraft, steps: finalSteps };
       await casesService.updateCase(caseId, updatedData);
       setFormData(updatedData);
       
@@ -244,6 +369,99 @@ export default function EditCasePage({ params }) {
                 placeholder="Detail the materials used, technique, etc."
               />
             </div>
+          </div>
+
+          <div className={styles.formCard}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h2 className={styles.formCardTitle} style={{ margin: 0 }}>Treatment Process Steps</h2>
+              <button type="button" onClick={handleAddStep} className="btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+                + Add Step
+              </button>
+            </div>
+            
+            {formData.steps.map((step, index) => (
+              <div key={step.id} className={styles.stepContainer}>
+                <div className={styles.stepHeader}>
+                  <div className={styles.stepTitle}>Step {index + 1}</div>
+                  <button type="button" className={styles.removeStepBtn} onClick={() => handleRemoveStep(step.id)}>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Remove
+                  </button>
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label>Step Title *</label>
+                  <input 
+                    type="text" 
+                    value={step.title} 
+                    onChange={(e) => handleStepChange(step.id, 'title', e.target.value)} 
+                    className={styles.formInput}
+                    placeholder="e.g. Tooth Preparation"
+                    required
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label>Description</label>
+                  <textarea 
+                    rows="3" 
+                    value={step.description} 
+                    onChange={(e) => handleStepChange(step.id, 'description', e.target.value)} 
+                    className={styles.formTextarea}
+                    placeholder="Describe what was done in this step..."
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label>Step Images</label>
+                  <div className={styles.imageDropzone} style={{ padding: '1rem', minHeight: '80px', marginBottom: '1rem' }}>
+                    <input type="file" accept="image/*" multiple onChange={(e) => handleStepImageChange(step.id, e)} style={{position:'absolute', top:0, left:0, width:'100%', height:'100%', opacity:0, cursor:'pointer', zIndex:2}} />
+                    <div style={{color: 'var(--primary-color)', fontWeight: '600'}}>
+                      + Add Step Images
+                    </div>
+                  </div>
+                  
+                  {(step.existingImages?.length > 0 || step.previews?.length > 0) && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '1rem' }}>
+                      {/* Existing Images */}
+                      {step.existingImages?.map((url, idx) => (
+                        <div key={`existing-${idx}`} style={{ position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                          <img src={url} alt="Step image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button 
+                            type="button" 
+                            onClick={() => handleRemoveStepExistingImage(step.id, idx)}
+                            style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.8)', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
+                          >
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                          </button>
+                        </div>
+                      ))}
+                      
+                      {/* New Previews */}
+                      {step.previews?.map((preview, idx) => (
+                        <div key={`new-${idx}`} style={{ position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--primary-light)' }}>
+                          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, border: '2px solid var(--primary-color)', borderRadius: '8px', pointerEvents: 'none', zIndex: 1 }} />
+                          <img src={preview} alt="New step preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button 
+                            type="button" 
+                            onClick={() => handleRemoveStepNewImage(step.id, idx)}
+                            style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.8)', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
+                          >
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            
+            {formData.steps.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '2rem', border: '1px dashed var(--border-color)', borderRadius: '8px', color: 'var(--text-muted)' }}>
+                No process steps added. Click "+ Add Step" to document the treatment sequence.
+              </div>
+            )}
           </div>
         </div>
 

@@ -14,17 +14,26 @@
   --container-max-width: 1200px;
   --container-padding-x: 2rem;
 
+  /* Computed Interactive States */
+  --color-primary-hover: #1D4ED8;
+  --color-primary-active: #1E3A8A;
+  --color-primary-disabled: rgba(135, 135, 135, 0.38);
+
+  /* Computed Glassmorphism Scale */
+  --glass-bg: rgba(248, 250, 252, 0.15);
+  --glass-border: rgba(31, 41, 55, 0.1);
+  --glass-blur: 16px;
+
   /* Aliases for backwards compatibility with existing UI components */
   --primary-color: var(--primary);
   --secondary-color: var(--secondary);
-  --primary-light: #EFF6FF;
-  /* Very light primary for backgrounds */
+  --primary-light: #EFF6FF; /* Very light primary for backgrounds */
   --bg-color: var(--background);
   --text-dark: var(--text);
   --text-muted: var(--text-light);
   --white: #FFFFFF;
   --error: #D32F2F;
-  --border-color: #E0E0E0;
+  --border-color: var(--border);
 
   /* Typography */
   --font-primary: 'Inter', sans-serif;
@@ -118,7 +127,7 @@ button {
 }
 
 .btn-primary:hover {
-  background-color: #0b495f;
+  background-color: var(--color-primary-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
