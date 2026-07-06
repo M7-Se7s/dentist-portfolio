@@ -17,7 +17,7 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import styles from '../app/admin/admin.module.css';
+import styles from '../app/[locale]/admin/admin.module.css';
 
 // Sortable Item Component
 function SortableItem(props) {

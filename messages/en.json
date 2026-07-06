@@ -1,0 +1,42 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "cases": "Cases",
+    "cv": "CV",
+    "profile": "Profile"
+  },
+  "Hero": {
+    "badge": "General Dentist",
+    "title": "Dr. Mohamed Shaaban",
+    "subtitle": "Committed to evidence-based care, continuous learning, and high-quality restorative dentistry.",
+    "description": "Dedicated to evidence-based dentistry with a focus on restorative care and continuous clinical development.",
+    "viewWork": "View My Work",
+    "downloadCV": "Download CV",
+    "professionalPhoto": "Professional Photo"
+  },
+  "Profile": {
+    "title": "Professional Profile",
+    "defaultBio": "I am Dr. Mohamed El Sayed Mohamed Shabaan, a General Dentist with more than two years of post-internship clinical experience, providing comprehensive dental care across multiple private dental clinics in Egypt.",
+    "biography": "I am Dr. Mohamed El Sayed Mohamed Shabaan, a General Dentist with more than two years of post-internship clinical experience, providing comprehensive dental care across multiple private dental clinics in Egypt.\n\nI successfully passed the Saudi Prometric Examination and obtained the Saudi Commission for Health Specialties (SCFHS) Professional Classification.\n\nThroughout my clinical practice, I have developed strong experience in endodontics, oral surgery, fixed and removable prosthodontics, pediatric dentistry, and esthetic restorative dentistry. My clinical interests include comprehensive treatment planning, full-mouth rehabilitation, management of impacted wisdom teeth, coronectomy, apicoectomy, and advanced restorative procedures.\n\nI am experienced in performing routine and advanced dental procedures, including anterior and posterior root canal treatment using various rotary systems, endodontic retreatment, crown and bridge rehabilitation, porcelain veneers, complete and removable dentures, pediatric pulpotomy and pulpectomy, stainless steel crowns, and surgical dental extractions.\n\nCommitted to continuous professional development, I actively attend advanced training courses in endodontics and oral surgery and continuously work on improving my clinical and digital dentistry skills.\n\nI believe that successful dentistry is achieved through accurate diagnosis, evidence-based treatment planning, and delivering high-quality patient-centered care with the highest standards of infection control and professionalism.",
+    "quote": "Every case presented in this portfolio reflects my commitment to conservative treatment principles, functional rehabilitation, esthetic excellence, and continuous professional development.",
+    "viewProfile": "View Full Profile \u2192"
+  },
+  "Cases": {
+    "title": "Featured Cases",
+    "viewCase": "View Case \u2192",
+    "viewAll": "View All Cases \u2192"
+  },
+  "Contact": {
+    "title": "Interested in working together?",
+    "downloadCV": "Download CV",
+    "contactMe": "Contact Me"
+  },
+  "Footer": {
+    "name": "Dr. Mohamed Shaaban",
+    "title": "General Dentist",
+    "email": "Email",
+    "phone": "Phone",
+    "copyright": "Dr. Mohamed Shaaban. All rights reserved.",
+    "developedBy": "Developed by M7-Se7s"
+  }
+}

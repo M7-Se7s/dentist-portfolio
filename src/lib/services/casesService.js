@@ -3,6 +3,13 @@ import { db } from '../firebase';
 
 const COLLECTION_NAME = 'cases';
 
+const convertTimestamp = (ts) => {
+  if (!ts) return new Date().toISOString();
+  if (typeof ts === 'string') return ts;
+  if (ts.toDate) return ts.toDate().toISOString();
+  return new Date(ts).toISOString();
+};
+
 export const casesService = {
   // Fetch all cases
   getCases: async () => {
@@ -13,8 +20,8 @@ export const casesService = {
         id: doc.id,
         ...doc.data(),
         // Convert Firestore Timestamp to string for Next.js serialization
-        createdAt: doc.data().createdAt?.toDate().toISOString() || new Date().toISOString(),
-        updatedAt: doc.data().updatedAt?.toDate().toISOString() || new Date().toISOString(),
+        createdAt: convertTimestamp(doc.data().createdAt),
+        updatedAt: convertTimestamp(doc.data().updatedAt),
       }));
       return cases;
     } catch (error) {
@@ -34,8 +41,8 @@ export const casesService = {
         return {
           id: docSnap.id,
           ...data,
-          createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
-          updatedAt: data.updatedAt?.toDate().toISOString() || new Date().toISOString(),
+          createdAt: convertTimestamp(data.createdAt),
+          updatedAt: convertTimestamp(data.updatedAt),
         };
       } else {
         console.log("No such document!");
