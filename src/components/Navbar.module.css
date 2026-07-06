@@ -42,7 +42,12 @@
   height: 60px;
   width: auto;
   object-fit: contain;
-  transition: height var(--transition-fast);
+  transition: height var(--transition-fast), filter 0.3s ease;
+  filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.15)) drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.1));
+}
+
+.logoImage:hover {
+  filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.2)) drop-shadow(5px 5px 6px rgba(0, 0, 0, 0.15));
 }
 
 .brand span {
