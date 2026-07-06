@@ -32,7 +32,7 @@ export default function CasesGallery() {
         let fetchedCases = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        }));
+        })).filter(caseItem => caseItem.isDraft !== true);
         
         setCases(fetchedCases);
       } catch (error) {

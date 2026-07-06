@@ -137,6 +137,10 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
       alert("Please fill all required fields (Title, Categories)");
       return;
     }
+    if (!beforeImage || !afterImage) {
+      alert("Please upload both before and after images.");
+      return;
+    }
 
     setUploading(true);
 
@@ -208,7 +212,7 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
         title,
         categories,
         description,
-        isDraft: true, // New cases start as draft until fully filled in
+        isDraft: isDraftSubmit, // Use button state instead of hardcoded true
         featured,
         treatmentPlan: treatmentDetails,
         steps: uploadedSteps,
@@ -564,7 +568,10 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
             <button type="button" className="btn-secondary" onClick={onClose} disabled={uploading}>
               Cancel
             </button>
-            <button type="submit" className="btn-primary" disabled={uploading}>
+            <button type="submit" className="btn-secondary" disabled={uploading} onClick={() => setIsDraftSubmit(true)}>
+              Save as Draft
+            </button>
+            <button type="submit" className="btn-primary" disabled={uploading} onClick={() => setIsDraftSubmit(false)}>
               {uploading ? 'Saving Case...' : 'Publish Case'}
             </button>
           </div>

@@ -3,7 +3,6 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import SortableGallery from '../../../../components/SortableGallery';
 import { casesService } from '../../../../../lib/services/casesService';
 import imageCompression from 'browser-image-compression';
 import styles from '../../../admin.module.css';
@@ -21,6 +20,11 @@ export default function EditCasePage({ params }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  
+  const [beforeImage, setBeforeImage] = useState(null);
+  const [beforePreview, setBeforePreview] = useState(null);
+  const [afterImage, setAfterImage] = useState(null);
+  const [afterPreview, setAfterPreview] = useState(null);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -87,6 +91,22 @@ export default function EditCasePage({ params }) {
         : [...prev.categories, category];
       return { ...prev, categories: cats };
     });
+  };
+
+  const handleBeforeChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setBeforeImage(file);
+      setBeforePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleAfterChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAfterImage(file);
+      setAfterPreview(URL.createObjectURL(file));
+    }
   };
 
   // Step Handlers
@@ -193,6 +213,9 @@ export default function EditCasePage({ params }) {
         return data.url;
       };
 
+      const newBeforeUrl = beforeImage ? await uploadImage(beforeImage) : formData.beforeImage;
+      const newAfterUrl = afterImage ? await uploadImage(afterImage) : formData.afterImage;
+
       const finalSteps = [];
       for (const step of formData.steps) {
         const stepImages = [...(step.existingImages || [])];
@@ -209,7 +232,13 @@ export default function EditCasePage({ params }) {
         });
       }
 
-      const updatedData = { ...formData, isDraft: asDraft, steps: finalSteps };
+      const updatedData = { 
+        ...formData, 
+        isDraft: asDraft, 
+        steps: finalSteps,
+        beforeImage: newBeforeUrl,
+        afterImage: newAfterUrl
+      };
       await casesService.updateCase(caseId, updatedData);
       setFormData(updatedData);
       
@@ -473,19 +502,33 @@ export default function EditCasePage({ params }) {
             
             <div className={styles.formGroup}>
               <label>Before Image</label>
-              <div className={styles.uploadArea}>
-                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginBottom: '0.5rem', color: 'var(--primary-color)'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                <p style={{fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.25rem'}}>Drag Before Image</p>
-                <button className={styles.uploadBtn} style={{padding: '0.25rem 0.75rem', fontSize: '0.8rem'}}>Browse</button>
+              <div className={styles.imageDropzone} style={{ padding: '1rem', minHeight: '150px', position: 'relative' }}>
+                <input type="file" accept="image/*" onChange={handleBeforeChange} style={{position:'absolute', top:0, left:0, width:'100%', height:'100%', opacity:0, cursor:'pointer', zIndex:2}} />
+                {beforePreview || formData.beforeImage ? (
+                  <img src={beforePreview || formData.beforeImage} alt="Before preview" style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', position: 'relative', zIndex: 1}} />
+                ) : (
+                  <div style={{color: 'var(--primary-color)', textAlign: 'center'}}>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginBottom: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <p style={{fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.25rem'}}>Drag Before Image</p>
+                    <button type="button" className={styles.uploadBtn} style={{padding: '0.25rem 0.75rem', fontSize: '0.8rem', pointerEvents: 'none'}}>Browse</button>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className={styles.formGroup}>
               <label>After Image</label>
-              <div className={styles.uploadArea}>
-                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginBottom: '0.5rem', color: 'var(--primary-color)'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                <p style={{fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.25rem'}}>Drag After Image</p>
-                <button className={styles.uploadBtn} style={{padding: '0.25rem 0.75rem', fontSize: '0.8rem'}}>Browse</button>
+              <div className={styles.imageDropzone} style={{ padding: '1rem', minHeight: '150px', position: 'relative' }}>
+                <input type="file" accept="image/*" onChange={handleAfterChange} style={{position:'absolute', top:0, left:0, width:'100%', height:'100%', opacity:0, cursor:'pointer', zIndex:2}} />
+                {afterPreview || formData.afterImage ? (
+                  <img src={afterPreview || formData.afterImage} alt="After preview" style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', position: 'relative', zIndex: 1}} />
+                ) : (
+                  <div style={{color: 'var(--primary-color)', textAlign: 'center'}}>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginBottom: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <p style={{fontWeight: 500, fontSize: '0.9rem', marginBottom: '0.25rem'}}>Drag After Image</p>
+                    <button type="button" className={styles.uploadBtn} style={{padding: '0.25rem 0.75rem', fontSize: '0.8rem', pointerEvents: 'none'}}>Browse</button>
+                  </div>
+                )}
               </div>
             </div>
 
