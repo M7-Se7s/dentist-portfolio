@@ -26,12 +26,14 @@
     width: 320px;
     padding: 3rem 2rem;
   }
+
   .sidebarProfile {
     margin-left: -2rem;
     margin-right: -2rem;
     margin-bottom: -3rem;
     padding: 1.5rem 2rem 2rem 2rem;
   }
+
   .sidebar.sidebarCollapsed {
     width: 88px;
     padding: 3rem 1rem;
@@ -132,7 +134,7 @@
   gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .logoAvatar {
@@ -168,7 +170,7 @@
 }
 
 .navLink {
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.85);
   padding: 0.85rem 1rem;
   border-radius: 8px;
   transition: all var(--transition-fast);
@@ -181,13 +183,13 @@
 
 .navLink:hover {
   color: var(--white);
-  background-color: rgba(255,255,255,0.1);
+  background-color: rgba(255, 255, 255, 0.1);
   transform: translateX(4px);
 }
 
 .navLinkActive {
   color: var(--white);
-  background-color: rgba(255,255,255,0.15);
+  background-color: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(4px);
   transform: translateX(4px);
   border-left: 3px solid var(--secondary-color);
@@ -200,7 +202,7 @@
 }
 
 .logoutBtn {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--white);
   padding: 0.75rem;
   text-align: center;
@@ -208,7 +210,7 @@
   margin-top: 2rem;
   font-weight: 600;
   transition: all var(--transition-fast);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -217,7 +219,7 @@
 }
 
 .logoutBtn:hover {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
@@ -266,7 +268,7 @@
   position: absolute;
   width: 150%;
   height: 150%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
   top: -25%;
   left: -25%;
 }
@@ -276,6 +278,7 @@
   margin-bottom: 1rem;
   position: relative;
   z-index: 1;
+  color: white;
 }
 
 .loginLeft p {
@@ -302,7 +305,7 @@
   background: var(--white);
   border-radius: 16px;
   box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .loginTitle {
@@ -400,7 +403,7 @@
 .imageDropzoneContent {
   position: relative;
   z-index: 2;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255, 255, 255, 0.8);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   backdrop-filter: blur(4px);
@@ -442,7 +445,8 @@
   border-collapse: collapse;
 }
 
-.caseTable th, .caseTable td {
+.caseTable th,
+.caseTable td {
   padding: 1.25rem 1.5rem;
   text-align: left;
 }
@@ -518,6 +522,7 @@
 .actionBtn.edit {
   color: var(--primary-color);
 }
+
 .actionBtn.edit:hover {
   background-color: var(--primary-light);
 }
@@ -525,6 +530,7 @@
 .actionBtn.delete {
   color: var(--error);
 }
+
 .actionBtn.delete:hover {
   background-color: #FEE2E2;
 }
@@ -535,8 +541,11 @@
 --------------------------- */
 .modalOverlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0,0,0,0.5);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -569,8 +578,15 @@
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .modalTitle {
@@ -599,8 +615,8 @@
   border-radius: 16px;
   padding: 4rem 2rem;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-  border: 1px solid rgba(0,0,0,0.02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.02);
 }
 
 .caseGrid {
@@ -613,8 +629,8 @@
   background-color: var(--white);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-  border: 1px solid rgba(0,0,0,0.02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -622,7 +638,7 @@
 
 .caseAdminCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
 .caseAdminImage {
@@ -642,7 +658,7 @@
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 2;
 }
 
@@ -673,6 +689,7 @@
 .actionBtn.view {
   color: var(--secondary-color);
 }
+
 .actionBtn.view:hover {
   background-color: rgba(20, 184, 166, 0.1);
 }
@@ -685,8 +702,8 @@
   border-radius: 16px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-  border: 1px solid rgba(0,0,0,0.02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.02);
 }
 
 .formSectionTitle {
@@ -721,7 +738,8 @@
   justify-content: flex-end;
   gap: 1rem;
   z-index: 100;
-  margin: 2rem -3rem -3rem -3rem; /* extend to bleed into parent padding */
+  margin: 2rem -3rem -3rem -3rem;
+  /* extend to bleed into parent padding */
 }
 
 /* React Quill Overrides */
@@ -729,12 +747,14 @@
   background-color: var(--white);
   border-radius: 8px;
 }
+
 .quillWrapper .ql-toolbar {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   border-color: var(--border-color) !important;
   background-color: #F8FAFC;
 }
+
 .quillWrapper .ql-container {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
@@ -832,11 +852,11 @@
   border-radius: 50%;
 }
 
-input:checked + .toggleSlider {
+input:checked+.toggleSlider {
   background-color: var(--primary-color);
 }
 
-input:checked + .toggleSlider:before {
+input:checked+.toggleSlider:before {
   transform: translateX(22px);
 }
 
@@ -859,7 +879,7 @@ input:checked + .toggleSlider:before {
   padding: 1rem 3rem;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
   z-index: 5;
 }
 
@@ -954,8 +974,15 @@ input:checked + .toggleSlider:before {
   margin-bottom: 1rem;
 }
 
-.statCardIcon.blue { background-color: var(--primary-light); color: var(--primary-color); }
-.statCardIcon.lightBlue { background-color: #E0F2FE; color: #0284C7; }
+.statCardIcon.blue {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.statCardIcon.lightBlue {
+  background-color: #E0F2FE;
+  color: #0284C7;
+}
 
 .statCardHeader {
   display: flex;
@@ -1056,7 +1083,8 @@ input:checked + .toggleSlider:before {
 }
 
 /* Right Column Widgets */
-.cvQuickEditCard, .analyticsCard {
+.cvQuickEditCard,
+.analyticsCard {
   background: var(--white);
   border-radius: 12px;
   padding: 1.5rem;
@@ -1065,7 +1093,8 @@ input:checked + .toggleSlider:before {
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.cvQuickEditCard:hover, .analyticsCard:hover {
+.cvQuickEditCard:hover,
+.analyticsCard:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-md);
 }
@@ -1415,7 +1444,7 @@ input:checked + .toggleSlider:before {
   .collapseToggleBtn {
     display: none !important;
   }
-  
+
   .menuBtn {
     display: flex;
     align-items: center;
@@ -1456,21 +1485,21 @@ input:checked + .toggleSlider:before {
     border-radius: 8px;
     font-weight: 600;
     font-size: 1.05rem;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     margin-top: 1rem;
     width: 100%;
     cursor: pointer;
     transition: background 0.2s;
   }
-  
+
   .logoutBtnMobile:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .profileIconDesktop {
     display: none !important;
   }
-  
+
   .sidebar {
     position: fixed;
     top: 0;
@@ -1480,10 +1509,10 @@ input:checked + .toggleSlider:before {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 100;
   }
-  
+
   .sidebarOpen {
     transform: translateX(0);
-    box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
   }
 
   .adminContent {
@@ -1509,7 +1538,8 @@ input:checked + .toggleSlider:before {
     flex-direction: column;
   }
 
-  .loginLeft, .loginRight {
+  .loginLeft,
+  .loginRight {
     width: 100%;
     padding: 2rem 1.5rem;
   }
@@ -1561,7 +1591,7 @@ input:checked + .toggleSlider:before {
     padding: 1rem 1.5rem;
     flex-direction: column;
   }
-  
+
   .stickyActionBar button {
     width: 100%;
   }
@@ -1604,9 +1634,14 @@ input:checked + .toggleSlider:before {
   .statCardValue {
     font-size: 1.5rem;
   }
-  
+
   /* Touch target enhancements */
-  .navLink, .logoutBtn, .actionBtn, .newCaseBtn, .analyticsBtnPrimary, .cvUpdateBtn {
+  .navLink,
+  .logoutBtn,
+  .actionBtn,
+  .newCaseBtn,
+  .analyticsBtnPrimary,
+  .cvUpdateBtn {
     min-height: 44px;
   }
 }
@@ -1628,7 +1663,7 @@ input:checked + .toggleSlider:before {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   padding-top: 3rem;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   position: sticky;
   top: -3rem;
   background-color: #F8FAFC;
@@ -1668,6 +1703,7 @@ input:checked + .toggleSlider:before {
   .editCaseLayout {
     grid-template-columns: 1fr;
   }
+
   .editCaseHeader {
     margin-top: -1.5rem;
     margin-left: -1.5rem;
@@ -1685,17 +1721,21 @@ input:checked + .toggleSlider:before {
     align-items: flex-start;
     gap: 1rem;
   }
+
   .headerActions {
     width: 100%;
     justify-content: stretch;
   }
+
   .headerActions button {
     flex: 1;
   }
+
   .formRow {
     flex-direction: column;
     gap: 1.5rem;
   }
+
   .formCard {
     padding: 1.5rem;
   }
@@ -1711,12 +1751,15 @@ input:checked + .toggleSlider:before {
     padding-right: 1rem;
     top: -1rem;
   }
+
   .headerActions {
     flex-direction: column;
   }
+
   .formCard {
     padding: 1rem;
   }
+
   .imageGrid {
     grid-template-columns: 1fr;
   }
@@ -1769,7 +1812,7 @@ input:checked + .toggleSlider:before {
 .formTextarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   font-family: inherit;
   font-size: 1rem;
@@ -1803,7 +1846,7 @@ input:checked + .toggleSlider:before {
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   background: var(--white);
   color: var(--text-muted);
   transition: all 0.2s ease;
@@ -1821,7 +1864,7 @@ input:checked + .toggleSlider:before {
 }
 
 .uploadArea {
-  border: 2px dashed rgba(0,0,0,0.1);
+  border: 2px dashed rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   padding: 2rem;
   text-align: center;
@@ -1841,7 +1884,7 @@ input:checked + .toggleSlider:before {
 
 .uploadBtn {
   background: var(--white);
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 0.4rem 1rem;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -1860,7 +1903,7 @@ input:checked + .toggleSlider:before {
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   aspect-ratio: 1 / 1;
 }
 
@@ -1875,7 +1918,7 @@ input:checked + .toggleSlider:before {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
   padding: 1rem 0.5rem 0.5rem;
   display: flex;
   justify-content: space-between;
@@ -1889,7 +1932,7 @@ input:checked + .toggleSlider:before {
 }
 
 .imageDeleteBtn {
-  background: rgba(255,0,0,0.8);
+  background: rgba(255, 0, 0, 0.8);
   color: white;
   border: none;
   border-radius: 50%;
@@ -1973,6 +2016,7 @@ input:checked + .toggleSlider:before {
   position: relative;
   width: 100%;
 }
+
 .categorySelectBox {
   width: 100%;
   min-height: 48px;
@@ -1986,25 +2030,30 @@ input:checked + .toggleSlider:before {
   align-items: center;
   transition: all 0.2s ease;
 }
+
 .categorySelectBoxClosed {
   border: 1px solid var(--border-color);
   box-shadow: none;
 }
+
 .categorySelectBoxOpen {
   border: 1px solid var(--primary-color);
   box-shadow: 0 0 0 3px rgba(14, 116, 144, 0.1);
 }
+
 .categoryChips {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
   flex: 1;
 }
+
 .categoryPlaceholder {
   color: var(--text-muted);
   font-size: 1rem;
   padding: 0.35rem 0;
 }
+
 .categoryChip {
   background-color: var(--primary-color);
   color: var(--white);
@@ -2015,15 +2064,18 @@ input:checked + .toggleSlider:before {
   align-items: center;
   gap: 0.5rem;
 }
+
 .categoryIcon {
   color: var(--text-muted);
   flex-shrink: 0;
   margin-left: 0.5rem;
   transition: transform 0.2s;
 }
+
 .categoryIconOpen {
   transform: rotate(180deg);
 }
+
 .categoryMenu {
   position: absolute;
   top: calc(100% + 8px);
@@ -2037,6 +2089,7 @@ input:checked + .toggleSlider:before {
   overflow: hidden;
   animation: modalFadeIn 0.2s ease-out;
 }
+
 .categoryItem {
   padding: 12px 16px;
   cursor: pointer;
@@ -2045,20 +2098,24 @@ input:checked + .toggleSlider:before {
   align-items: center;
   justify-content: space-between;
 }
+
 .categoryItemActive {
   background-color: rgba(14, 116, 144, 0.1);
   color: var(--primary-color);
   font-weight: 600;
 }
+
 .categoryItemInactive {
   background-color: transparent;
   color: var(--text-dark);
   font-weight: 400;
 }
+
 .categoryItem:hover {
   background-color: rgba(14, 116, 144, 0.05);
   color: var(--primary-color);
 }
+
 .categoryItemUnchecked {
   width: 18px;
   height: 18px;
@@ -2077,18 +2134,22 @@ input:checked + .toggleSlider:before {
   resize: vertical;
   min-height: 120px;
 }
+
 .treatmentStepsContainer {
   margin-top: 2rem;
 }
+
 .treatmentStepsHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
 }
+
 .treatmentStepsHeader label {
   margin: 0;
 }
+
 .imageDropzoneStep {
   padding: 1rem;
   min-height: 100px;
@@ -2104,10 +2165,12 @@ input:checked + .toggleSlider:before {
   align-items: center;
   justify-content: center;
 }
+
 .imageDropzoneStep:hover {
   border-color: var(--primary-color);
   background-color: var(--primary-light);
 }
+
 .hiddenFileInput {
   position: absolute;
   top: 0;
@@ -2118,16 +2181,19 @@ input:checked + .toggleSlider:before {
   cursor: pointer;
   z-index: 2;
 }
+
 .dropzoneText {
   color: var(--primary-color);
   font-weight: 600;
 }
+
 .stepImageGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
 }
+
 .stepImageWrapper {
   position: relative;
   aspect-ratio: 1;
@@ -2135,16 +2201,18 @@ input:checked + .toggleSlider:before {
   overflow: hidden;
   border: 1px solid var(--border-color);
 }
+
 .stepImagePreview {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
+
 .removeStepImageBtn {
   position: absolute;
   top: 4px;
   right: 4px;
-  background: rgba(255,0,0,0.8);
+  background: rgba(255, 0, 0, 0.8);
   color: white;
   border: none;
   border-radius: 50%;
@@ -2156,6 +2224,7 @@ input:checked + .toggleSlider:before {
   cursor: pointer;
   z-index: 10;
 }
+
 .emptyStepsState {
   text-align: center;
   padding: 2rem;
@@ -2170,6 +2239,7 @@ input:checked + .toggleSlider:before {
   margin-bottom: 1rem;
   font-size: 0.9rem;
 }
+
 .imageDropzoneSplit {
   padding: 1rem;
   min-height: 150px;
@@ -2185,16 +2255,19 @@ input:checked + .toggleSlider:before {
   align-items: center;
   justify-content: center;
 }
+
 .imageDropzoneSplit:hover {
   border-color: var(--primary-color);
   background-color: var(--primary-light);
 }
+
 .imageDropzonePreview {
   width: 100%;
   height: 120px;
   object-fit: cover;
   border-radius: 8px;
 }
+
 .uploadPlaceholder {
   color: var(--text-muted);
   padding-top: 1rem;
@@ -2203,12 +2276,15 @@ input:checked + .toggleSlider:before {
   align-items: center;
   justify-content: center;
 }
+
 .uploadPlaceholderIcon {
   margin: 0 auto 0.25rem;
 }
+
 .uploadPlaceholderText {
   font-size: 0.85rem;
 }
+
 .imageDropzoneGallery {
   padding: 1rem;
   min-height: 80px;
@@ -2224,6 +2300,7 @@ input:checked + .toggleSlider:before {
   align-items: center;
   justify-content: center;
 }
+
 .imageDropzoneGallery:hover {
   border-color: var(--primary-color);
   background-color: var(--primary-light);

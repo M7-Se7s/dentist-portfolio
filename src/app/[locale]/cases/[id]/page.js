@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import ImageSlider from '@/components/ImageSlider';
+import Collapsible from '@/components/Collapsible';
 import { useTranslations, useLocale } from 'next-intl';
 import styles from './detail.module.css';
 
@@ -182,58 +183,65 @@ export default function CaseDetail({ params }) {
           {/* Clinical Story (Narrative) */}
           {(caseData.diagnosis || caseData.treatmentPerformed || caseData.chiefComplaint || caseData.techniques || caseData.challenges || caseData.result || caseData.keyTakeaways) && (
             <div className={styles.clinicalStory}>
-              <h3 className={styles.sectionHeading}>Clinical Narrative</h3>
-              
+              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>Clinical Narrative</h3>}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 {caseData.chiefComplaint && (
                   <div className={styles.storyBlock}>
-                    <h4>Chief Complaint</h4>
-                    <p>{caseData.chiefComplaint}</p>
+                    <Collapsible titleElement={<h4 style={{margin: 0}}>Chief Complaint</h4>}>
+                      <p style={{marginTop: '1rem'}}>{caseData.chiefComplaint}</p>
+                    </Collapsible>
                   </div>
                 )}
                 
                 {caseData.diagnosis && (
                   <div className={styles.storyBlock}>
-                    <h4>Diagnosis</h4>
-                    <p>{caseData.diagnosis}</p>
+                    <Collapsible titleElement={<h4 style={{margin: 0}}>Diagnosis</h4>}>
+                      <p style={{marginTop: '1rem'}}>{caseData.diagnosis}</p>
+                    </Collapsible>
                   </div>
                 )}
                 
                 {caseData.treatmentPerformed && (
                   <div className={styles.storyBlock}>
-                    <h4>Treatment Performed</h4>
-                    <p>{caseData.treatmentPerformed}</p>
+                    <Collapsible titleElement={<h4 style={{margin: 0}}>Treatment Performed</h4>}>
+                      <p style={{marginTop: '1rem'}}>{caseData.treatmentPerformed}</p>
+                    </Collapsible>
                   </div>
                 )}
                 
                 {caseData.techniques && (
                   <div className={styles.storyBlock}>
-                    <h4>Techniques & Workflow</h4>
-                    <p>{caseData.techniques}</p>
+                    <Collapsible titleElement={<h4 style={{margin: 0}}>Techniques & Workflow</h4>}>
+                      <p style={{marginTop: '1rem'}}>{caseData.techniques}</p>
+                    </Collapsible>
                   </div>
                 )}
 
                 {caseData.challenges && (
                   <div className={styles.storyBlock}>
-                    <h4>Challenges</h4>
-                    <p>{caseData.challenges}</p>
+                    <Collapsible titleElement={<h4 style={{margin: 0}}>Challenges</h4>}>
+                      <p style={{marginTop: '1rem'}}>{caseData.challenges}</p>
+                    </Collapsible>
                   </div>
                 )}
 
                 {caseData.result && (
                   <div className={styles.storyBlock}>
-                    <h4>Outcome</h4>
-                    <p>{caseData.result}</p>
+                    <Collapsible titleElement={<h4 style={{margin: 0}}>Outcome</h4>}>
+                      <p style={{marginTop: '1rem'}}>{caseData.result}</p>
+                    </Collapsible>
                   </div>
                 )}
 
                 {caseData.keyTakeaways && (
                   <div className={styles.storyBlock}>
-                    <h4>Key Takeaways</h4>
-                    <p>{caseData.keyTakeaways}</p>
+                    <Collapsible titleElement={<h4 style={{margin: 0}}>Key Takeaways</h4>}>
+                      <p style={{marginTop: '1rem'}}>{caseData.keyTakeaways}</p>
+                    </Collapsible>
                   </div>
                 )}
               </div>
+              </Collapsible>
             </div>
           )}
 
@@ -251,45 +259,51 @@ export default function CaseDetail({ params }) {
           {/* Treatment Process Steps */}
           {caseData.steps && caseData.steps.length > 0 && (
             <div className={styles.processStepsSection}>
-              <h3 className={styles.sectionHeading}>{t('treatmentProcessSteps')}</h3>
+              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('treatmentProcessSteps')}</h3>}>
               <div className={styles.stepsList}>
                 {caseData.steps.map((step, index) => {
                   const stepTitle = locale === 'ar' ? (step.titleAr || step.title) : step.title;
                   const stepDesc = locale === 'ar' ? (step.descriptionAr || step.description) : step.description;
                   return (
                   <div key={index} className={styles.stepCard}>
-                    <h4 className={styles.stepTitle}>
-                      {t('step')} {index + 1}: {stepTitle}
-                    </h4>
-                    {stepDesc && (
-                      <p className={styles.stepDesc}>{stepDesc}</p>
-                    )}
-                    
-                    {step.images && step.images.length > 0 && (
-                      <div className={styles.stepImageGrid}>
-                        {step.images.map((imgUrl, imgIdx) => (
-                          <div key={imgIdx} className={styles.gallerySquare} onClick={() => openLightbox(step.images, imgIdx)}>
-                            <Image 
-                              src={imgUrl} 
-                              alt={`${stepTitle} image ${imgIdx + 1}`} 
-                              fill
-                              sizes="(max-width: 768px) 50vw, 33vw"
-                              className={styles.galleryImage}
-                            />
+                    <Collapsible titleElement={
+                      <h4 className={styles.stepTitle} style={{margin: 0}}>
+                        {t('step')} {index + 1}: {stepTitle}
+                      </h4>
+                    }>
+                      <div style={{ paddingTop: '1rem' }}>
+                        {stepDesc && (
+                          <p className={styles.stepDesc}>{stepDesc}</p>
+                        )}
+                        
+                        {step.images && step.images.length > 0 && (
+                          <div className={styles.stepImageGrid}>
+                            {step.images.map((imgUrl, imgIdx) => (
+                              <div key={imgIdx} className={styles.gallerySquare} onClick={() => openLightbox(step.images, imgIdx)}>
+                                <Image 
+                                  src={imgUrl} 
+                                  alt={`${stepTitle} image ${imgIdx + 1}`} 
+                                  fill
+                                  sizes="(max-width: 768px) 50vw, 33vw"
+                                  className={styles.galleryImage}
+                                />
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        )}
                       </div>
-                    )}
+                    </Collapsible>
                   </div>
                 )})}
               </div>
+              </Collapsible>
             </div>
           )}
 
           {/* Gallery Section */}
           {(caseData.images || caseData.galleryImages) && (caseData.images || caseData.galleryImages).length > 0 && (
             <div className={styles.gallerySection}>
-              <h3 className={styles.sectionHeading}>Procedure Gallery</h3>
+              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>Procedure Gallery</h3>}>
               <div className={styles.galleryGrid}>
                 {(caseData.images || caseData.galleryImages).map((img, idx) => {
                   const imagesArray = caseData.images || caseData.galleryImages;
@@ -305,7 +319,8 @@ export default function CaseDetail({ params }) {
                     </div>
                   );
                 })}
-              </div>
+                </div>
+              </Collapsible>
             </div>
           )}
 
