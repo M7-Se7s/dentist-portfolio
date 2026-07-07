@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import ImageSlider from '@/components/ImageSlider';
+import { useTranslations, useLocale } from 'next-intl';
 import styles from './page.module.css';
 
 const CATEGORIES = [
@@ -16,13 +17,14 @@ const CATEGORIES = [
   "Posterior Restorations"
 ];
 
-
-
 export default function CasesGallery() {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("All");
   const [visibleCount, setVisibleCount] = useState(9);
+
+  const t = useTranslations('Cases');
+  const locale = useLocale();
 
   useEffect(() => {
     async function fetchCases() {
@@ -67,8 +69,8 @@ export default function CasesGallery() {
       {/* 1. Small Hero Section */}
       <div className={styles.pageHeader}>
         <div className="container">
-          <h1>Clinical Cases</h1>
-          <p>A curated collection of documented clinical cases demonstrating diagnosis, treatment planning, and restorative outcomes.</p>
+          <h1>{t('title')}</h1>
+          <p>{t('description')}</p>
         </div>
       </div>
 
@@ -84,7 +86,7 @@ export default function CasesGallery() {
                 setVisibleCount(9); // Reset pagination on filter change
               }}
             >
-              {category}
+              {t(`Categories.${category}`)}
             </button>
           ))}
         </div>
@@ -94,13 +96,20 @@ export default function CasesGallery() {
       <section className={styles.gallerySection}>
         <div className="container">
           {loading ? (
-            <div className={styles.loading}>Loading clinical cases...</div>
+            <div className={styles.loading}>{t('loading')}</div>
           ) : visibleCases.length === 0 ? (
-            <div className={styles.loading}>No cases found for this category.</div>
+            <div className={styles.loading}>{t('noCases')}</div>
           ) : (
             <>
               <div className={styles.grid}>
-                {visibleCases.map((caseItem) => (
+                {visibleCases.map((caseItem) => {
+                  const title = locale === 'ar' ? (caseItem.titleAr || caseItem.title) : caseItem.title;
+                  const description = locale === 'ar' ? (caseItem.descriptionAr || caseItem.description) : caseItem.description;
+                  const allCategories = caseItem.categories && caseItem.categories.length > 0 
+                    ? caseItem.categories 
+                    : (caseItem.category ? [caseItem.category] : ["All"]);
+
+                  return (
                   <div key={caseItem.id} className={styles.caseCard}>
                     <div className={styles.imageWrapper}>
                       <ImageSlider 
@@ -109,30 +118,35 @@ export default function CasesGallery() {
                       />
                     </div>
                     <div className={styles.caseInfo}>
-                      {/* 4. Category Badge & Title */}
-                      <span className={styles.caseCategory}>
-                        {caseItem.categories && caseItem.categories.length > 0 ? caseItem.categories[0] : (caseItem.category || "General")}
-                      </span>
+                      {/* 4. Category Badges & Title */}
+                      <div className={styles.categoriesWrapper}>
+                        {allCategories.map(cat => (
+                          <span key={cat} className={styles.caseCategory}>
+                            {t(`Categories.${cat}`)}
+                          </span>
+                        ))}
+                      </div>
                       <Link href={`/cases/${caseItem.id}`} style={{textDecoration: 'none', display: 'inline-block'}}>
-                        <h3 className={styles.caseTitle}>{caseItem.title}</h3>
+                        <h3 className={styles.caseTitle}>{title}</h3>
                       </Link>
                       <p className={styles.caseDesc}>
-                        {caseItem.description?.substring(0, 80)}
-                        {caseItem.description?.length > 80 ? '...' : ''}
+                        {description?.substring(0, 80)}
+                        {description?.length > 80 ? '...' : ''}
                       </p>
                       <Link href={`/cases/${caseItem.id}`} style={{textDecoration: 'none'}}>
-                        <span className={styles.viewBtn}>View Case &rarr;</span>
+                        <span className={styles.viewBtn}>{t('viewCase')}</span>
                       </Link>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* 5. Pagination / Load More */}
               {hasMore && (
                 <div className={styles.loadMoreContainer}>
                   <button onClick={handleLoadMore} className={styles.loadMoreBtn}>
-                    Load More Cases
+                    {t('loadMore')}
                   </button>
                 </div>
               )}

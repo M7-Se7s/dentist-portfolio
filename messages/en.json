@@ -22,9 +22,33 @@
     "viewProfile": "View Full Profile \u2192"
   },
   "Cases": {
-    "title": "Featured Cases",
+    "title": "Clinical Cases",
+    "description": "A curated collection of documented clinical cases demonstrating diagnosis, treatment planning, and restorative outcomes.",
     "viewCase": "View Case \u2192",
-    "viewAll": "View All Cases \u2192"
+    "viewAll": "View All Cases \u2192",
+    "loading": "Loading clinical cases...",
+    "noCases": "No cases found for this category.",
+    "loadMore": "Load More Cases",
+    "Categories": {
+      "All": "All",
+      "Composite": "Composite",
+      "Endodontics": "Endodontics",
+      "Prosthodontics": "Prosthodontics",
+      "Esthetic": "Esthetic",
+      "Posterior Restorations": "Posterior Restorations"
+    }
+  },
+  "CaseDetail": {
+    "loading": "Loading case details...",
+    "notFound": "Case not found.",
+    "backToCases": "Back to Cases",
+    "viewFullImages": "View Full Images",
+    "caseDescription": "Case Description",
+    "noDescription": "No description provided.",
+    "fullCaseReport": "Full Case Report",
+    "treatmentProcessSteps": "Treatment Process Steps",
+    "step": "Step",
+    "caseGallery": "Case Gallery"
   },
   "Contact": {
     "title": "Interested in working together?",

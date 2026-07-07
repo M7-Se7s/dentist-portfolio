@@ -1,7 +1,5 @@
 .detailHeader {
-  background-color: var(--primary-light);
-  padding: 4rem 0;
-  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 0;
 }
 
 .backLink {
@@ -113,6 +111,11 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 0;
+}
+
+.infoBlock {
+  min-width: 0;
 }
 
 .infoBlock h3 {
@@ -122,12 +125,15 @@
   border-bottom: 2px solid var(--primary-light);
   padding-bottom: 0.5rem;
   display: inline-block;
+  word-break: break-word;
 }
 
 .infoBlock p {
   color: var(--text-dark);
   font-size: 1rem;
   line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .loading, .error {
@@ -135,4 +141,20 @@
   padding: 6rem;
   font-size: 1.2rem;
   color: var(--text-muted);
+}
+
+.stepCard {
+  padding: 1rem;
+  background-color: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (min-width: 768px) {
+  .stepCard {
+    padding: 2rem;
+  }
 }

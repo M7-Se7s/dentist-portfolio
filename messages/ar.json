@@ -22,9 +22,33 @@
     "viewProfile": "عرض الملف الشخصي الكامل \u2190"
   },
   "Cases": {
-    "title": "حالات مميزة",
+    "title": "الحالات السريرية",
+    "description": "مجموعة مختارة من الحالات السريرية الموثقة التي توضح التشخيص وتخطيط العلاج والنتائج الترميمية.",
     "viewCase": "عرض الحالة \u2190",
-    "viewAll": "عرض جميع الحالات \u2190"
+    "viewAll": "عرض جميع الحالات \u2190",
+    "loading": "جاري تحميل الحالات السريرية...",
+    "noCases": "لم يتم العثور على حالات لهذه الفئة.",
+    "loadMore": "تحميل المزيد من الحالات",
+    "Categories": {
+      "All": "الكل",
+      "Composite": "حشوات تجميلية",
+      "Endodontics": "علاج جذور",
+      "Prosthodontics": "تركيبات",
+      "Esthetic": "تجميلي",
+      "Posterior Restorations": "ترميمات خلفية"
+    }
+  },
+  "CaseDetail": {
+    "loading": "جاري تحميل تفاصيل الحالة...",
+    "notFound": "لم يتم العثور على الحالة.",
+    "backToCases": "العودة للحالات",
+    "viewFullImages": "عرض الصور الكاملة",
+    "caseDescription": "وصف الحالة",
+    "noDescription": "لا يوجد وصف متاح.",
+    "fullCaseReport": "تقرير الحالة الكامل",
+    "treatmentProcessSteps": "خطوات خطة العلاج",
+    "step": "خطوة",
+    "caseGallery": "معرض صور الحالة"
   },
   "Contact": {
     "title": "مهتم بالعمل معاً؟",

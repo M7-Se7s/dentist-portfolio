@@ -120,6 +120,13 @@
   flex-direction: column;
 }
 
+.categoriesWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
 .caseCategory {
   display: inline-block;
   background-color: var(--primary-light);
@@ -128,7 +135,6 @@
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
-  margin-bottom: 1rem;
   align-self: flex-start;
   text-transform: uppercase;
   letter-spacing: 0.5px;

@@ -65,7 +65,7 @@
 
 .philosophyQuote {
   margin-top: clamp(1rem, 3vw, 2rem);
-  padding: clamp(1.5rem, 3vw, 2rem);
+  padding: clamp(1rem, 3vw, 2rem);
   background-color: var(--primary-light);
   border-inline-start: 5px solid var(--primary);
   border-start-start-radius: 0;
@@ -79,6 +79,10 @@
 }
 
 @media (max-width: 768px) {
+  .profileSection {
+    padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 5vw, 4rem);
+  }
+
   .profileGrid {
     grid-template-columns: 1fr;
     gap: 2rem;

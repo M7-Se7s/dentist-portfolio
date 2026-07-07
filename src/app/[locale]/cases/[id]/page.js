@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState, use } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import ImageSlider from '@/components/ImageSlider';
+import { useTranslations, useLocale } from 'next-intl';
 import styles from './detail.module.css';
 
 export default function CaseDetail({ params }) {
-  // In Next 15+ App Router, params must be awaited if we destructure it directly inside the component, 
-  // or we can use `React.use()` to unwrap it if it's passed as a promise.
   const resolvedParams = use(params);
   const { id } = resolvedParams;
 
@@ -21,6 +20,9 @@ export default function CaseDetail({ params }) {
   const [lightboxImages, setLightboxImages] = useState([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
+  const t = useTranslations('CaseDetail');
+  const locale = useLocale();
+
   useEffect(() => {
     async function fetchCase() {
       try {
@@ -30,11 +32,11 @@ export default function CaseDetail({ params }) {
         if (docSnap.exists()) {
           setCaseData({ id: docSnap.id, ...docSnap.data() });
         } else {
-          setError("Case not found.");
+          setError(t('notFound'));
         }
       } catch (err) {
         console.error("Error fetching case: ", err);
-        setError("Failed to load case details.");
+        setError(t('notFound'));
       } finally {
         setLoading(false);
       }
@@ -43,7 +45,7 @@ export default function CaseDetail({ params }) {
     if (id) {
       fetchCase();
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -57,7 +59,6 @@ export default function CaseDetail({ params }) {
   }, [lightboxOpen, lightboxImages]);
 
   const openLightbox = (imagesList, startIndex) => {
-    // Standardize images list to string array
     const urls = imagesList.map(img => typeof img === 'string' ? img : (img.url || ''));
     setLightboxImages(urls);
     setLightboxIndex(startIndex);
@@ -65,26 +66,33 @@ export default function CaseDetail({ params }) {
   };
 
   if (loading) {
-    return <div className={styles.loading}>Loading case details...</div>;
+    return <div className={styles.loading}>{t('loading')}</div>;
   }
 
   if (error || !caseData) {
     return (
       <div className={styles.error}>
-        <p>{error || "Case not found."}</p>
-        <Link href="/cases" className="btn-primary" style={{marginTop: '1rem'}}>Back to Cases</Link>
+        <p>{error || t('notFound')}</p>
+        <Link href="/cases" className="btn-primary" style={{marginTop: '1rem'}}>{t('backToCases')}</Link>
       </div>
     );
   }
 
+  const title = locale === 'ar' ? (caseData.titleAr || caseData.title) : caseData.title;
+  const description = locale === 'ar' ? (caseData.descriptionAr || caseData.description) : caseData.description;
+  const treatmentPlan = locale === 'ar' ? (caseData.treatmentPlanAr || caseData.treatmentPlan || caseData.treatmentDetails) : (caseData.treatmentPlan || caseData.treatmentDetails);
+
   return (
     <main>
       <div className={styles.detailHeader}>
-        <div className="container">
-          <Link href="/cases" className={styles.backLink}>
-            &larr; Back to Gallery
+        <div className="container" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40px' }}>
+          <Link href="/cases" className={styles.backLink} aria-label="Back to Gallery" style={{ position: 'absolute', left: locale === 'ar' ? 'auto' : '15px', right: locale === 'ar' ? '15px' : 'auto', top: '50%', transform: 'translateY(-50%)', margin: 0, padding: '10px' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{transform: locale === 'ar' ? 'rotate(180deg)' : 'none'}}>
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
           </Link>
-          <h1 className={styles.title}>{caseData.title}</h1>
+          <h1 className={styles.title} style={{ margin: 0, padding: '0 50px', textAlign: 'center', fontSize: '1.8rem' }}>{title}</h1>
         </div>
       </div>
 
@@ -93,7 +101,7 @@ export default function CaseDetail({ params }) {
           <div className={styles.splitView}>
             
             {/* Left: Images */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: 0 }}>
               <div className={styles.comparisonBox}>
                 <ImageSlider 
                   beforeImage={caseData.beforeImage || caseData.beforeImageUrl} 
@@ -131,7 +139,7 @@ export default function CaseDetail({ params }) {
                   <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                   </svg>
-                  View Full Images
+                  {t('viewFullImages')}
                 </button>
               </div>
             </div>
@@ -139,16 +147,16 @@ export default function CaseDetail({ params }) {
             {/* Right: Info */}
             <div className={styles.infoBox}>
               <div className={styles.infoBlock}>
-                <h3>Case Description</h3>
-                <p>{caseData.description || "No description provided."}</p>
+                <h3>{t('caseDescription')}</h3>
+                <p>{description || t('noDescription')}</p>
               </div>
 
-              {(caseData.treatmentPlan || caseData.treatmentDetails) && (
+              {treatmentPlan && (
                 <div className={styles.infoBlock} style={{marginTop: '2rem'}}>
-                  <h3>Full Case Report</h3>
+                  <h3>{t('fullCaseReport')}</h3>
                   <div 
                     className="rich-text-content" 
-                    dangerouslySetInnerHTML={{ __html: caseData.treatmentPlan || caseData.treatmentDetails }} 
+                    dangerouslySetInnerHTML={{ __html: treatmentPlan }} 
                   />
                 </div>
               )}
@@ -158,21 +166,18 @@ export default function CaseDetail({ params }) {
           {/* Treatment Process Steps */}
           {caseData.steps && caseData.steps.length > 0 && (
             <div style={{marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid var(--border-color)'}}>
-              <h3 style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'var(--text-dark)'}}>Treatment Process Steps</h3>
+              <h3 style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'var(--text-dark)'}}>{t('treatmentProcessSteps')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                {caseData.steps.map((step, index) => (
-                  <div key={index} style={{ 
-                    padding: '1.5rem', 
-                    backgroundColor: 'var(--surface)', 
-                    borderRadius: '12px', 
-                    border: '1px solid var(--border-color)',
-                    boxShadow: '0 4px 15px rgba(0,0,0,0.02)'
-                  }}>
+                {caseData.steps.map((step, index) => {
+                  const stepTitle = locale === 'ar' ? (step.titleAr || step.title) : step.title;
+                  const stepDesc = locale === 'ar' ? (step.descriptionAr || step.description) : step.description;
+                  return (
+                  <div key={index} className={styles.stepCard}>
                     <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--primary-color)', fontSize: '1.2rem' }}>
-                      Step {index + 1}: {step.title}
+                      {t('step')} {index + 1}: {stepTitle}
                     </h4>
-                    {step.description && (
-                      <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>{step.description}</p>
+                    {stepDesc && (
+                      <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>{stepDesc}</p>
                     )}
                     
                     {step.images && step.images.length > 0 && (
@@ -191,7 +196,7 @@ export default function CaseDetail({ params }) {
                           }} onClick={() => openLightbox(step.images, imgIdx)}>
                             <img 
                               src={imgUrl} 
-                              alt={`${step.title} image ${imgIdx + 1}`} 
+                              alt={`${stepTitle} image ${imgIdx + 1}`} 
                               style={{width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease'}}
                               onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
                               onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
@@ -201,7 +206,7 @@ export default function CaseDetail({ params }) {
                       </div>
                     )}
                   </div>
-                ))}
+                )})}
               </div>
             </div>
           )}
@@ -209,7 +214,7 @@ export default function CaseDetail({ params }) {
           {/* Gallery Section */}
           {(caseData.images || caseData.galleryImages) && (caseData.images || caseData.galleryImages).length > 0 && (
             <div style={{marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid var(--border-color)'}}>
-              <h3 style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'var(--text-dark)'}}>Case Gallery</h3>
+              <h3 style={{fontSize: '1.5rem', marginBottom: '2rem', color: 'var(--text-dark)'}}>{t('caseGallery')}</h3>
               <div style={{
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 

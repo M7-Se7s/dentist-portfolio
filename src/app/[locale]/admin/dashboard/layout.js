@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import styles from '../admin.module.css';
 import Image from 'next/image';
 

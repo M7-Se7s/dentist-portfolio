@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { casesService } from '@/lib/services/casesService';
 import imageCompression from 'browser-image-compression';
 import styles from '../../../admin.module.css';

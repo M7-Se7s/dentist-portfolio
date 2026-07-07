@@ -105,17 +105,45 @@ export default function CVPage() {
           {/* Header Section */}
           <header className="cv-header">
             <div>
-              <h1 style={{ color: 'var(--primary-color)', fontSize: 'clamp(2rem, 5vw, 2.5rem)', fontFamily: 'var(--font-heading)', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>
+              <h1 style={{ color: 'var(--primary-color)', fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', fontFamily: 'var(--font-heading)', marginBottom: '0.25rem', lineHeight: '1.2', letterSpacing: '-0.5px' }}>
                 {basicInfo.name || "Dr. Mohamed Shaaban"}
               </h1>
-              <p style={{ color: 'var(--secondary-color)', fontSize: 'clamp(1.1rem, 2vw, 1.25rem)', fontWeight: '500', marginBottom: '1rem' }}>
+              <p style={{ color: 'var(--secondary-color)', fontSize: 'clamp(1rem, 2.5vw, 1.15rem)', fontWeight: '500', marginBottom: '1.5rem' }}>
                 {basicInfo.title || "General Dentist"}
               </p>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                {basicInfo.location && <span>📍 {basicInfo.location}</span>}
-                {basicInfo.phone && <span>📱 {basicInfo.phone}</span>}
-                {basicInfo.email && <span>📧 {basicInfo.email}</span>}
-                {basicInfo.linkedin && <span>🔗 <a href={basicInfo.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>{basicInfo.linkedin.replace(/^https?:\/\//, '')}</a></span>}
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {basicInfo.location && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--secondary-color)" style={{ flexShrink: 0 }}>
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span>{basicInfo.location}</span>
+                  </div>
+                )}
+                {basicInfo.phone && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--secondary-color)" style={{ flexShrink: 0 }}>
+                      <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.73 0 .99-.67.99-1.19v-3.44c0-.54-.45-.99-.99-.99z"/>
+                    </svg>
+                    <span>{basicInfo.phone}</span>
+                  </div>
+                )}
+                {basicInfo.email && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--secondary-color)" style={{ flexShrink: 0 }}>
+                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span>{basicInfo.email}</span>
+                  </div>
+                )}
+                {basicInfo.linkedin && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--secondary-color)" style={{ flexShrink: 0 }}>
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                    <span><a href={basicInfo.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>{basicInfo.linkedin.replace(/^https?:\/\//, '')}</a></span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -127,8 +155,8 @@ export default function CVPage() {
             {/* Summary */}
             {summary && (
               <section>
-                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Professional Summary</h2>
-                <p style={{ color: 'var(--text-dark)', lineHeight: '1.8', fontSize: '1rem', textAlign: 'justify' }}>{summary}</p>
+                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Professional Summary</h2>
+                <p style={{ color: 'var(--text-dark)', lineHeight: '1.8', fontSize: 'clamp(0.77rem, 2.5vw, 1.8rem)', textAlign: 'justify' }}>{summary}</p>
               </section>
             )}
 
@@ -136,7 +164,7 @@ export default function CVPage() {
               {/* Core Competencies */}
               {coreCompetencies.length > 0 && (
                 <section>
-                  <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Core Competencies</h2>
+                  <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Core Competencies</h2>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'flex-start' }}>
                     {(() => {
                       const estimateWidth = (str) => {
@@ -184,7 +212,7 @@ export default function CVPage() {
               {/* Professional Licensure */}
               {licensure.length > 0 && (
                 <section>
-                  <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Professional Licensure</h2>
+                  <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Professional Licensure</h2>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {licensure.map((item, idx) => (
                       <li key={idx} className="licensure-item">
@@ -214,7 +242,7 @@ export default function CVPage() {
                 <div className="timeline-container">
                   {experiences.map((exp, idx) => (
                     <div key={idx} className="timeline-item">
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                      <div className="timeline-header">
                         <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', fontWeight: '700', margin: 0 }}>{exp.role}</h3>
                         <span style={{ color: 'var(--secondary-color)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{exp.period}</span>
                       </div>
@@ -223,7 +251,7 @@ export default function CVPage() {
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                           {exp.responsibilities.split('\n').filter(r => r.trim()).map((req, rIdx) => (
                             <li key={rIdx} style={{ color: 'var(--text-dark)', display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem' }}>
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--secondary-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '0.1rem' }}>
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '0.1rem' }}>
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
                               </svg>
@@ -241,7 +269,7 @@ export default function CVPage() {
             {/* Education */}
             {education.length > 0 && (
               <section>
-                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>Education</h2>
+                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>Education</h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.5rem' }}>
                   {education.map((edu, idx) => (
                     <div key={idx} className="education-card">
@@ -253,10 +281,10 @@ export default function CVPage() {
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                          <h3 style={{ fontSize: '1.15rem', color: 'var(--primary-color)', fontWeight: '700', margin: 0, lineHeight: '1.3' }}>{edu.degree}</h3>
-                          <span style={{ color: 'var(--secondary-color)', fontSize: '0.85rem', fontWeight: '700', whiteSpace: 'nowrap', backgroundColor: 'rgba(192, 154, 107, 0.1)', padding: '0.2rem 0.75rem', borderRadius: '50px' }}>{edu.year}</span>
+                          <h3 className="edu-degree" style={{ color: 'var(--primary-color)', fontWeight: '700', margin: 0, lineHeight: '1.3' }}>{edu.degree}</h3>
+                          <span className="edu-year" style={{ color: 'var(--secondary-color)', fontWeight: '700', whiteSpace: 'nowrap', backgroundColor: 'rgba(192, 154, 107, 0.1)', padding: '0.2rem 0.75rem', borderRadius: '50px' }}>{edu.year}</span>
                         </div>
-                        <p style={{ fontSize: '1rem', color: 'var(--text-dark)', fontWeight: '500', margin: 0, lineHeight: '1.5' }}>{edu.institution}</p>
+                        <p className="edu-inst" style={{ color: 'var(--text-dark)', fontWeight: '500', margin: 0, lineHeight: '1.5' }}>{edu.institution}</p>
                       </div>
                     </div>
                   ))}
@@ -270,7 +298,7 @@ export default function CVPage() {
                 <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', fontWeight: '700', marginBottom: '1.5rem', letterSpacing: '-0.5px' }}>
                   Clinical Skills
                 </h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '1.5rem' }}>
+                <div className="skills-grid">
                   {parseClinicalSkills(clinicalSkills).map((cat, idx) => (
                     <div key={idx} className="skill-card">
                       <h3 style={{
@@ -320,7 +348,7 @@ export default function CVPage() {
                   <>
                     {flatCourses.length > 0 && (
                       <section>
-                        <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Professional Courses</h2>
+                        <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Professional Courses</h2>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                           {flatCourses.map((item, idx) => (
                             <li key={idx} className="licensure-item">
@@ -339,7 +367,7 @@ export default function CVPage() {
                     {/* Languages */}
                     {flatLanguages.length > 0 && (
                       <section>
-                        <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Languages</h2>
+                        <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Languages</h2>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                           {flatLanguages.map((item, idx) => (
                             <li key={idx} className="licensure-item">
@@ -364,7 +392,7 @@ export default function CVPage() {
             {/* References */}
             {references && (
               <section>
-                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '1rem' }}>References</h2>
+                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1rem' }}>References</h2>
                 <p style={{ color: 'var(--text-dark)', fontStyle: 'italic' }}>{references}</p>
               </section>
             )}
@@ -387,7 +415,7 @@ export default function CVPage() {
         }
         .cv-container {
           background-color: var(--surface);
-          padding: 4rem;
+          padding: 3rem;
           border-radius: 16px;
           box-shadow: var(--shadow-md);
           box-sizing: border-box;
@@ -400,8 +428,7 @@ export default function CVPage() {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          border-bottom: 2px solid #F1F5F9;
-          padding-bottom: 2rem;
+          padding-bottom: 1rem;
           margin-bottom: 2rem;
           gap: 1.5rem;
         }
@@ -421,8 +448,15 @@ export default function CVPage() {
           }
         }
         @media (max-width: 767px) {
+          .cv-main {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+          }
           .cv-container {
-            padding: 2.5rem;
+            padding: 1.5rem 0;
+            background-color: transparent;
+            box-shadow: none;
+            border-radius: 0;
           }
           .cv-header {
             flex-direction: column;
@@ -431,18 +465,75 @@ export default function CVPage() {
             grid-template-columns: 1fr;
             gap: 2rem;
           }
-        }
-        @media (max-width: 480px) {
-          .cv-container {
-            padding: 1.5rem;
+          .timeline-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+          }
+          .timeline-container {
+            padding-left: clamp(0.8rem, 3vw, 1.2rem);
+          }
+          .timeline-item {
+            padding: clamp(0.8rem, 3vw, 1rem);
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            margin-bottom: 1.5rem;
+          }
+          .timeline-item::before {
+            left: calc(-1.3rem - 9px);
+          }
+          .timeline-item:hover {
+            box-shadow: none;
+            transform: none;
+          }
+          .education-card {
+            gap: clamp(0.6rem, 2vw, 1rem);
+            padding: clamp(0.8rem, 2.5vw, 1rem) clamp(0.6rem, 2vw, 1rem);
+          }
+          .edu-degree {
+            font-size: clamp(0.9rem, 3vw, 1rem) !important;
+          }
+          .edu-year {
+            font-size: clamp(0.65rem, 2vw, 0.75rem) !important;
+          }
+          .edu-inst {
+            font-size: clamp(0.65rem, 2vw, 0.75rem) !important;
+          }
+          .skills-grid {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            -webkit-overflow-scrolling: touch;
+            /* Hide scrollbar for cleaner look */
+            scrollbar-width: none; 
+          }
+          .skills-grid::-webkit-scrollbar {
+            display: none;
+          }
+          .skills-grid > * {
+            min-width: 85vw;
+            scroll-snap-align: start;
+            flex-shrink: 0;
           }
         }
+
         @media print {
           body { background-color: #fff !important; }
           .no-print { display: none !important; }
           .cv-container { box-shadow: none !important; padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
           main { padding: 0 !important; background-color: #fff !important; }
           * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+        }
+        .timeline-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          margin-bottom: 0.5rem;
+          flex-wrap: wrap;
+          gap: 1rem;
         }
         .timeline-container {
           position: relative;
@@ -462,7 +553,7 @@ export default function CVPage() {
           position: relative;
           background-color: #FFFFFF;
           border: 1px solid #E2E8F0;
-          padding: 2rem;
+          padding: 1.3rem;
           margin-bottom: 1.5rem;
           border-radius: 8px;
           box-shadow: 0 2px 4px rgba(0,0,0,0.02);
@@ -476,8 +567,8 @@ export default function CVPage() {
         .timeline-item::before {
           content: '';
           position: absolute;
-          left: -1.9rem;
-          top: 2.2rem;
+          left: calc(-1.5rem - 9px);
+          top: 2.15rem;
           width: 14px;
           height: 14px;
           border-radius: 50%;
@@ -490,6 +581,11 @@ export default function CVPage() {
         }
         .timeline-item:last-child {
           margin-bottom: 0;
+        }
+        .skills-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+          gap: 1.5rem;
         }
         .skill-card {
           background-color: #FFFFFF;
@@ -514,13 +610,12 @@ export default function CVPage() {
           color: var(--secondary-color);
         }
         .competency-tag {
-          background-color: #F8FAFC;
+          background-color: var(--primary-light);
           color: var(--primary-color);
-          padding: 0.5rem 1rem;
+          padding: 0.5rem 0.5rem;
           border-radius: 50px;
-          font-size: clamp(0.85rem, 1.5vw, 1rem);
+          font-size: clamp(0.64rem, 2vw, 1rem);
           font-weight: 500;
-          border: 1px solid #E2E8F0;
           transition: all 0.3s ease;
           display: inline-flex;
           align-items: center;
@@ -537,8 +632,8 @@ export default function CVPage() {
           align-items: flex-start;
           gap: 1rem;
           color: var(--text-dark);
-          font-size: clamp(0.9rem, 1.5vw, 1.05rem) !important;
-          padding: 1rem;
+          font-size: clamp(0.75rem, 2vw, 1.15rem) !important;
+          padding: 1rem 0.6rem;
           border-radius: 8px;
           background-color: #FFFFFF;
           border: 1px solid #E2E8F0;
@@ -550,7 +645,7 @@ export default function CVPage() {
           transform: translateX(4px);
         }
         .licensure-icon-wrapper {
-          color: var(--secondary-color);
+          color: var(--success);
           flex-shrink: 0;
           margin-top: 0.1rem;
           transition: transform 0.3s ease;
@@ -561,10 +656,10 @@ export default function CVPage() {
         .education-card {
           display: flex;
           align-items: flex-start;
-          gap: 1.25rem;
+          gap: 1rem;
           background-color: #FFFFFF;
           border: 1px solid #E2E8F0;
-          padding: 1.5rem;
+          padding: 1rem;
           border-radius: 8px;
           transition: all 0.3s ease;
         }
@@ -572,6 +667,15 @@ export default function CVPage() {
           border-color: var(--primary-color);
           box-shadow: 0 10px 25px rgba(0,0,0,0.06);
           transform: translateY(-4px);
+        }
+        .edu-degree {
+          font-size: 1.15rem;
+        }
+        .edu-year {
+          font-size: 0.85rem;
+        }
+        .edu-inst {
+          font-size: 1rem;
         }
         .edu-icon-wrapper {
           background-color: #F8FAFC;
