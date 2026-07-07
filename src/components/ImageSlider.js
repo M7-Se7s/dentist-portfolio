@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import styles from './ImageSlider.module.css';
 
-export default function ImageSlider({ beforeImage, afterImage }) {
+export default function ImageSlider({ beforeImage, afterImage, priority = false }) {
   const [sliderPosition, setSliderPosition] = useState(50);
 
   const handleSliderChange = (e) => {
@@ -14,7 +15,7 @@ export default function ImageSlider({ beforeImage, afterImage }) {
     return (
       <div className={styles.fallback}>
         {afterImage || beforeImage ? (
-          <img src={afterImage || beforeImage} alt="Case image" />
+          <Image src={afterImage || beforeImage} alt="Case image" fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'contain' }} priority={priority} />
         ) : (
           <div className={styles.noImage}>No images available</div>
         )}
@@ -26,7 +27,7 @@ export default function ImageSlider({ beforeImage, afterImage }) {
     <div className={styles.container} dir="ltr">
       {/* Before Image (Background) */}
       <div className={styles.imageWrapper}>
-        <img src={beforeImage} alt="Before treatment" className={styles.image} draggable="false" />
+        <Image src={beforeImage} alt="Before treatment" className={styles.image} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'contain' }} draggable="false" priority={priority} />
         <span className={styles.labelBefore}>Before</span>
       </div>
 
@@ -35,7 +36,7 @@ export default function ImageSlider({ beforeImage, afterImage }) {
         className={`${styles.imageWrapper} ${styles.afterImage}`}
         style={{ clipPath: `polygon(${sliderPosition}% 0, 100% 0, 100% 100%, ${sliderPosition}% 100%)` }}
       >
-        <img src={afterImage} alt="After treatment" className={styles.image} draggable="false" />
+        <Image src={afterImage} alt="After treatment" className={styles.image} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'contain' }} draggable="false" priority={priority} />
         <span className={styles.labelAfter}>After</span>
       </div>
 
@@ -60,6 +61,7 @@ export default function ImageSlider({ beforeImage, afterImage }) {
         onPointerDown={(e) => e.stopPropagation()}
         className={styles.sliderInput}
         aria-label="Image comparison slider"
+        aria-valuenow={sliderPosition}
       />
     </div>
   );

@@ -31,8 +31,20 @@ export default function DashboardLayout({ children }) {
 
   // Close drawer on route change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileDrawerOpen(false);
   }, [pathname]);
+
+  // Close drawer on Escape key
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && isMobileDrawerOpen) {
+        setIsMobileDrawerOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isMobileDrawerOpen]);
 
   const handleLogout = async () => {
     await signOut(auth);

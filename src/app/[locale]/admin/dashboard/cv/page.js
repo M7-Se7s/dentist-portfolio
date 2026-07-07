@@ -5,6 +5,12 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import styles from '../../admin.module.css';
 
+import BasicInfoEditor from './components/BasicInfoEditor';
+import ExperienceEditor from './components/ExperienceEditor';
+import EducationEditor from './components/EducationEditor';
+import SkillsTextEditor from './components/SkillsTextEditor';
+import PdfUploadSection from './components/PdfUploadSection';
+
 export default function CVEditorPage() {
   const [basicInfo, setBasicInfo] = useState({
     name: 'Dr. Mohamed El Sayed Mohamed Shabaan',
@@ -43,7 +49,6 @@ export default function CVEditorPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Fetch existing data
   useEffect(() => {
     async function fetchCV() {
       try {
@@ -75,7 +80,6 @@ export default function CVEditorPage() {
     formData.append('file', file);
     formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
     
-    // Auto resource type for non-image files like PDFs
     const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/auto/upload`, {
       method: 'POST',
       body: formData,
@@ -126,35 +130,6 @@ export default function CVEditorPage() {
     }
   };
 
-  const handleBasicInfoChange = (e) => {
-    const { name, value } = e.target;
-    setBasicInfo(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Experience Handlers
-  const addExperience = () => {
-    setExperiences([{ id: Date.now(), role: '', clinic: '', period: '', responsibilities: '' }, ...experiences]);
-  };
-  const updateExperience = (id, field, value) => {
-    setExperiences(experiences.map(exp => exp.id === id ? { ...exp, [field]: value } : exp));
-  };
-  const removeExperience = (id) => {
-    setExperiences(experiences.filter(exp => exp.id !== id));
-  };
-
-  // Education Handlers
-  const addEducation = () => {
-    setEducation([...education, { degree: '', institution: '', year: '' }]);
-  };
-  const updateEducation = (index, field, value) => {
-    const newEdu = [...education];
-    newEdu[index][field] = value;
-    setEducation(newEdu);
-  };
-  const removeEducation = (index) => {
-    setEducation(education.filter((_, i) => i !== index));
-  };
-
   return (
     <div className="animate-slideUp stagger-1">
       <div className={styles.caseManagementHeader} style={{ marginBottom: '2rem' }}>
@@ -179,160 +154,23 @@ export default function CVEditorPage() {
 
       <form onSubmit={handleSave}>
         
-        {/* PDF Upload */}
-        <div className={styles.formSection}>
-          <div className={styles.formSectionTitle}>Downloadable PDF</div>
-          <div className={styles.formGroup}>
-            <label>Upload Static PDF (Optional)</label>
-            <p style={{fontSize: '0.85rem', color: '#64748B', marginBottom: '0.5rem'}}>Upload the beautifully designed PDF file you want users to download when they click "Download PDF".</p>
-            <input 
-              type="file" 
-              accept="application/pdf"
-              onChange={(e) => setPdfFile(e.target.files[0])}
-              style={{padding: '0.5rem', border: '1px solid #CBD5E1', borderRadius: '6px', width: '100%'}}
-            />
-            {pdfUrl && (
-              <div style={{marginTop: '0.5rem'}}>
-                <a href={pdfUrl} target="_blank" rel="noopener noreferrer" style={{color: 'var(--secondary-color)', fontSize: '0.9rem', fontWeight: '500'}}>View Current PDF</a>
-                <button type="button" onClick={() => setPdfUrl('')} style={{marginLeft: '1rem', color: '#EF4444', border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '500'}}>Remove PDF</button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Basic Information */}
-        <div className={styles.formSection}>
-          <div className={styles.formSectionTitle}>Basic Profile</div>
-          
-          <div className={styles.splitImages}>
-            <div className={styles.formGroup}>
-              <label>Full Name *</label>
-              <input type="text" name="name" value={basicInfo.name} onChange={handleBasicInfoChange} required />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Professional Title *</label>
-              <input type="text" name="title" value={basicInfo.title} onChange={handleBasicInfoChange} required />
-            </div>
-          </div>
-
-          <div className={styles.splitImages}>
-            <div className={styles.formGroup}>
-              <label>Email Address</label>
-              <input type="email" name="email" value={basicInfo.email} onChange={handleBasicInfoChange} />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Phone Number</label>
-              <input type="text" name="phone" value={basicInfo.phone} onChange={handleBasicInfoChange} />
-            </div>
-          </div>
-
-          <div className={styles.splitImages}>
-            <div className={styles.formGroup}>
-              <label>Location</label>
-              <input type="text" name="location" value={basicInfo.location} onChange={handleBasicInfoChange} placeholder="e.g. Giza, Egypt" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>LinkedIn URL</label>
-              <input type="url" name="linkedin" value={basicInfo.linkedin} onChange={handleBasicInfoChange} placeholder="https://linkedin.com/in/..." />
-            </div>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Professional Summary</label>
-            <textarea rows="4" value={summary} onChange={(e) => setSummary(e.target.value)}></textarea>
-          </div>
-        </div>
-
-        {/* Competencies & Licensure */}
-        <div className={styles.formSection}>
-          <div className={styles.splitImages}>
-            <div className={styles.formGroup}>
-              <label>Core Competencies (One per line)</label>
-              <textarea rows="6" value={coreCompetencies} onChange={(e) => setCoreCompetencies(e.target.value)} placeholder="Comprehensive Treatment Planning\nEndodontics\nOral Surgery..."></textarea>
-            </div>
-            <div className={styles.formGroup}>
-              <label>Professional Licensure (One per line)</label>
-              <textarea rows="6" value={licensure} onChange={(e) => setLicensure(e.target.value)} placeholder="Saudi Prometric Examination — Passed\nSCFHS — Professionally Classified"></textarea>
-            </div>
-          </div>
-        </div>
-
-        {/* Education */}
-        <div className={styles.formSection}>
-          <div className={styles.formSectionTitle} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <span>Education</span>
-            <button type="button" onClick={addEducation} className="btn-secondary" style={{fontSize: '0.85rem', padding: '0.4rem 0.8rem'}}>+ Add Education</button>
-          </div>
-          
-          {education.map((edu, index) => (
-            <div key={index} style={{border: '1px solid var(--border-color)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', position: 'relative'}}>
-              <button type="button" onClick={() => removeEducation(index)} style={{position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer'}}>Remove</button>
-              <div className={styles.splitImages}>
-                <div className={styles.formGroup}><label>Degree</label><input type="text" value={edu.degree} onChange={(e) => updateEducation(index, 'degree', e.target.value)} placeholder="Bachelor of Dental Surgery (BDS)" /></div>
-                <div className={styles.formGroup}><label>Institution</label><input type="text" value={edu.institution} onChange={(e) => updateEducation(index, 'institution', e.target.value)} placeholder="Al-Azhar University" /></div>
-              </div>
-              <div className={styles.formGroup} style={{width: '50%'}}><label>Year/Status</label><input type="text" value={edu.year} onChange={(e) => updateEducation(index, 'year', e.target.value)} placeholder="Graduated: 2023" /></div>
-            </div>
-          ))}
-        </div>
-
-        {/* Experience */}
-        <div className={styles.formSection}>
-          <div className={styles.formSectionTitle} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <span>Clinical Experience</span>
-            <button type="button" onClick={addExperience} className="btn-secondary" style={{fontSize: '0.85rem', padding: '0.4rem 0.8rem'}}>+ Add Experience</button>
-          </div>
-          
-          {experiences.map((exp, index) => (
-            <div key={exp.id || index} style={{border: '1px solid var(--border-color)', padding: '1.5rem', borderRadius: '8px', marginBottom: '1.5rem', position: 'relative'}}>
-              <button type="button" onClick={() => removeExperience(exp.id)} style={{position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer'}}>Remove</button>
-              
-              <div className={styles.splitImages}>
-                <div className={styles.formGroup}><label>Role</label><input type="text" value={exp.role} onChange={(e) => updateExperience(exp.id, 'role', e.target.value)} placeholder="General Dentist" /></div>
-                <div className={styles.formGroup}><label>Clinic</label><input type="text" value={exp.clinic} onChange={(e) => updateExperience(exp.id, 'clinic', e.target.value)} /></div>
-              </div>
-              <div className={styles.formGroup} style={{width: '50%'}}><label>Period</label><input type="text" value={exp.period} onChange={(e) => updateExperience(exp.id, 'period', e.target.value)} placeholder="October 2023 – July 2024" /></div>
-              <div className={styles.formGroup}>
-                <label>Responsibilities (One per line)</label>
-                <textarea rows="4" value={exp.responsibilities} onChange={(e) => updateExperience(exp.id, 'responsibilities', e.target.value)} placeholder="Restorative dentistry.\nRoot canal treatment."></textarea>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Clinical Skills */}
-        <div className={styles.formSection}>
-          <div className={styles.formSectionTitle}>Clinical Skills</div>
-          <p style={{fontSize: '0.85rem', color: '#64748B', marginBottom: '1rem'}}>
-            Use Markdown-like syntax. Use <strong>**Bold**</strong> for categories, and start new lines for skills.
-            <br/>Example:
-            <br/>**Endodontics**
-            <br/>Anterior & Posterior RCT
-            <br/>**Oral Surgery**
-            <br/>Simple Extractions
-          </p>
-          <div className={styles.formGroup}>
-            <textarea rows="10" value={clinicalSkills} onChange={(e) => setClinicalSkills(e.target.value)}></textarea>
-          </div>
-        </div>
-
-        {/* Courses, Languages, References */}
-        <div className={styles.formSection}>
-          <div className={styles.splitImages}>
-            <div className={styles.formGroup}>
-              <label>Professional Courses (One per line)</label>
-              <textarea rows="4" value={courses} onChange={(e) => setCourses(e.target.value)}></textarea>
-            </div>
-            <div className={styles.formGroup}>
-              <label>Languages (One per line)</label>
-              <textarea rows="4" value={languages} onChange={(e) => setLanguages(e.target.value)} placeholder="Arabic: Native\nEnglish: Intermediate"></textarea>
-            </div>
-          </div>
-          <div className={styles.formGroup}>
-            <label>References</label>
-            <input type="text" value={references} onChange={(e) => setReferences(e.target.value)} placeholder="Available upon request." />
-          </div>
-        </div>
+        <PdfUploadSection pdfFile={pdfFile} setPdfFile={setPdfFile} pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} styles={styles} />
+        
+        <BasicInfoEditor basicInfo={basicInfo} setBasicInfo={setBasicInfo} summary={summary} setSummary={setSummary} styles={styles} />
+        
+        <SkillsTextEditor 
+          coreCompetencies={coreCompetencies} setCoreCompetencies={setCoreCompetencies}
+          licensure={licensure} setLicensure={setLicensure}
+          clinicalSkills={clinicalSkills} setClinicalSkills={setClinicalSkills}
+          courses={courses} setCourses={setCourses}
+          languages={languages} setLanguages={setLanguages}
+          references={references} setReferences={setReferences}
+          styles={styles}
+        />
+        
+        <EducationEditor education={education} setEducation={setEducation} styles={styles} />
+        
+        <ExperienceEditor experiences={experiences} setExperiences={setExperiences} styles={styles} />
 
         {/* Sticky Action Bar */}
         <div className={styles.stickyActionBar}>

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
-import CreateCaseModal from './CreateCaseModal';
+import dynamic from 'next/dynamic';
+const CreateCaseModal = dynamic(() => import('./CreateCaseModal'), { ssr: false });
 import styles from '../../admin.module.css';
 import { casesService } from '@/lib/services/casesService';
 import { useUploads } from '@/lib/contexts/UploadContext';
@@ -30,6 +31,7 @@ export default function CaseManagementPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadCases();
 
     // Listen for custom event from UploadContext to refresh list when an upload succeeds

@@ -81,6 +81,7 @@ export default function Home() {
                 src={profile.homeImageUrl} 
                 alt={tHero('title')} 
                 fill 
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className={styles.heroImage} 
                 priority
               />

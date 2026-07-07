@@ -65,7 +65,7 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
       }
     }
     fetchProfile();
-  }, []);
+  }, [defaultBiography, defaultQuote]);
 
   const handleHomeImageChange = (e) => {
     const file = e.target.files[0];
@@ -158,15 +158,15 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
         <p style={{color: 'var(--text-muted)'}}>Update your biography and professional philosophy quote.</p>
       </div>
 
-      <div className={styles.formContainer} style={{backgroundColor: 'var(--white)', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', marginTop: '2rem'}}>
+      <div className={localStyles.formCard}>
         <form onSubmit={handleSave}>
           
-          <div style={{display: 'flex', flexWrap: 'wrap', gap: '3rem', marginBottom: '2.5rem', paddingBottom: '2.5rem', borderBottom: '1px solid #E2E8F0'}}>
+          <div className={localStyles.imageUploadLayout}>
             
             {/* Home Page Photo */}
-            <div className={styles.formGroup} style={{flex: '1 1 300px'}}>
-              <label style={{display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: 'var(--text-dark)', fontSize: '1.1rem'}}>Home Page Photo</label>
-              <p style={{fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.5rem'}}>
+            <div className={localStyles.imageUploadColumn}>
+              <label className={localStyles.imageLabel}>Home Page Photo</label>
+              <p className={localStyles.hint}>
                 This is the first impression photo displayed in the main hero section of your website.
               </p>
               
@@ -202,9 +202,9 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
             </div>
 
             {/* Profile Page Photo */}
-            <div className={styles.formGroup} style={{flex: '1 1 300px'}}>
-              <label style={{display: 'block', fontWeight: '600', marginBottom: '0.25rem', color: 'var(--text-dark)', fontSize: '1.1rem'}}>Professional Profile Photo</label>
-              <p style={{fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.5rem'}}>
+            <div className={localStyles.imageUploadColumn}>
+              <label className={localStyles.imageLabel}>Professional Profile Photo</label>
+              <p className={localStyles.hint}>
                 This photo is shown next to your clinical biography on the Profile page.
               </p>
               
@@ -241,71 +241,42 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
 
           </div>
 
-          <div className={styles.formGroup} style={{marginBottom: '1.5rem'}}>
-            <label htmlFor="biography" style={{display: 'block', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--text-dark)'}}>Biography (Paragraphs)</label>
+          <div className={localStyles.formGroup}>
+            <label htmlFor="biography" className={localStyles.label}>Biography (Paragraphs)</label>
             <textarea
               id="biography"
               value={biography}
               onChange={(e) => setBiography(e.target.value)}
               rows="15"
-              style={{
-                width: '100%',
-                padding: '1rem',
-                borderRadius: '8px',
-                border: '1px solid #CBD5E1',
-                fontSize: '1rem',
-                lineHeight: '1.6',
-                fontFamily: 'inherit',
-                resize: 'vertical'
-              }}
+              className={localStyles.textarea}
               placeholder="Enter your professional biography here..."
               required
             />
-            <small style={{color: 'var(--text-muted)', display: 'block', marginTop: '0.5rem'}}>Line breaks will be preserved as separate paragraphs on the profile page.</small>
+            <small className={localStyles.hint}>Line breaks will be preserved as separate paragraphs on the profile page.</small>
           </div>
 
-          <div className={styles.formGroup} style={{marginBottom: '2rem'}}>
-            <label htmlFor="quote" style={{display: 'block', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--text-dark)'}}>Philosophy Quote</label>
+          <div className={localStyles.formGroup}>
+            <label htmlFor="quote" className={localStyles.label}>Philosophy Quote</label>
             <textarea
               id="quote"
               value={quote}
               onChange={(e) => setQuote(e.target.value)}
               rows="3"
-              style={{
-                width: '100%',
-                padding: '1rem',
-                borderRadius: '8px',
-                border: '1px solid #CBD5E1',
-                fontSize: '1rem',
-                fontFamily: 'inherit',
-                resize: 'vertical'
-              }}
+              className={localStyles.textarea}
               placeholder="Enter your professional philosophy quote..."
             />
           </div>
 
-          <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+          <div className={localStyles.saveActions}>
             <button 
               type="submit" 
-              className={styles.btnPrimary} 
+              className={localStyles.saveBtn} 
               disabled={saving}
-              style={{
-                backgroundColor: 'var(--primary-color)',
-                color: 'var(--white)',
-                padding: '0.75rem 2rem',
-                borderRadius: '6px',
-                fontWeight: '600',
-                border: 'none',
-                cursor: saving ? 'not-allowed' : 'pointer'
-              }}
             >
               {saving ? 'Saving...' : 'Save Profile'}
             </button>
             {message && (
-              <span style={{
-                color: message.includes('Error') ? '#EF4444' : '#10B981',
-                fontWeight: '500'
-              }}>
+              <span className={`${localStyles.statusMessage} ${message.includes('Error') ? localStyles.statusError : localStyles.statusSuccess}`}>
                 {message}
               </span>
             )}

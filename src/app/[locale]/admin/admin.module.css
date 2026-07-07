@@ -223,7 +223,7 @@
 
 .adminContent {
   flex-grow: 1;
-  padding: 3rem;
+  padding: 1rem 3rem 3rem 3rem;
   overflow-y: auto;
 }
 
@@ -1962,4 +1962,269 @@ input:checked + .toggleSlider:before {
 
 .removeStepBtn:hover {
   background-color: #FEE2E2;
+}
+
+/* ---------------------------
+   New Extracted Classes from Modal Refactor
+--------------------------- */
+
+/* Basic Info Section */
+.categoryDropdownWrapper {
+  position: relative;
+  width: 100%;
+}
+.categorySelectBox {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background-color: var(--bg-color);
+  font-family: var(--font-primary);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+.categorySelectBoxClosed {
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+}
+.categorySelectBoxOpen {
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(14, 116, 144, 0.1);
+}
+.categoryChips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.categoryPlaceholder {
+  color: var(--text-muted);
+  font-size: 1rem;
+  padding: 0.35rem 0;
+}
+.categoryChip {
+  background-color: var(--primary-color);
+  color: var(--white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.categoryIcon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  transition: transform 0.2s;
+}
+.categoryIconOpen {
+  transform: rotate(180deg);
+}
+.categoryMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 3000;
+  overflow: hidden;
+  animation: modalFadeIn 0.2s ease-out;
+}
+.categoryItem {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.categoryItemActive {
+  background-color: rgba(14, 116, 144, 0.1);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+.categoryItemInactive {
+  background-color: transparent;
+  color: var(--text-dark);
+  font-weight: 400;
+}
+.categoryItem:hover {
+  background-color: rgba(14, 116, 144, 0.05);
+  color: var(--primary-color);
+}
+.categoryItemUnchecked {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+}
+
+/* Treatment Details Section */
+.treatmentTextArea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-primary);
+  resize: vertical;
+  min-height: 120px;
+}
+.treatmentStepsContainer {
+  margin-top: 2rem;
+}
+.treatmentStepsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.treatmentStepsHeader label {
+  margin: 0;
+}
+.imageDropzoneStep {
+  padding: 1rem;
+  min-height: 100px;
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  text-align: center;
+  background-color: var(--bg-color);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.imageDropzoneStep:hover {
+  border-color: var(--primary-color);
+  background-color: var(--primary-light);
+}
+.hiddenFileInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+.dropzoneText {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+.stepImageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.stepImageWrapper {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+.stepImagePreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.removeStepImageBtn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(255,0,0,0.8);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+.emptyStepsState {
+  text-align: center;
+  padding: 2rem;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
+/* Image Upload Section */
+.sectionHint {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.imageDropzoneSplit {
+  padding: 1rem;
+  min-height: 150px;
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  text-align: center;
+  background-color: var(--bg-color);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.imageDropzoneSplit:hover {
+  border-color: var(--primary-color);
+  background-color: var(--primary-light);
+}
+.imageDropzonePreview {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.uploadPlaceholder {
+  color: var(--text-muted);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.uploadPlaceholderIcon {
+  margin: 0 auto 0.25rem;
+}
+.uploadPlaceholderText {
+  font-size: 0.85rem;
+}
+.imageDropzoneGallery {
+  padding: 1rem;
+  min-height: 80px;
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  text-align: center;
+  background-color: var(--bg-color);
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.imageDropzoneGallery:hover {
+  border-color: var(--primary-color);
+  background-color: var(--primary-light);
 }

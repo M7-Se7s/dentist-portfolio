@@ -57,7 +57,7 @@ export default function ProfilePage() {
             <div className={styles.imageContainer}>
               {profile?.profileImageUrl ? (
                 <div className={styles.imageWrapper}>
-                  <Image src={profile.profileImageUrl} alt={profile.name} fill style={{objectFit: 'cover'}} priority />
+                  <Image src={profile.profileImageUrl} alt={profile.name} fill sizes="(max-width: 768px) 100vw, 33vw" style={{objectFit: 'cover'}} priority />
                 </div>
               ) : (
                 <div className={styles.imagePlaceholder}>{tProfile('title')}</div>
@@ -77,7 +77,7 @@ export default function ProfilePage() {
               })}
 
               <div className={styles.philosophyQuote}>
-                "{profile?.quote}"
+                &quot;{profile?.quote}&quot;
               </div>
               
             </div>

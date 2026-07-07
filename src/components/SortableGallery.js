@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Image from 'next/image';
 import {
   DndContext,
   closestCenter,
@@ -37,7 +38,7 @@ function SortableItem(props) {
 
   return (
     <div ref={setNodeRef} style={style} className={styles.galleryItem} {...attributes} {...listeners}>
-      <img src={props.url} alt="Gallery item" draggable="false" />
+      <Image src={props.url} alt="Gallery item" fill sizes="(max-width: 768px) 50vw, 25vw" style={{ objectFit: 'contain' }} draggable="false" />
       <button 
         className={styles.removeGalleryBtn} 
         onClick={(e) => {

@@ -13,10 +13,6 @@ export default function DashboardPage() {
   
 
 
-  useEffect(() => {
-    fetchCases();
-  }, []);
-
   async function fetchCases() {
     try {
       const querySnapshot = await getDocs(collection(db, "cases"));
@@ -34,6 +30,11 @@ export default function DashboardPage() {
     }
   }
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchCases();
+  }, []);
+
 
 
   const publishedCases = cases.filter(c => !c.isDraft).length; // Assuming no draft logic yet, but this is a placeholder
@@ -43,7 +44,7 @@ export default function DashboardPage() {
       <div className={`${styles.dashboardMainColumn} animate-slideUp stagger-1`}>
         <div className={styles.pageWelcomeSection}>
           <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-dark)', marginBottom: '0.25rem'}}>Welcome back, Dr. Shaaban 👋</h1>
-          <p style={{color: 'var(--text-muted)'}}>Here is what's happening with your clinic today.</p>
+          <p style={{color: 'var(--text-muted)'}}>Here is what&apos;s happening with your clinic today.</p>
         </div>
 
         {/* Stat Cards */}
