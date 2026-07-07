@@ -108,51 +108,42 @@ export default function CaseDetail({ params }) {
             
             {/* Left: Images */}
             <div className={styles.imageColumn}>
-              <div className={styles.comparisonBox}>
-                <ImageSlider 
-                  beforeImage={caseData.beforeImage || caseData.beforeImageUrl} 
-                  afterImage={caseData.afterImage || caseData.afterImageUrl} 
-                  priority={true}
-                />
-              </div>
-              <div className={styles.viewFullImagesWrapper}>
-                <button 
-                  onClick={() => openLightbox(
-                    [caseData.beforeImage || caseData.beforeImageUrl, caseData.afterImage || caseData.afterImageUrl].filter(Boolean), 
-                    0
-                  )}
-                  className={styles.viewFullImagesBtn}
-                >
-                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                  </svg>
-                  {t('viewFullImages') || 'View Full Images'}
-                </button>
+              <div className={styles.contentCard}>
+                <div className={styles.comparisonBox} style={{ border: 'none', boxShadow: 'none', padding: 0 }}>
+                  <ImageSlider 
+                    beforeImage={caseData.beforeImage || caseData.beforeImageUrl} 
+                    afterImage={caseData.afterImage || caseData.afterImageUrl} 
+                    priority={true}
+                  />
+                </div>
+                <div className={styles.viewFullImagesWrapper} style={{ marginTop: '1.5rem' }}>
+                  <button 
+                    onClick={() => openLightbox(
+                      [caseData.beforeImage || caseData.beforeImageUrl, caseData.afterImage || caseData.afterImageUrl].filter(Boolean), 
+                      0
+                    )}
+                    className={styles.viewFullImagesBtn}
+                  >
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                    </svg>
+                    {t('viewFullImages') || 'View Full Images'}
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Right: Info */}
             <div className={styles.infoBox}>
-              <div className={styles.infoBlock}>
-                <h3>{t('caseDescription') || 'Case Overview'}</h3>
-                <p>{description || t('noDescription')}</p>
-              </div>
+              <div className={styles.contentCard}>
+                <div className={styles.infoBlock}>
+                  <h3>{t('caseDescription') || 'Case Overview'}</h3>
+                  <p>{description || t('noDescription')}</p>
+                </div>
 
-              {/* Clinical Summary Card */}
-              <div className={styles.summaryCard}>
-                <div className={styles.summaryGrid}>
-                  {caseData.diagnosis && (
-                    <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Diagnosis</span>
-                      <span className={styles.summaryValue}>{caseData.diagnosis}</span>
-                    </div>
-                  )}
-                  {caseData.treatmentPerformed && (
-                    <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Treatment</span>
-                      <span className={styles.summaryValue}>{caseData.treatmentPerformed}</span>
-                    </div>
-                  )}
+                {/* Clinical Summary Grid */}
+                <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--border-color)' }}>
+                  <div className={styles.summaryGrid}>
                   {caseData.duration && (
                     <div className={styles.summaryItem}>
                       <span className={styles.summaryLabel}>Duration</span>
@@ -172,6 +163,7 @@ export default function CaseDetail({ params }) {
                     </div>
                   )}
                 </div>
+                </div>
                 
                 {caseData.materials && caseData.materials.length > 0 && (
                   <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
@@ -188,15 +180,29 @@ export default function CaseDetail({ params }) {
           </div>
 
           {/* Clinical Story (Narrative) */}
-          {(caseData.chiefComplaint || caseData.techniques || caseData.challenges || caseData.result || caseData.keyTakeaways) && (
+          {(caseData.diagnosis || caseData.treatmentPerformed || caseData.chiefComplaint || caseData.techniques || caseData.challenges || caseData.result || caseData.keyTakeaways) && (
             <div className={styles.clinicalStory}>
               <h3 className={styles.sectionHeading}>Clinical Narrative</h3>
               
-              <div style={{ display: 'grid', gap: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 {caseData.chiefComplaint && (
                   <div className={styles.storyBlock}>
                     <h4>Chief Complaint</h4>
                     <p>{caseData.chiefComplaint}</p>
+                  </div>
+                )}
+                
+                {caseData.diagnosis && (
+                  <div className={styles.storyBlock}>
+                    <h4>Diagnosis</h4>
+                    <p>{caseData.diagnosis}</p>
+                  </div>
+                )}
+                
+                {caseData.treatmentPerformed && (
+                  <div className={styles.storyBlock}>
+                    <h4>Treatment Performed</h4>
+                    <p>{caseData.treatmentPerformed}</p>
                   </div>
                 )}
                 

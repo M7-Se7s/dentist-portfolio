@@ -192,12 +192,7 @@ export default function EditCasePage({ params }) {
             onClick={(e) => handleSave(e, true)}
             disabled={isSaving}
           >
-            {isSaving ? (
-              <span style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                <Spinner size={18} />
-                Saving...
-              </span>
-            ) : 'Save as Draft'}
+            {isSaving ? 'Saving...' : 'Save as Draft'}
           </button>
           <button 
             type="button" 
@@ -205,12 +200,7 @@ export default function EditCasePage({ params }) {
             onClick={(e) => handleSave(e, false)}
             disabled={isSaving}
           >
-            {isSaving ? (
-              <span style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                <Spinner size={18} />
-                Publishing...
-              </span>
-            ) : 'Publish Case'}
+            {isSaving ? 'Publishing...' : 'Publish Case'}
           </button>
         </div>
       </div>
