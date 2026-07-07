@@ -84,7 +84,8 @@ export function UploadProvider({ children }) {
         formData, 
         beforeImageFile, 
         afterImageFile, 
-        galleryItems, 
+        galleryItems,
+        xrayItems,
         treatmentSteps 
       } = job.payload;
 
@@ -118,6 +119,19 @@ export function UploadProvider({ children }) {
           });
         } else if (item.url) {
           finalGalleryItems.push({ url: item.url, label: item.label || '' });
+        }
+      }
+
+      const finalXrayItems = [];
+      for (const item of xrayItems || []) {
+        if (item.file) {
+          totalFiles++;
+          uploadTasks.push(async () => {
+            const url = await uploadFile(item.file);
+            if (url) finalXrayItems.push({ url, label: item.label || '' });
+          });
+        } else if (item.url) {
+          finalXrayItems.push({ url: item.url, label: item.label || '' });
         }
       }
 
@@ -159,6 +173,7 @@ export function UploadProvider({ children }) {
         beforeImage: finalBeforeUrl,
         afterImage: finalAfterUrl,
         images: finalGalleryItems,
+        xrays: finalXrayItems,
         steps: finalSteps,
       };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from '@/i18n/routing';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Link } from '@/i18n/routing';
@@ -47,6 +47,7 @@ export default function DashboardLayout({ children }) {
   }, [isMobileDrawerOpen]);
 
   const handleLogout = async () => {
+    document.cookie = "admin_session=; path=/; max-age=0";
     await signOut(auth);
     router.push('/admin/login');
   };

@@ -13,9 +13,12 @@ export default function ImageSlider({ beforeImage, afterImage, priority = false 
 
   if (!beforeImage || !afterImage) {
     return (
-      <div className={styles.fallback}>
+      <div className={styles.fallback} style={{ position: 'relative', overflow: 'hidden' }}>
         {afterImage || beforeImage ? (
-          <Image src={afterImage || beforeImage} alt="Case image" fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'contain' }} priority={priority} />
+          <>
+            <Image src={afterImage || beforeImage} alt="" className={styles.imageBackground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} />
+            <Image src={afterImage || beforeImage} alt="Case image" className={styles.imageForeground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} />
+          </>
         ) : (
           <div className={styles.noImage}>No images available</div>
         )}
@@ -25,19 +28,25 @@ export default function ImageSlider({ beforeImage, afterImage, priority = false 
 
   return (
     <div className={styles.container} dir="ltr">
-      {/* Before Image (Background) */}
+      {/* Before Image */}
       <div className={styles.imageWrapper}>
-        <Image src={beforeImage} alt="Before treatment" className={styles.image} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'contain' }} draggable="false" priority={priority} />
-        <span className={styles.labelBefore}>Before</span>
+        {/* Blurred background to fill empty space */}
+        <Image src={beforeImage} alt="" className={styles.imageBackground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} />
+        {/* Actual image contained */}
+        <Image src={beforeImage} alt="Before treatment" className={styles.imageForeground} fill sizes="(max-width: 768px) 100vw, 50vw" draggable="false" priority={priority} />
+        <span className={styles.labelBefore} style={{ zIndex: 20 }}>Before</span>
       </div>
 
-      {/* After Image (Foreground, clipped) */}
+      {/* After Image (Clipped) */}
       <div 
         className={`${styles.imageWrapper} ${styles.afterImage}`}
         style={{ clipPath: `polygon(${sliderPosition}% 0, 100% 0, 100% 100%, ${sliderPosition}% 100%)` }}
       >
-        <Image src={afterImage} alt="After treatment" className={styles.image} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'contain' }} draggable="false" priority={priority} />
-        <span className={styles.labelAfter}>After</span>
+        {/* Blurred background to fill empty space */}
+        <Image src={afterImage} alt="" className={styles.imageBackground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} />
+        {/* Actual image contained */}
+        <Image src={afterImage} alt="After treatment" className={styles.imageForeground} fill sizes="(max-width: 768px) 100vw, 50vw" draggable="false" priority={priority} />
+        <span className={styles.labelAfter} style={{ zIndex: 20 }}>After</span>
       </div>
 
       {/* Visual Slider Line */}

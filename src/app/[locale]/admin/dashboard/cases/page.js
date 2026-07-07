@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
-import dynamic from 'next/dynamic';
-const CreateCaseModal = dynamic(() => import('./CreateCaseModal'), { ssr: false });
 import styles from '../../admin.module.css';
 import { casesService } from '@/lib/services/casesService';
 import { useUploads } from '@/lib/contexts/UploadContext';
@@ -14,7 +12,6 @@ export default function CaseManagementPage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [caseToDelete, setCaseToDelete] = useState(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const { activeUploads, retryJob, clearJob } = useUploads();
 
@@ -73,10 +70,10 @@ export default function CaseManagementPage() {
           </div>
           
           {/* Desktop Button - Hidden on Mobile */}
-          <button onClick={() => setShowCreateModal(true)} className={`${styles.newCaseBtn} ${styles.desktopBtn}`} style={{border: 'none', cursor: 'pointer'}}>
+          <Link href="/admin/dashboard/create-case" className={`${styles.newCaseBtn} ${styles.desktopBtn}`} style={{border: 'none', cursor: 'pointer', textDecoration: 'none'}}>
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
             <span className={styles.newCaseBtnText}>Add New Case</span>
-          </button>
+          </Link>
         </div>
 
       <div className={styles.caseCardGrid}>
@@ -196,20 +193,9 @@ export default function CaseManagementPage() {
       )}
 
       {/* Mobile FAB - Outside of animated container to preserve fixed positioning */}
-      <button onClick={() => setShowCreateModal(true)} className={`${styles.newCaseBtn} ${styles.mobileFab}`} style={{border: 'none', cursor: 'pointer'}}>
+      <Link href="/admin/dashboard/create-case" className={`${styles.newCaseBtn} ${styles.mobileFab}`} style={{border: 'none', cursor: 'pointer'}}>
         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-      </button>
-
-      {/* Create Case Modal */}
-      {showCreateModal && (
-        <CreateCaseModal 
-          onClose={() => setShowCreateModal(false)} 
-          onSuccess={() => {
-            setShowCreateModal(false);
-            loadCases();
-          }}
-        />
-      )}
+      </Link>
     </>
   );
 }

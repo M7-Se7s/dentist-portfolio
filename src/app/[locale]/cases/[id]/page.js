@@ -126,7 +126,7 @@ export default function CaseDetail({ params }) {
                   <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                   </svg>
-                  {t('viewFullImages')}
+                  {t('viewFullImages') || 'View Full Images'}
                 </button>
               </div>
             </div>
@@ -134,21 +134,113 @@ export default function CaseDetail({ params }) {
             {/* Right: Info */}
             <div className={styles.infoBox}>
               <div className={styles.infoBlock}>
-                <h3>{t('caseDescription')}</h3>
+                <h3>{t('caseDescription') || 'Case Overview'}</h3>
                 <p>{description || t('noDescription')}</p>
               </div>
 
-              {treatmentPlan && (
-                <div className={`${styles.infoBlock} ${styles.treatmentPlanBlock}`}>
-                  <h3>{t('fullCaseReport')}</h3>
-                  <div 
-                    className="rich-text-content" 
-                    dangerouslySetInnerHTML={{ __html: treatmentPlan }} 
-                  />
+              {/* Clinical Summary Card */}
+              <div className={styles.summaryCard}>
+                <div className={styles.summaryGrid}>
+                  {caseData.diagnosis && (
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Diagnosis</span>
+                      <span className={styles.summaryValue}>{caseData.diagnosis}</span>
+                    </div>
+                  )}
+                  {caseData.treatmentPerformed && (
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Treatment</span>
+                      <span className={styles.summaryValue}>{caseData.treatmentPerformed}</span>
+                    </div>
+                  )}
+                  {caseData.duration && (
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Duration</span>
+                      <span className={styles.summaryValue}>{caseData.duration}</span>
+                    </div>
+                  )}
+                  {caseData.year && (
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Year</span>
+                      <span className={styles.summaryValue}>{caseData.year}</span>
+                    </div>
+                  )}
+                  {caseData.difficulty && (
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Difficulty</span>
+                      <span className={styles.summaryValue}>{caseData.difficulty}</span>
+                    </div>
+                  )}
                 </div>
-              )}
+                
+                {caseData.materials && caseData.materials.length > 0 && (
+                  <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
+                    <span className={styles.summaryLabel} style={{ display: 'block', marginBottom: '0.75rem' }}>Materials Used</span>
+                    <div className={styles.materialsList}>
+                      {caseData.materials.map((mat, i) => (
+                        <span key={i} className={styles.materialTag}>{mat}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Clinical Story (Narrative) */}
+          {(caseData.chiefComplaint || caseData.techniques || caseData.challenges || caseData.result || caseData.keyTakeaways) && (
+            <div className={styles.clinicalStory}>
+              <h3 className={styles.sectionHeading}>Clinical Narrative</h3>
+              
+              <div style={{ display: 'grid', gap: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+                {caseData.chiefComplaint && (
+                  <div className={styles.storyBlock}>
+                    <h4>Chief Complaint</h4>
+                    <p>{caseData.chiefComplaint}</p>
+                  </div>
+                )}
+                
+                {caseData.techniques && (
+                  <div className={styles.storyBlock}>
+                    <h4>Techniques & Workflow</h4>
+                    <p>{caseData.techniques}</p>
+                  </div>
+                )}
+
+                {caseData.challenges && (
+                  <div className={styles.storyBlock}>
+                    <h4>Challenges</h4>
+                    <p>{caseData.challenges}</p>
+                  </div>
+                )}
+
+                {caseData.result && (
+                  <div className={styles.storyBlock}>
+                    <h4>Outcome</h4>
+                    <p>{caseData.result}</p>
+                  </div>
+                )}
+
+                {caseData.keyTakeaways && (
+                  <div className={styles.storyBlock}>
+                    <h4>Key Takeaways</h4>
+                    <p>{caseData.keyTakeaways}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Legacy Treatment Plan (Fallback) */}
+          {treatmentPlan && !caseData.treatmentPerformed && (
+            <div className={`${styles.infoBlock} ${styles.treatmentPlanBlock}`} style={{ marginTop: '3rem' }}>
+              <h3 className={styles.sectionHeading}>{t('fullCaseReport')}</h3>
+              <div 
+                className="rich-text-content" 
+                dangerouslySetInnerHTML={{ __html: treatmentPlan }} 
+              />
+            </div>
+          )}
 
           {/* Treatment Process Steps */}
           {caseData.steps && caseData.steps.length > 0 && (
@@ -191,7 +283,7 @@ export default function CaseDetail({ params }) {
           {/* Gallery Section */}
           {(caseData.images || caseData.galleryImages) && (caseData.images || caseData.galleryImages).length > 0 && (
             <div className={styles.gallerySection}>
-              <h3 className={styles.sectionHeading}>{t('caseGallery')}</h3>
+              <h3 className={styles.sectionHeading}>Procedure Gallery</h3>
               <div className={styles.galleryGrid}>
                 {(caseData.images || caseData.galleryImages).map((img, idx) => {
                   const imagesArray = caseData.images || caseData.galleryImages;
@@ -210,17 +302,54 @@ export default function CaseDetail({ params }) {
               </div>
             </div>
           )}
+
+          {/* X-Rays Section */}
+          {caseData.xrays && caseData.xrays.length > 0 && (
+            <div className={styles.gallerySection}>
+              <h3 className={styles.sectionHeading}>X-Rays & Radiographs</h3>
+              <div className={styles.galleryGrid}>
+                {caseData.xrays.map((img, idx) => {
+                  return (
+                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <div className={styles.gallerySquareLg} onClick={() => openLightbox(caseData.xrays, idx)}>
+                        <Image 
+                          src={img.url || img} 
+                          alt={img.label || `X-ray ${idx + 1}`} 
+                          fill
+                          sizes="(max-width: 768px) 50vw, 33vw"
+                          className={styles.galleryImage}
+                        />
+                      </div>
+                      {img.label && (
+                        <span style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: '500' }}>
+                          {img.label}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Lightbox Overlay */}
       {lightboxOpen && lightboxImages.length > 0 && (
-        <div className={styles.lightboxOverlay}>
+        <div 
+          className={styles.lightboxOverlay}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setLightboxOpen(false);
+          }}
+          tabIndex={-1}
+          ref={(el) => { if (el) el.focus(); }}
+        >
           {/* Close Button */}
           <button 
             autoFocus
             onClick={() => setLightboxOpen(false)}
             className={styles.lightboxCloseBtn}
+            aria-label="Close Lightbox"
           >&times;</button>
 
           {/* Main Image */}
@@ -229,6 +358,7 @@ export default function CaseDetail({ params }) {
               <button 
                 onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => (prev - 1 + lightboxImages.length) % lightboxImages.length); }}
                 className={styles.lightboxPrevBtn}
+                aria-label="Previous Image"
               >&#10094;</button>
             )}
             
@@ -244,6 +374,7 @@ export default function CaseDetail({ params }) {
               <button 
                 onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => (prev + 1) % lightboxImages.length); }}
                 className={styles.lightboxNextBtn}
+                aria-label="Next Image"
               >&#10095;</button>
             )}
           </div>

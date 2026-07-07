@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import styles from '../../admin.module.css';
+import Spinner from '@/components/Spinner';
 import localStyles from './profileEditor.module.css';
 import Image from 'next/image';
 
@@ -273,7 +274,12 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
               className={localStyles.saveBtn} 
               disabled={saving}
             >
-              {saving ? 'Saving...' : 'Save Profile'}
+              {saving ? (
+                <span style={{display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center'}}>
+                  <Spinner size={18} />
+                  Saving...
+                </span>
+              ) : 'Save Profile'}
             </button>
             {message && (
               <span className={`${localStyles.statusMessage} ${message.includes('Error') ? localStyles.statusError : localStyles.statusSuccess}`}>

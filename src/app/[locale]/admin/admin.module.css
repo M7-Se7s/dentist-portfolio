@@ -1627,7 +1627,7 @@ input:checked + .toggleSlider:before {
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  padding-top: 1.5rem;
+  padding-top: 3rem;
   border-bottom: 1px solid rgba(0,0,0,0.05);
   position: sticky;
   top: -3rem;

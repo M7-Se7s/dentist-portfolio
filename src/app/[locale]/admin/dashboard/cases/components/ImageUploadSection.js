@@ -7,6 +7,7 @@ export default function ImageUploadSection({
   beforePreview, setBeforePreview, setBeforeImage,
   afterPreview, setAfterPreview, setAfterImage,
   galleryItems, setGalleryItems,
+  xrayItems, setXrayItems,
   styles
 }) {
 
@@ -33,10 +34,25 @@ export default function ImageUploadSection({
     const newItems = files.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       file,
-      url: URL.createObjectURL(file)
+      url: URL.createObjectURL(file),
+      label: ''
     }));
     
     setGalleryItems(prev => [...prev, ...newItems]);
+  };
+
+  const handleXrayChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files || files.length === 0) return;
+    
+    const newItems = files.map(file => ({
+      id: Math.random().toString(36).substr(2, 9),
+      file,
+      url: URL.createObjectURL(file),
+      label: ''
+    }));
+    
+    setXrayItems(prev => [...(prev || []), ...newItems]);
   };
 
   return (
@@ -81,7 +97,7 @@ export default function ImageUploadSection({
 
       <div className={styles.formSection}>
         <div className={styles.formSectionTitle}>Case Gallery (Optional)</div>
-        <p className={styles.sectionHint}>Upload additional images (e.g. X-rays, prep stages, mockups).</p>
+        <p className={styles.sectionHint}>Upload additional procedure images.</p>
         
         <div className={styles.formGroup}>
           <div className={styles.imageDropzoneGallery}>
@@ -93,7 +109,25 @@ export default function ImageUploadSection({
         </div>
 
         {galleryItems.length > 0 && (
-          <SortableGallery images={galleryItems} setImages={setGalleryItems} />
+          <SortableGallery images={galleryItems} setImages={setGalleryItems} showLabel={true} />
+        )}
+      </div>
+
+      <div className={styles.formSection}>
+        <div className={styles.formSectionTitle}>X-Rays (Optional)</div>
+        <p className={styles.sectionHint}>Upload X-rays and provide labels (e.g. Pre-op Panoramic).</p>
+        
+        <div className={styles.formGroup}>
+          <div className={styles.imageDropzoneGallery}>
+            <input type="file" accept="image/*" multiple onChange={handleXrayChange} className={styles.hiddenFileInput} />
+            <div className={styles.dropzoneText}>
+              + Add X-Rays
+            </div>
+          </div>
+        </div>
+
+        {xrayItems && xrayItems.length > 0 && (
+          <SortableGallery images={xrayItems} setImages={setXrayItems} showLabel={true} />
         )}
       </div>
     </>

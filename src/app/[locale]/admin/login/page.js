@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { auth } from '@/lib/firebase';
 import styles from '../admin.module.css';
 
@@ -19,10 +19,21 @@ export default function AdminLogin() {
     setError('');
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      // Enforce single-account access
+      if (userCredential.user.email !== 'dr-mohammed-shabaan@dr.com') {
+        throw new Error('Unauthorized Account: This dashboard is restricted.');
+      }
+      
+      document.cookie = "admin_session=true; path=/; max-age=86400"; // 24 hours
       router.push('/admin/dashboard');
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      if (err.message.includes('Unauthorized Account')) {
+        setError(err.message);
+      } else {
+        setError('Invalid email or password. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import Spinner from '@/components/Spinner';
 import styles from '../../admin.module.css';
 
 import BasicInfoEditor from './components/BasicInfoEditor';
@@ -175,7 +178,12 @@ export default function CVEditorPage() {
         {/* Sticky Action Bar */}
         <div className={styles.stickyActionBar}>
           <button type="submit" className="btn-primary" disabled={isSaving}>
-            {isSaving ? 'Saving...' : 'Save CV Profile'}
+            {isSaving ? (
+              <span style={{display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center'}}>
+                <Spinner size={18} />
+                Saving...
+              </span>
+            ) : 'Save CV Profile'}
           </button>
         </div>
       </form>

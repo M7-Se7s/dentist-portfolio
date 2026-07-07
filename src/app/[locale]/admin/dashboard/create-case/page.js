@@ -1,26 +1,22 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState, useEffect, use } from 'react';
+import { useState } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { Link } from '@/i18n/routing';
-import { casesService } from '@/lib/services/casesService';
-import styles from '../../../admin.module.css';
+import styles from '../../admin.module.css';
 import { useUploads } from '@/lib/contexts/UploadContext';
 
-import BasicInfoSection from '../../cases/components/BasicInfoSection';
-import TreatmentDetailsSection from '../../cases/components/TreatmentDetailsSection';
-import ImageUploadSection from '../../cases/components/ImageUploadSection';
-import ClinicalAssessmentSection from '../../cases/components/ClinicalAssessmentSection';
-import CaseDetailsSection from '../../cases/components/CaseDetailsSection';
-import OutcomeSection from '../../cases/components/OutcomeSection';
+import BasicInfoSection from '../cases/components/BasicInfoSection';
+import TreatmentDetailsSection from '../cases/components/TreatmentDetailsSection';
+import ImageUploadSection from '../cases/components/ImageUploadSection';
+import ClinicalAssessmentSection from '../cases/components/ClinicalAssessmentSection';
+import CaseDetailsSection from '../cases/components/CaseDetailsSection';
+import OutcomeSection from '../cases/components/OutcomeSection';
 
-export default function EditCasePage({ params }) {
+export default function CreateCasePage() {
   const router = useRouter();
-  const unwrappedParams = use(params);
-  const caseId = unwrappedParams.id;
   
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   
@@ -56,58 +52,27 @@ export default function EditCasePage({ params }) {
     steps: []
   });
 
-  // Load Case Data
-  useEffect(() => {
-    let isMounted = true;
-    
-    const loadCase = async () => {
-      try {
-        const caseData = await casesService.getCaseById(caseId);
-        if (caseData && isMounted) {
-          // Normalize existing arrays and fields for the form
-          setFormData({ 
-            ...caseData,
-            categories: caseData.categories || [],
-            materials: caseData.materials || [],
-            images: (caseData.images || []).map(img => ({ ...img, id: img.id || Math.random().toString(36).substr(2, 9) })),
-            xrays: (caseData.xrays || []).map(img => ({ ...img, id: img.id || Math.random().toString(36).substr(2, 9) })),
-            steps: (caseData.steps || []).map(step => ({ 
-              ...step, 
-              id: step.id || Math.random().toString(36).substr(2, 9), 
-              files: [], 
-              previews: [],
-              existingImages: step.images || []
-            }))
-          });
-        } else if (isMounted) {
-          // Fallback if not found
-          setFormData(prev => ({ ...prev, title: `New Case ${caseId}`, isDraft: true }));
-        }
-      } catch (error) {
-        console.error("Failed to fetch case", error);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-    
-    loadCase();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [caseId]);
-
   const { startCaseUpload } = useUploads();
 
   const handleSave = async (e, asDraft = false) => {
     e?.preventDefault();
+    if (!formData.title || formData.categories.length === 0) {
+      alert("Please fill all required fields (Title, Categories)");
+      return;
+    }
+    if (!beforeImage || !afterImage) {
+      alert("Please upload both before and after images.");
+      return;
+    }
+
     setIsSaving(true);
     const payload = {
-      mode: 'edit',
-      caseId,
+      mode: 'create',
       formData: {
         ...formData,
-        isDraft: asDraft
+        category: formData.categories[0] || 'General',
+        isDraft: asDraft,
+        createdAt: new Date().toISOString()
       },
       beforeImageFile: beforeImage,
       afterImageFile: afterImage,
@@ -122,16 +87,6 @@ export default function EditCasePage({ params }) {
       router.push('/admin/dashboard/cases');
     }, 1500);
   };
-
-  if (isLoading) {
-    return (
-      <div className={styles.loadingContainer} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50vh'}}>
-        <div className={styles.spinner} style={{width: '40px', height: '40px', border: '3px solid rgba(var(--primary-rgb), 0.2)', borderTopColor: 'var(--primary-color)', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '1rem'}}></div>
-        <p style={{color: 'var(--text-muted)'}}>Loading clinical case data...</p>
-        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-      </div>
-    );
-  }
 
   // Adapter setters
   const setTitle = (val) => setFormData(p => ({ ...p, title: val }));
@@ -192,12 +147,7 @@ export default function EditCasePage({ params }) {
             onClick={(e) => handleSave(e, true)}
             disabled={isSaving}
           >
-            {isSaving ? (
-              <span style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                <Spinner size={18} />
-                Saving...
-              </span>
-            ) : 'Save as Draft'}
+            {isSaving ? 'Saving...' : 'Save as Draft'}
           </button>
           <button 
             type="button" 
@@ -205,12 +155,7 @@ export default function EditCasePage({ params }) {
             onClick={(e) => handleSave(e, false)}
             disabled={isSaving}
           >
-            {isSaving ? (
-              <span style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                <Spinner size={18} />
-                Publishing...
-              </span>
-            ) : 'Publish Case'}
+            {isSaving ? 'Publishing...' : 'Publish Case'}
           </button>
         </div>
       </div>
@@ -218,7 +163,7 @@ export default function EditCasePage({ params }) {
       {saveSuccess && (
         <div className={styles.successBanner} style={{ background: '#ECFDF5', color: '#065F46', padding: '1rem', borderRadius: '8px', marginBottom: '2rem', display: 'flex', alignItems: 'center', fontWeight: '500', border: '1px solid #A7F3D0' }}>
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-          Case successfully updated! Saving in background...
+          Case successfully created! Saving in background...
         </div>
       )}
 
@@ -264,10 +209,10 @@ export default function EditCasePage({ params }) {
         />
 
         <ImageUploadSection 
-          beforePreview={beforePreview || formData.beforeImageUrl || formData.beforeImage} 
+          beforePreview={beforePreview} 
           setBeforePreview={setBeforePreview} 
           setBeforeImage={setBeforeImage}
-          afterPreview={afterPreview || formData.afterImageUrl || formData.afterImage} 
+          afterPreview={afterPreview} 
           setAfterPreview={setAfterPreview} 
           setAfterImage={setAfterImage}
           galleryItems={formData.images} 

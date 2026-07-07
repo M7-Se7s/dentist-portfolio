@@ -5,10 +5,15 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styles from '../../admin.module.css';
 import { useUploads } from '@/lib/contexts/UploadContext';
+import Spinner from '@/components/Spinner';
 
 import BasicInfoSection from './components/BasicInfoSection';
 import TreatmentDetailsSection from './components/TreatmentDetailsSection';
 import ImageUploadSection from './components/ImageUploadSection';
+
+import ClinicalAssessmentSection from './components/ClinicalAssessmentSection';
+import CaseDetailsSection from './components/CaseDetailsSection';
+import OutcomeSection from './components/OutcomeSection';
 
 export default function CreateCaseModal({ onClose, onSuccess }) {
   const [mounted, setMounted] = useState(false);
@@ -38,10 +43,27 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
   const [description, setDescription] = useState('');
   const [featured, setFeatured] = useState(false);
 
-  // Treatment Details
-  const [treatmentDetails, setTreatmentDetails] = useState('');
+  // Clinical Assessment
+  const [chiefComplaint, setChiefComplaint] = useState('');
+  const [diagnosis, setDiagnosis] = useState('');
+  const [treatmentPerformed, setTreatmentPerformed] = useState('');
+  const [techniques, setTechniques] = useState('');
+  const [materials, setMaterials] = useState([]);
+
+  // Treatment Details (Steps)
+  const [treatmentDetails, setTreatmentDetails] = useState(''); // Keep for backward compatibility if needed, but mostly superseded by treatmentPerformed
   const [treatmentSteps, setTreatmentSteps] = useState([]);
   const [isDraftSubmit, setIsDraftSubmit] = useState(false);
+
+  // Case Details
+  const [duration, setDuration] = useState('');
+  const [year, setYear] = useState('');
+  const [difficulty, setDifficulty] = useState('');
+
+  // Outcome
+  const [challenges, setChallenges] = useState('');
+  const [result, setResult] = useState('');
+  const [keyTakeaways, setKeyTakeaways] = useState('');
 
   // Images
   const [beforeImage, setBeforeImage] = useState(null);
@@ -49,6 +71,7 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
   const [beforePreview, setBeforePreview] = useState(null);
   const [afterPreview, setAfterPreview] = useState(null);
   const [galleryItems, setGalleryItems] = useState([]);
+  const [xrayItems, setXrayItems] = useState([]);
 
   // eslint-disable-next-line no-unused-vars
   const [uploading, setUploading] = useState(false);
@@ -75,12 +98,24 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
         description,
         isDraft: isDraftSubmit,
         featured,
-        treatmentPlan: treatmentDetails,
+        treatmentPlan: treatmentDetails, // legacy
+        chiefComplaint,
+        diagnosis,
+        treatmentPerformed,
+        techniques,
+        materials,
+        duration,
+        year,
+        difficulty,
+        challenges,
+        result,
+        keyTakeaways,
         createdAt: new Date().toISOString()
       },
       beforeImageFile: beforeImage,
       afterImageFile: afterImage,
       galleryItems,
+      xrayItems,
       treatmentSteps
     };
 
@@ -114,6 +149,15 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
             styles={styles}
           />
 
+          <ClinicalAssessmentSection 
+            chiefComplaint={chiefComplaint} setChiefComplaint={setChiefComplaint}
+            diagnosis={diagnosis} setDiagnosis={setDiagnosis}
+            treatmentPerformed={treatmentPerformed} setTreatmentPerformed={setTreatmentPerformed}
+            techniques={techniques} setTechniques={setTechniques}
+            materials={materials} setMaterials={setMaterials}
+            styles={styles}
+          />
+
           <TreatmentDetailsSection 
             treatmentDetails={treatmentDetails} setTreatmentDetails={setTreatmentDetails}
             treatmentSteps={treatmentSteps} setTreatmentSteps={setTreatmentSteps}
@@ -124,6 +168,21 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
             beforePreview={beforePreview} setBeforePreview={setBeforePreview} setBeforeImage={setBeforeImage}
             afterPreview={afterPreview} setAfterPreview={setAfterPreview} setAfterImage={setAfterImage}
             galleryItems={galleryItems} setGalleryItems={setGalleryItems}
+            xrayItems={xrayItems} setXrayItems={setXrayItems}
+            styles={styles}
+          />
+
+          <CaseDetailsSection 
+            duration={duration} setDuration={setDuration}
+            year={year} setYear={setYear}
+            difficulty={difficulty} setDifficulty={setDifficulty}
+            styles={styles}
+          />
+
+          <OutcomeSection 
+            challenges={challenges} setChallenges={setChallenges}
+            result={result} setResult={setResult}
+            keyTakeaways={keyTakeaways} setKeyTakeaways={setKeyTakeaways}
             styles={styles}
           />
 
@@ -136,12 +195,8 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
             </button>
             <button type="submit" className="btn-primary" disabled={uploading} onClick={() => setIsDraftSubmit(false)}>
               {uploading ? (
-                <span style={{display: 'flex', alignItems: 'center'}}>
-                  <svg style={{marginRight: '0.5rem', height: '1.25rem', width: '1.25rem', color: 'white', display: 'inline-block', animation: 'spin 1s linear infinite'}} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-                    <circle style={{opacity: 0.25}} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path style={{opacity: 0.75}} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
+                <span style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                  <Spinner size={18} />
                   Saving Case...
                 </span>
               ) : 'Publish Case'}
