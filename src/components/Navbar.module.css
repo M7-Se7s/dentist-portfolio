@@ -160,6 +160,10 @@
     height: 45px;
   }
 
+  .brand, .rightActions {
+    flex: 0 1 auto;
+  }
+
   .hamburger {
     display: block;
     position: relative;
