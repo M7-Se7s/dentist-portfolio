@@ -62,8 +62,7 @@ export default function DownloadCvButton({ pdfUrl, pdfUrlAr, className, style, l
         <div style={{
           position: 'absolute',
           top: 'calc(100% + 0.5rem)',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          insetInlineEnd: 0,
           backgroundColor: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: '8px',
