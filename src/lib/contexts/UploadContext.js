@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import imageCompression from 'browser-image-compression';
 import { casesService } from '../services/casesService';
+import { auth } from '../firebase';
 
 export const UploadContext = createContext();
 
@@ -34,7 +35,21 @@ export function UploadProvider({ children }) {
     const formData = new FormData();
     formData.append('file', fileToUpload);
     
-    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    let token = null;
+    if (auth.currentUser) {
+      token = await auth.currentUser.getIdToken();
+    }
+
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch('/api/upload', { 
+      method: 'POST', 
+      headers,
+      body: formData 
+    });
     if (!res.ok) {
       const errorText = await res.text();
       throw new Error(`Upload failed (${res.status}): ${errorText}`);

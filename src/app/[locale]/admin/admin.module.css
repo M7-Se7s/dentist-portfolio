@@ -316,8 +316,48 @@
 }
 
 /* ---------------------------
-   Forms & Tables
+   Forms & Tables & Tabs
 --------------------------- */
+.tabsContainer {
+  display: flex;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: 2rem;
+  gap: 2rem;
+  overflow-x: auto;
+  padding-bottom: 1px;
+}
+
+.tabInactive {
+  padding: 0.75rem 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.tabInactive:hover {
+  color: var(--primary-color);
+  border-bottom: 3px solid rgba(var(--primary-rgb), 0.2);
+}
+
+.tabActive {
+  padding: 0.75rem 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  border-bottom: 3px solid var(--primary-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
 .formGroup {
   margin-bottom: 1.5rem;
 }
@@ -713,6 +753,68 @@
   color: var(--primary-color);
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cvSubCard {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  position: relative;
+  transition: border-color 0.2s ease;
+}
+
+.cvSubCard:hover {
+  border-color: #cbd5e1;
+}
+
+.btnDashed {
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  border: 2px dashed #cbd5e1;
+  color: var(--primary-color);
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btnDashed:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(14, 94, 122, 0.03);
+}
+
+.iconButtonRemove {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: white;
+  border: 1px solid #fecaca;
+  color: #ef4444;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+}
+
+.iconButtonRemove:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
 }
 
 .splitImages {
@@ -729,17 +831,22 @@
 
 .stickyActionBar {
   position: sticky;
-  bottom: -3rem;
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
-  padding: 1.5rem 3rem;
-  border-top: 1px solid var(--border-color);
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
   z-index: 100;
-  margin: 2rem -3rem -3rem -3rem;
-  /* extend to bleed into parent padding */
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
+}
+
+.stickyActionBar button {
+  min-width: 200px;
 }
 
 /* React Quill Overrides */
@@ -2086,7 +2193,8 @@ input:checked+.toggleSlider:before {
   border-radius: 12px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   z-index: 3000;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 240px;
   animation: modalFadeIn 0.2s ease-out;
 }
 

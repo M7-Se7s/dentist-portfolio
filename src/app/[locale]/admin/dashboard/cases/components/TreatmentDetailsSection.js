@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function TreatmentDetailsSection({
   treatmentDetails, setTreatmentDetails,
+  treatmentDetailsAr, setTreatmentDetailsAr,
   treatmentSteps, setTreatmentSteps,
   styles
 }) {
-  
+
+
   const handleAddStep = () => {
-    setTreatmentSteps(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), title: '', description: '', files: [], previews: [], existingImages: [] }]);
+    setTreatmentSteps(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), title: '', titleAr: '', description: '', descriptionAr: '', files: [], previews: [], existingImages: [] }]);
   };
 
   const handleRemoveStep = (id) => {
@@ -17,6 +19,8 @@ export default function TreatmentDetailsSection({
   const handleStepChange = (id, field, value) => {
     setTreatmentSteps(prev => prev.map(step => step.id === id ? { ...step, [field]: value } : step));
   };
+
+
 
   const handleStepImageChange = (id, e) => {
     const files = Array.from(e.target.files);
@@ -63,16 +67,36 @@ export default function TreatmentDetailsSection({
   return (
     <div className={styles.formSection}>
       <div className={styles.formSectionTitle}>Treatment Details</div>
-      <div className={styles.formGroup}>
-        <label>Full Case Report (Optional)</label>
-        <div className={styles.quillWrapper}>
-          <textarea 
-            rows="5"
-            value={treatmentDetails} 
-            onChange={(e) => setTreatmentDetails(e.target.value)} 
-            placeholder="Write the full clinical details, materials used, steps taken..."
-            className={styles.treatmentTextArea}
-          />
+      
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+          <label>Full Case Report (EN)</label>
+          <div className={styles.quillWrapper}>
+            <textarea 
+              rows="5"
+              value={treatmentDetails} 
+              onChange={(e) => setTreatmentDetails(e.target.value)} 
+              placeholder="Write the full clinical details, materials used, steps taken..."
+              className={styles.treatmentTextArea}
+              style={{ width: '100%', padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-primary)' }}
+            />
+          </div>
+        </div>
+        <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label>Full Case Report (AR)</label>
+          </div>
+          <div className={styles.quillWrapper}>
+            <textarea 
+              rows="5"
+              value={treatmentDetailsAr || ''} 
+              onChange={(e) => setTreatmentDetailsAr(e.target.value)} 
+              placeholder="Arabic Case Report"
+              dir="rtl"
+              className={styles.treatmentTextArea}
+              style={{ width: '100%', padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-arabic)' }}
+            />
+          </div>
         </div>
       </div>
       
@@ -94,25 +118,55 @@ export default function TreatmentDetailsSection({
               </button>
             </div>
             
-            <div className={styles.formGroup}>
-              <label>Step Title *</label>
-              <input 
-                type="text" 
-                value={step.title} 
-                onChange={(e) => handleStepChange(step.id, 'title', e.target.value)} 
-                placeholder="e.g. Tooth Preparation"
-                required
-              />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className={styles.formGroup}>
+                <label>Step Title (EN) *</label>
+                <input 
+                  type="text" 
+                  value={step.title} 
+                  onChange={(e) => handleStepChange(step.id, 'title', e.target.value)} 
+                  placeholder="e.g. Tooth Preparation"
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label>Step Title (AR)</label>
+                </div>
+                <input 
+                  type="text" 
+                  value={step.titleAr || ''} 
+                  onChange={(e) => handleStepChange(step.id, 'titleAr', e.target.value)} 
+                  placeholder="Arabic Title"
+                  dir="rtl"
+                  style={{ fontFamily: 'var(--font-arabic)' }}
+                />
+              </div>
             </div>
-            
-            <div className={styles.formGroup}>
-              <label>Description</label>
-              <textarea 
-                rows="3" 
-                value={step.description} 
-                onChange={(e) => handleStepChange(step.id, 'description', e.target.value)} 
-                placeholder="Describe what was done in this step..."
-              />
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className={styles.formGroup}>
+                <label>Description (EN)</label>
+                <textarea 
+                  rows="3" 
+                  value={step.description} 
+                  onChange={(e) => handleStepChange(step.id, 'description', e.target.value)} 
+                  placeholder="Describe what was done in this step..."
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label>Description (AR)</label>
+                </div>
+                <textarea 
+                  rows="3" 
+                  value={step.descriptionAr || ''} 
+                  onChange={(e) => handleStepChange(step.id, 'descriptionAr', e.target.value)} 
+                  placeholder="Arabic Description"
+                  dir="rtl"
+                  style={{ fontFamily: 'var(--font-arabic)' }}
+                />
+              </div>
             </div>
             
             <div className={styles.formGroup}>

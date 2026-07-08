@@ -1,9 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { Link } from '@/i18n/routing';
 
 export default function BasicInfoSection({
   title, setTitle,
+  titleAr, setTitleAr,
   categories, setCategories,
   description, setDescription,
+  descriptionAr, setDescriptionAr,
   featured, setFeatured,
   patientAge, setPatientAge,
   patientGender, setPatientGender,
@@ -11,6 +16,26 @@ export default function BasicInfoSection({
 }) {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const categoryDropdownRef = useRef(null);
+  const [availableCategories, setAvailableCategories] = useState([]);
+
+  useEffect(() => {
+    async function fetchCats() {
+      try {
+        const q = query(collection(db, "categories"), orderBy("nameEn", "asc"));
+        const snapshot = await getDocs(q);
+        const fetched = snapshot.docs.map(doc => doc.data().nameEn);
+        if (fetched.length > 0) {
+          setAvailableCategories(fetched);
+        } else {
+          setAvailableCategories(['General', 'Esthetic', 'Composite', 'Prosthodontics', 'Endodontics', 'Surgery', 'Orthodontics', 'Periodontics', 'Pediatric', 'Posterior Restorations']);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+        setAvailableCategories(['General', 'Esthetic', 'Composite', 'Prosthodontics', 'Endodontics', 'Surgery', 'Orthodontics', 'Periodontics', 'Pediatric', 'Posterior Restorations']);
+      }
+    }
+    fetchCats();
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -27,19 +52,42 @@ export default function BasicInfoSection({
   return (
     <div className={styles.formSection}>
       <div className={styles.formSectionTitle}>Basic Information</div>
-      <div className={styles.formGroup}>
-        <label>Case Title *</label>
-        <input 
-          autoFocus
-          type="text" 
-          value={title} 
-          onChange={(e) => setTitle(e.target.value)} 
-          placeholder="e.g. Anterior Composite Restoration"
-          required
-        />
+      
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+          <label>Case Title (EN) *</label>
+          <input 
+            autoFocus
+            type="text" 
+            value={title} 
+            onChange={(e) => setTitle(e.target.value)} 
+            placeholder="e.g. Anterior Composite Restoration"
+            required
+            style={{ width: '100%', padding: '0.85rem 1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-primary)' }}
+          />
+        </div>
+        <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label>Case Title (AR)</label>
+          </div>
+          <input 
+            type="text" 
+            value={titleAr || ''} 
+            onChange={(e) => setTitleAr(e.target.value)} 
+            placeholder="Arabic Title"
+            dir="rtl"
+            style={{ width: '100%', padding: '0.85rem 1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-arabic)' }}
+          />
+        </div>
       </div>
+
       <div className={styles.formGroup}>
-        <label>Categories *</label>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label>Categories *</label>
+          <Link href="/admin/dashboard/categories" style={{ fontSize: '0.8rem', color: 'var(--primary-color)', textDecoration: 'none' }}>
+            Manage Categories
+          </Link>
+        </div>
         <div ref={categoryDropdownRef} className={styles.categoryDropdownWrapper}>
           <div 
             onClick={() => setIsCategoryOpen(!isCategoryOpen)}
@@ -73,7 +121,7 @@ export default function BasicInfoSection({
           
           {isCategoryOpen && (
             <div className={styles.categoryMenu}>
-              {['General', 'Esthetic', 'Composite', 'Prosthodontics', 'Endodontics', 'Surgery', 'Orthodontics', 'Periodontics', 'Pediatric', 'Posterior Restorations'].map((cat, index) => {
+              {availableCategories.map((cat, index) => {
                 const isSelected = categories.includes(cat);
                 return (
                   <div 
@@ -87,7 +135,7 @@ export default function BasicInfoSection({
                       }
                     }}
                     className={`${styles.categoryItem} ${isSelected ? styles.categoryItemActive : styles.categoryItemInactive}`}
-                    style={{ borderBottom: index < 9 ? '1px solid #f1f5f9' : 'none' }}
+                    style={{ borderBottom: index < availableCategories.length - 1 ? '1px solid #f1f5f9' : 'none' }}
                   >
                     {cat}
                     {isSelected ? (
@@ -133,15 +181,30 @@ export default function BasicInfoSection({
         </div>
       )}
 
-      <div className={styles.formGroup}>
-        <label>Short Description (Displays on cards)</label>
-        <textarea 
-          rows="2" 
-          value={description} 
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Brief overview of the case..."
-          style={{ width: '100%', padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-primary)', resize: 'vertical' }}
-        ></textarea>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+          <label>Short Description (EN)</label>
+          <textarea 
+            rows="3" 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Brief overview of the case..."
+            style={{ width: '100%', padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-primary)', resize: 'vertical' }}
+          ></textarea>
+        </div>
+        <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <label>Short Description (AR)</label>
+          </div>
+          <textarea 
+            rows="3" 
+            value={descriptionAr || ''} 
+            onChange={(e) => setDescriptionAr(e.target.value)}
+            placeholder="Arabic Description"
+            dir="rtl"
+            style={{ width: '100%', padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-arabic)', resize: 'vertical' }}
+          ></textarea>
+        </div>
       </div>
       
       <div className={styles.formGroup} style={{marginTop: '1.5rem'}}>

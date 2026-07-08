@@ -26,7 +26,8 @@ export default function AdminLogin() {
         throw new Error('Unauthorized Account: This dashboard is restricted.');
       }
       
-      document.cookie = "admin_session=true; path=/; max-age=86400"; // 24 hours
+      const idToken = await userCredential.user.getIdToken();
+      document.cookie = `admin_session=${idToken}; path=/; max-age=86400; Secure; SameSite=Strict`; // 24 hours
       router.push('/admin/dashboard');
     } catch (err) {
       if (err.message.includes('Unauthorized Account')) {

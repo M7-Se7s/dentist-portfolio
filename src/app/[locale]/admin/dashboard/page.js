@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { db, auth } from '@/lib/firebase';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import styles from '../admin.module.css';
@@ -10,29 +10,71 @@ import styles from '../admin.module.css';
 export default function DashboardPage() {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [profileViews, setProfileViews] = useState(0);
+  const [cloudinaryUsage, setCloudinaryUsage] = useState(null);
   
 
 
-  async function fetchCases() {
-    try {
-      const querySnapshot = await getDocs(collection(db, "cases"));
-      const casesList = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      // Sort by latest first
-      casesList.sort((a, b) => b.createdAt - a.createdAt);
-      setCases(casesList);
-    } catch (error) {
-      console.error("Error fetching cases: ", error);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchCases() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "cases"));
+        if (!isMounted) return;
+        const casesList = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        // Sort by latest first
+        casesList.sort((a, b) => b.createdAt - a.createdAt);
+        setCases(casesList);
+
+        // Fetch Profile Views
+        const viewsRef = doc(db, "analytics", "visits");
+        const viewsSnap = await getDoc(viewsRef);
+        if (!isMounted) return;
+        if (viewsSnap.exists()) {
+          setProfileViews(viewsSnap.data().count || 0);
+        }
+      } catch (error) {
+        if (!isMounted) return;
+        console.error("Error fetching dashboard stats: ", error);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     }
-  }
+    fetchCases();
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchCases();
+    async function fetchCloudinaryUsage() {
+      try {
+        const idToken = await auth.currentUser?.getIdToken();
+        if (!idToken) return;
+
+        const res = await fetch('/api/cloudinary/usage', {
+          headers: { 'Authorization': `Bearer ${idToken}` }
+        });
+        const data = await res.json();
+        if (data && data.storage) {
+          setCloudinaryUsage({
+            used: data.storage.usage,
+            limit: data.storage.limit || 26843545600 // Default 25GB if not specified
+          });
+        }
+      } catch (e) {
+        console.error("Error fetching Cloudinary usage:", e);
+      }
+    }
+
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        fetchCloudinaryUsage();
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
 
@@ -79,66 +121,77 @@ export default function DashboardPage() {
               <span className={styles.statCardTitle}>PROFILE VIEWS</span>
               <span className={styles.statCardTrend}>Top 5% in Region</span>
             </div>
-            <div className={styles.statCardValue}>2,481</div>
+            <div className={styles.statCardValue}>{loading ? '-' : profileViews.toLocaleString()}</div>
           </div>
         </div>
 
-        {/* Dashboard Widgets (CV Edit & Analytics) */}
-        <div className={styles.dashboardWidgetsRow}>
-          {/* CV Quick Edit Card */}
-          <div className={styles.cvQuickEditCard}>
-            <div className={styles.cvQuickEditHeader}>
-              <h3>CV Quick Edit</h3>
-              <button className={styles.editIconBtn}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-              </button>
-            </div>
-            <div className={styles.cvCardSubtitle}>LATEST ENTRY: CLINICAL EXPERIENCE</div>
-            <div className={styles.cvCardTitle}>Senior Implantologist</div>
-            <div className={styles.cvCardCompany}>Metropolitan Dental Group</div>
-            <div className={styles.cvCardDate}>Jan 2020 — Present • New York, NY</div>
-            <ul className={styles.cvCardList}>
-              <li>
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                Led a team of 4 clinical associates in complex oral surgery cases.
-              </li>
-              <li>
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                Implemented a new digital workflow reducing patient chair time by 15%.
-              </li>
-            </ul>
-            <button className={styles.cvUpdateBtn}>Update Experience</button>
-          </div>
-
-          {/* Profile Edit Card */}
-          <div className={styles.cvQuickEditCard}>
-            <div className={styles.cvQuickEditHeader}>
-              <h3>Professional Profile</h3>
-              <Link href="/admin/dashboard/profile" className={styles.editIconBtn}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-              </Link>
-            </div>
-            <div className={styles.cvCardSubtitle}>PUBLIC BIOGRAPHY</div>
-            <p style={{fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.5', marginTop: '0.5rem', marginBottom: '1.5rem'}}>
-              Update your main biography and philosophy quote displayed on the Professional Profile page.
+        {/* Analytics & Media Storage Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem', marginTop: '2rem' }}>
+          
+          {/* Cloudinary Storage Tracker */}
+          <div className={styles.formSection} style={{ marginBottom: 0 }}>
+            <div className={styles.formSectionTitle}>Cloudinary Media Storage</div>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+              Track how much image and video storage you are using out of your monthly quota.
             </p>
-            <Link href="/admin/dashboard/profile" className={styles.cvUpdateBtn} style={{display: 'inline-block', textAlign: 'center', textDecoration: 'none'}}>
-              Edit Profile
-            </Link>
+            {cloudinaryUsage ? (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600 }}>
+                  <span>{(cloudinaryUsage.used / (1024 * 1024 * 1024)).toFixed(2)} GB Used</span>
+                  <span>{(cloudinaryUsage.limit / (1024 * 1024 * 1024)).toFixed(0)} GB Quota</span>
+                </div>
+                <div style={{ width: '100%', background: '#E2E8F0', borderRadius: '999px', height: '12px', overflow: 'hidden' }}>
+                  <div 
+                    style={{ 
+                      height: '100%', 
+                      background: (cloudinaryUsage.used / cloudinaryUsage.limit) > 0.85 ? '#EF4444' : '#10B981',
+                      width: `${Math.min((cloudinaryUsage.used / cloudinaryUsage.limit) * 100, 100)}%`,
+                      transition: 'width 1s ease-out'
+                    }}
+                  ></div>
+                </div>
+              </div>
+            ) : (
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Loading storage stats...</div>
+            )}
           </div>
 
-          {/* Analytics Card */}
-          <div className={styles.analyticsCard}>
-            <div className={styles.analyticsIcon}>
-              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          {/* Top Performing Cases */}
+          <div className={styles.formSection} style={{ marginBottom: 0 }}>
+            <div className={styles.formSectionTitle}>Top Performing Cases</div>
+            <div className={styles.caseTableWrapper}>
+              <table className={styles.caseTable}>
+                <thead>
+                  <tr>
+                    <th>Case Title</th>
+                    <th>Category</th>
+                    <th>Total Views</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cases.length === 0 ? (
+                    <tr><td colSpan="4" style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No cases yet</td></tr>
+                  ) : (
+                    [...cases].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5).map(c => (
+                      <tr key={c.id}>
+                        <td style={{ fontWeight: 600 }}>{c.title}</td>
+                        <td>{c.categories?.length > 0 ? c.categories.join(', ') : c.category || 'Uncategorized'}</td>
+                        <td style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>{c.views || 0}</td>
+                        <td>
+                          <Link href={`/admin/dashboard/edit-case/${c.id}`} style={{ color: 'var(--primary-color)', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>
+                            Edit
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-            <h4 className={styles.analyticsTitle}>Detailed Analytics Preview</h4>
-            <p className={styles.analyticsDesc}>Your monthly patient satisfaction score and clinical performance metrics are being compiled. Check back in 2 days for the full report.</p>
-            <button className={styles.analyticsBtnPrimary}>Enable Auto-Sync</button>
-            <button className={styles.analyticsBtnSecondary}>Generate PDF</button>
           </div>
-        </div>
 
+        </div>
 
       </div>
 

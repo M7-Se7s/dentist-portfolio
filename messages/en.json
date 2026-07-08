@@ -56,6 +56,18 @@
     "downloadCV": "Download CV",
     "contactMe": "Contact Me"
   },
+  "CV": {
+    "loading": "Loading Professional CV...",
+    "professionalSummary": "Professional Summary",
+    "coreCompetencies": "Core Competencies",
+    "professionalLicensure": "Professional Licensure",
+    "clinicalExperience": "Clinical Experience",
+    "education": "Education",
+    "clinicalSkills": "Clinical Skills",
+    "professionalCourses": "Professional Courses",
+    "languages": "Languages",
+    "references": "References"
+  },
   "Footer": {
     "name": "Dr. Mohamed Shaaban",
     "title": "General Dentist",

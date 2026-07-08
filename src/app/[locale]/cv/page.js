@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function CVPage() {
   const [cvData, setCvData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [siteUrl, setSiteUrl] = useState('');
+  const locale = useLocale();
+  const isAr = locale === 'ar';
+  const t = useTranslations('CV');
 
   useEffect(() => {
     async function fetchCV() {
@@ -27,25 +30,40 @@ export default function CVPage() {
     fetchCV();
   }, []);
 
-  if (loading) {
-    return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FAFAFA' }}>
-      <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>Loading Professional CV...</span>
-    </div>;
-  }
+  // Loading state removed to allow immediate layout rendering
 
   const {
     basicInfo = {},
+    basicInfoAr = {},
     summary = "",
+    summaryAr = "",
     coreCompetencies = [],
+    coreCompetenciesAr = [],
     education = [],
     licensure = [],
+    licensureAr = [],
     experiences = [],
     clinicalSkills = "",
+    clinicalSkillsAr = "",
     courses = [],
+    coursesAr = [],
     languages = [],
+    languagesAr = [],
     references = "",
+    referencesAr = "",
     pdfUrl = ""
   } = cvData || {};
+
+  const nameToUse = isAr && basicInfoAr?.name ? basicInfoAr.name : basicInfo.name;
+  const titleToUse = isAr && basicInfoAr?.title ? basicInfoAr.title : basicInfo.title;
+  const locationToUse = isAr && basicInfoAr?.location ? basicInfoAr.location : basicInfo.location;
+  const summaryToUse = isAr && summaryAr ? summaryAr : summary;
+  const coreCompetenciesToUse = isAr && coreCompetenciesAr?.length ? coreCompetenciesAr : coreCompetencies;
+  const licensureToUse = isAr && licensureAr?.length ? licensureAr : licensure;
+  const clinicalSkillsToUse = isAr && clinicalSkillsAr ? clinicalSkillsAr : clinicalSkills;
+  const coursesToUse = isAr && coursesAr?.length ? coursesAr : courses;
+  const languagesToUse = isAr && languagesAr?.length ? languagesAr : languages;
+  const referencesToUse = isAr && referencesAr ? referencesAr : references;
 
   const parseMarkdown = (text) => {
     if (!text) return null;
@@ -106,18 +124,18 @@ export default function CVPage() {
           <header className="cv-header">
             <div>
               <h1 style={{ color: 'var(--primary-color)', fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', fontFamily: 'var(--font-heading)', marginBottom: '0.25rem', lineHeight: '1.2', letterSpacing: '-0.5px' }}>
-                {basicInfo.name || "Dr. Mohamed Shaaban"}
+                {nameToUse || "Dr. Mohamed Shaaban"}
               </h1>
               <p style={{ color: 'var(--secondary-color)', fontSize: 'clamp(1rem, 2.5vw, 1.15rem)', fontWeight: '500', marginBottom: '1.5rem' }}>
-                {basicInfo.title || "General Dentist"}
+                {titleToUse || "General Dentist"}
               </p>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {basicInfo.location && (
+                {locationToUse && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--secondary-color)" style={{ flexShrink: 0 }}>
                       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                     </svg>
-                    <span>{basicInfo.location}</span>
+                    <span>{locationToUse}</span>
                   </div>
                 )}
                 {basicInfo.phone && (
@@ -125,7 +143,7 @@ export default function CVPage() {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--secondary-color)" style={{ flexShrink: 0 }}>
                       <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.73 0 .99-.67.99-1.19v-3.44c0-.54-.45-.99-.99-.99z"/>
                     </svg>
-                    <span>{basicInfo.phone}</span>
+                    <span><span dir="ltr">{basicInfo.phone}</span></span>
                   </div>
                 )}
                 {basicInfo.email && (
@@ -153,18 +171,18 @@ export default function CVPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '3rem' }}>
 
             {/* Summary */}
-            {summary && (
+            {summaryToUse && (
               <section>
-                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Professional Summary</h2>
-                <p style={{ color: 'var(--text-dark)', lineHeight: '1.8', fontSize: 'clamp(0.77rem, 2.5vw, 1.8rem)', textAlign: 'justify' }}>{summary}</p>
+                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1rem' }}>{t('professionalSummary')}</h2>
+                <p style={{ color: 'var(--text-dark)', lineHeight: '1.8', fontSize: '1.1rem', textAlign: 'justify' }}>{summaryToUse}</p>
               </section>
             )}
 
             <div className="core-licensure-grid">
               {/* Core Competencies */}
-              {coreCompetencies.length > 0 && (
+              {coreCompetenciesToUse.length > 0 && (
                 <section>
-                  <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Core Competencies</h2>
+                  <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>{t('coreCompetencies')}</h2>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'flex-start' }}>
                     {(() => {
                       const estimateWidth = (str) => {
@@ -179,7 +197,7 @@ export default function CVPage() {
                         return w + 4; // Account for tag padding
                       };
 
-                      const sorted = [...coreCompetencies].sort((a, b) => estimateWidth(b) - estimateWidth(a));
+                      const sorted = [...coreCompetenciesToUse].sort((a, b) => estimateWidth(b) - estimateWidth(a));
                       const pairs = [];
                       let left = 0;
                       let right = sorted.length - 1;
@@ -210,11 +228,11 @@ export default function CVPage() {
               )}
 
               {/* Professional Licensure */}
-              {licensure.length > 0 && (
+              {licensureToUse.length > 0 && (
                 <section>
-                  <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Professional Licensure</h2>
+                  <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>{t('professionalLicensure')}</h2>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {licensure.map((item, idx) => (
+                    {licensureToUse.map((item, idx) => (
                       <li key={idx} className="licensure-item">
                         <div className="licensure-icon-wrapper">
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -237,19 +255,24 @@ export default function CVPage() {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--primary-color)">
                     <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm5 11h-2v2h-2v-2H9v-2h2v-2h2v2h2v2z" />
                   </svg>
-                  Clinical Experience
+                  {t('clinicalExperience')}
                 </h2>
                 <div className="timeline-container">
-                  {experiences.map((exp, idx) => (
+                  {experiences.map((exp, idx) => {
+                    const roleToUse = isAr && exp.roleAr ? exp.roleAr : exp.role;
+                    const periodToUse = isAr && exp.periodAr ? exp.periodAr : exp.period;
+                    const clinicToUse = isAr && exp.clinicAr ? exp.clinicAr : exp.clinic;
+                    const respsToUse = isAr && exp.responsibilitiesAr ? exp.responsibilitiesAr : exp.responsibilities;
+                    return (
                     <div key={idx} className="timeline-item">
                       <div className="timeline-header">
-                        <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', fontWeight: '700', margin: 0 }}>{exp.role}</h3>
-                        <span style={{ color: 'var(--secondary-color)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{exp.period}</span>
+                        <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', fontWeight: '700', margin: 0 }}>{roleToUse}</h3>
+                        <span style={{ color: 'var(--secondary-color)', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{periodToUse}</span>
                       </div>
-                      <p style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '1.25rem', marginTop: 0 }}>{exp.clinic}</p>
-                      {exp.responsibilities && (
+                      <p style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '1.25rem', marginTop: 0 }}>{clinicToUse}</p>
+                      {respsToUse && (
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                          {exp.responsibilities.split('\n').filter(r => r.trim()).map((req, rIdx) => (
+                          {respsToUse.split('\n').filter(r => r.trim()).map((req, rIdx) => (
                             <li key={rIdx} style={{ color: 'var(--text-dark)', display: 'flex', alignItems: 'flex-start', gap: '0.75rem', fontSize: '0.95rem' }}>
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '0.1rem' }}>
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -261,7 +284,7 @@ export default function CVPage() {
                         </ul>
                       )}
                     </div>
-                  ))}
+                  )})}
                 </div>
               </section>
             )}
@@ -269,9 +292,13 @@ export default function CVPage() {
             {/* Education */}
             {education.length > 0 && (
               <section>
-                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>Education</h2>
+                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>{t('education')}</h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.5rem' }}>
-                  {education.map((edu, idx) => (
+                  {education.map((edu, idx) => {
+                    const degreeToUse = isAr && edu.degreeAr ? edu.degreeAr : edu.degree;
+                    const instToUse = isAr && edu.institutionAr ? edu.institutionAr : edu.institution;
+                    const yearToUse = isAr && edu.yearAr ? edu.yearAr : edu.year;
+                    return (
                     <div key={idx} className="education-card">
                       <div className="edu-icon-wrapper">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -281,25 +308,25 @@ export default function CVPage() {
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                          <h3 className="edu-degree" style={{ color: 'var(--primary-color)', fontWeight: '700', margin: 0, lineHeight: '1.3' }}>{edu.degree}</h3>
-                          <span className="edu-year" style={{ color: 'var(--secondary-color)', fontWeight: '700', whiteSpace: 'nowrap', backgroundColor: 'rgba(192, 154, 107, 0.1)', padding: '0.2rem 0.75rem', borderRadius: '50px' }}>{edu.year}</span>
+                          <h3 className="edu-degree" style={{ color: 'var(--primary-color)', fontWeight: '700', margin: 0, lineHeight: '1.3' }}>{degreeToUse}</h3>
+                          <span className="edu-year" style={{ color: 'var(--secondary-color)', fontWeight: '700', whiteSpace: 'nowrap', backgroundColor: 'rgba(192, 154, 107, 0.1)', padding: '0.2rem 0.75rem', borderRadius: '50px' }}>{yearToUse}</span>
                         </div>
-                        <p className="edu-inst" style={{ color: 'var(--text-dark)', fontWeight: '500', margin: 0, lineHeight: '1.5' }}>{edu.institution}</p>
+                        <p className="edu-inst" style={{ color: 'var(--text-dark)', fontWeight: '500', margin: 0, lineHeight: '1.5' }}>{instToUse}</p>
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               </section>
             )}
 
             {/* Clinical Skills */}
-            {clinicalSkills && (
+            {clinicalSkillsToUse && (
               <section style={{ marginTop: '2rem' }}>
                 <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', fontWeight: '700', marginBottom: '1.5rem', letterSpacing: '-0.5px' }}>
-                  Clinical Skills
+                  {t('clinicalSkills')}
                 </h2>
                 <div className="skills-grid">
-                  {parseClinicalSkills(clinicalSkills).map((cat, idx) => (
+                  {parseClinicalSkills(clinicalSkillsToUse).map((cat, idx) => (
                     <div key={idx} className="skill-card">
                       <h3 style={{
                         color: 'var(--primary-color)',
@@ -341,14 +368,14 @@ export default function CVPage() {
                     return item;
                   });
                 };
-                const flatCourses = flattenItems(courses);
-                const flatLanguages = flattenItems(languages);
+                const flatCourses = flattenItems(coursesToUse);
+                const flatLanguages = flattenItems(languagesToUse);
 
                 return (
                   <>
                     {flatCourses.length > 0 && (
                       <section>
-                        <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Professional Courses</h2>
+                        <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>{t('professionalCourses')}</h2>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                           {flatCourses.map((item, idx) => (
                             <li key={idx} className="licensure-item">
@@ -367,7 +394,7 @@ export default function CVPage() {
                     {/* Languages */}
                     {flatLanguages.length > 0 && (
                       <section>
-                        <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>Languages</h2>
+                        <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>{t('languages')}</h2>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                           {flatLanguages.map((item, idx) => (
                             <li key={idx} className="licensure-item">
@@ -390,10 +417,10 @@ export default function CVPage() {
             </div>
 
             {/* References */}
-            {references && (
+            {referencesToUse && (
               <section>
-                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.25rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1rem' }}>References</h2>
-                <p style={{ color: 'var(--text-dark)', fontStyle: 'italic' }}>{references}</p>
+                <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1rem' }}>{t('references')}</h2>
+                <p style={{ color: 'var(--text-dark)', fontStyle: 'italic' }}>{referencesToUse}</p>
               </section>
             )}
 

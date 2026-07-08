@@ -2,13 +2,18 @@ import { useState } from 'react';
 
 export default function ClinicalAssessmentSection({
   chiefComplaint, setChiefComplaint,
+  chiefComplaintAr, setChiefComplaintAr,
   diagnosis, setDiagnosis,
+  diagnosisAr, setDiagnosisAr,
   treatmentPerformed, setTreatmentPerformed,
+  treatmentPerformedAr, setTreatmentPerformedAr,
   techniques, setTechniques,
+  techniquesAr, setTechniquesAr,
   materials, setMaterials,
   styles
 }) {
   const [materialInput, setMaterialInput] = useState('');
+
 
   const handleAddMaterial = (e) => {
     e.preventDefault();
@@ -28,53 +33,43 @@ export default function ClinicalAssessmentSection({
     setMaterials(materials.filter(m => m !== materialToRemove));
   };
 
+  const renderField = (label, enValue, enSetter, arValue, arSetter, fieldKey, rows = 2, placeholder = '') => (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+        <label>{label} (EN)</label>
+        <textarea 
+          rows={rows} 
+          value={enValue || ''} 
+          onChange={(e) => enSetter(e.target.value)}
+          placeholder={placeholder}
+          className={styles.treatmentTextArea}
+        ></textarea>
+      </div>
+      <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label>{label} (AR)</label>
+        </div>
+        <textarea 
+          rows={rows} 
+          value={arValue || ''} 
+          onChange={(e) => arSetter(e.target.value)}
+          placeholder={`Arabic ${label}`}
+          dir="rtl"
+          className={styles.treatmentTextArea}
+          style={{ fontFamily: 'var(--font-arabic)' }}
+        ></textarea>
+      </div>
+    </div>
+  );
+
   return (
     <div className={styles.formSection}>
       <div className={styles.formSectionTitle}>Clinical Assessment</div>
       
-      <div className={styles.formGroup}>
-        <label>Chief Complaint</label>
-        <textarea 
-          rows="2" 
-          value={chiefComplaint} 
-          onChange={(e) => setChiefComplaint(e.target.value)}
-          placeholder="e.g., Patient presented with pain in upper right quadrant..."
-          className={styles.treatmentTextArea}
-        ></textarea>
-      </div>
-
-      <div className={styles.formGroup}>
-        <label>Diagnosis</label>
-        <textarea 
-          rows="2" 
-          value={diagnosis} 
-          onChange={(e) => setDiagnosis(e.target.value)}
-          placeholder="e.g., Irreversible pulpitis on #14..."
-          className={styles.treatmentTextArea}
-        ></textarea>
-      </div>
-
-      <div className={styles.formGroup}>
-        <label>Treatment Performed</label>
-        <textarea 
-          rows="3" 
-          value={treatmentPerformed} 
-          onChange={(e) => setTreatmentPerformed(e.target.value)}
-          placeholder="e.g., Root canal treatment and composite restoration..."
-          className={styles.treatmentTextArea}
-        ></textarea>
-      </div>
-
-      <div className={styles.formGroup}>
-        <label>Techniques / Workflow</label>
-        <textarea 
-          rows="3" 
-          value={techniques} 
-          onChange={(e) => setTechniques(e.target.value)}
-          placeholder="e.g., Rubber dam isolation, warm vertical compaction..."
-          className={styles.treatmentTextArea}
-        ></textarea>
-      </div>
+      {renderField('Chief Complaint', chiefComplaint, setChiefComplaint, chiefComplaintAr, setChiefComplaintAr, 'chiefComplaint', 2, 'e.g., Patient presented with pain...')}
+      {renderField('Diagnosis', diagnosis, setDiagnosis, diagnosisAr, setDiagnosisAr, 'diagnosis', 2, 'e.g., Irreversible pulpitis on #14...')}
+      {renderField('Treatment Performed', treatmentPerformed, setTreatmentPerformed, treatmentPerformedAr, setTreatmentPerformedAr, 'treatmentPerformed', 3, 'e.g., Root canal treatment and...')}
+      {renderField('Techniques / Workflow', techniques, setTechniques, techniquesAr, setTechniquesAr, 'techniques', 3, 'e.g., Rubber dam isolation...')}
 
       <div className={styles.formGroup}>
         <label>Materials Used</label>

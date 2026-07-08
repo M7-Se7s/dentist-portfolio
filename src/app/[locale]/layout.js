@@ -28,6 +28,10 @@ import Footer from "@/components/Footer";
 export const metadata = {
   title: "Clinical Portfolio",
   description: "Advanced Dentistry & Esthetics",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function RootLayout({ children, params }) {

@@ -10,7 +10,9 @@ import Image from 'next/image';
 
 export default function EditProfilePage() {
   const [biography, setBiography] = useState('');
+  const [biographyAr, setBiographyAr] = useState('');
   const [quote, setQuote] = useState('');
+  const [quoteAr, setQuoteAr] = useState('');
   const [homeImageUrl, setHomeImageUrl] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState('');
   
@@ -23,6 +25,7 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [isAutoTranslating, setIsAutoTranslating] = useState(false);
 
   const defaultBiography = `I am Dr. Mohamed El Sayed Mohamed Shabaan, a General Dentist with more than two years of post-internship clinical experience, providing comprehensive dental care across multiple private dental clinics in Egypt.
 
@@ -46,7 +49,9 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
         if (docSnap.exists()) {
           const data = docSnap.data();
           setBiography(data.biography || defaultBiography);
+          setBiographyAr(data.biographyAr || '');
           setQuote(data.quote || defaultQuote);
+          setQuoteAr(data.quoteAr || '');
           if (data.homeImageUrl) {
             setHomeImageUrl(data.homeImageUrl);
             setHomeImagePreview(data.homeImageUrl);
@@ -114,6 +119,37 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
     return data.secure_url;
   };
 
+  const handleAutoTranslate = async () => {
+    if (!confirm('This will auto-translate English fields into Arabic. Existing Arabic text may be overwritten. Continue?')) return;
+    
+    setIsAutoTranslating(true);
+    setMessage('Translating Profile... This might take a moment.');
+    
+    try {
+      const translateText = async (text) => {
+        if (!text) return '';
+        const res = await fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, target: 'ar' })
+        });
+        const data = await res.json();
+        return data.translatedText || text;
+      };
+
+      setBiographyAr(await translateText(biography));
+      setQuoteAr(await translateText(quote));
+
+      setMessage('Translation complete! Please review the Arabic fields and hit Save.');
+      setTimeout(() => setMessage(''), 4000);
+    } catch (e) {
+      console.error(e);
+      setMessage('Error during translation.');
+    } finally {
+      setIsAutoTranslating(false);
+    }
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -135,7 +171,9 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
       const docRef = doc(db, "content", "profile");
       await setDoc(docRef, {
         biography,
+        biographyAr,
         quote,
+        quoteAr,
         homeImageUrl: finalHomeUrl,
         profileImageUrl: finalProfileUrl
       }, { merge: true });
@@ -154,9 +192,25 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
 
   return (
     <div className={`${styles.dashboardMainColumn} animate-slideUp`}>
-      <div className={styles.pageHeader}>
-        <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-dark)'}}>Edit Professional Profile</h1>
-        <p style={{color: 'var(--text-muted)'}}>Update your biography and professional philosophy quote.</p>
+      <div className={styles.pageHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-dark)'}}>Edit Professional Profile</h1>
+          <p style={{color: 'var(--text-muted)'}}>Update your biography and professional philosophy quote.</p>
+        </div>
+        <button 
+          type="button" 
+          onClick={handleAutoTranslate} 
+          disabled={isAutoTranslating}
+          className="btn-secondary"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+        >
+          {isAutoTranslating ? 'Translating...' : (
+            <>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+              Auto-Translate Arabic
+            </>
+          )}
+        </button>
       </div>
 
       <div className={localStyles.formCard}>
@@ -242,30 +296,58 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
 
           </div>
 
-          <div className={localStyles.formGroup}>
-            <label htmlFor="biography" className={localStyles.label}>Biography (Paragraphs)</label>
-            <textarea
-              id="biography"
-              value={biography}
-              onChange={(e) => setBiography(e.target.value)}
-              rows="15"
-              className={localStyles.textarea}
-              placeholder="Enter your professional biography here..."
-              required
-            />
-            <small className={localStyles.hint}>Line breaks will be preserved as separate paragraphs on the profile page.</small>
+          <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem' }}>
+            <div className={localStyles.formGroup} style={{ flex: 1, marginBottom: 0 }}>
+              <label htmlFor="biography" className={localStyles.label}>Biography (EN)</label>
+              <textarea
+                id="biography"
+                value={biography}
+                onChange={(e) => setBiography(e.target.value)}
+                rows="15"
+                className={localStyles.textarea}
+                placeholder="Enter your professional biography here..."
+                required
+              />
+            </div>
+            <div className={localStyles.formGroup} style={{ flex: 1, marginBottom: 0 }}>
+              <label htmlFor="biographyAr" className={localStyles.label}>Biography (AR)</label>
+              <textarea
+                id="biographyAr"
+                value={biographyAr}
+                onChange={(e) => setBiographyAr(e.target.value)}
+                rows="15"
+                className={localStyles.textarea}
+                dir="rtl"
+                style={{ fontFamily: 'var(--font-arabic)' }}
+              />
+            </div>
           </div>
+          <small className={localStyles.hint} style={{ display: 'block', marginBottom: '2rem' }}>Line breaks will be preserved as separate paragraphs on the profile page.</small>
 
-          <div className={localStyles.formGroup}>
-            <label htmlFor="quote" className={localStyles.label}>Philosophy Quote</label>
-            <textarea
-              id="quote"
-              value={quote}
-              onChange={(e) => setQuote(e.target.value)}
-              rows="3"
-              className={localStyles.textarea}
-              placeholder="Enter your professional philosophy quote..."
-            />
+          <div style={{ display: 'flex', gap: '2rem' }}>
+            <div className={localStyles.formGroup} style={{ flex: 1 }}>
+              <label htmlFor="quote" className={localStyles.label}>Philosophy Quote (EN)</label>
+              <textarea
+                id="quote"
+                value={quote}
+                onChange={(e) => setQuote(e.target.value)}
+                rows="3"
+                className={localStyles.textarea}
+                placeholder="Enter your professional philosophy quote..."
+              />
+            </div>
+            <div className={localStyles.formGroup} style={{ flex: 1 }}>
+              <label htmlFor="quoteAr" className={localStyles.label}>Philosophy Quote (AR)</label>
+              <textarea
+                id="quoteAr"
+                value={quoteAr}
+                onChange={(e) => setQuoteAr(e.target.value)}
+                rows="3"
+                className={localStyles.textarea}
+                dir="rtl"
+                style={{ fontFamily: 'var(--font-arabic)' }}
+              />
+            </div>
           </div>
 
           <div className={localStyles.saveActions}>

@@ -32,11 +32,14 @@ export default function EditCasePage({ params }) {
   // Form State
   const [formData, setFormData] = useState({
     title: '',
+    titleAr: '',
     categories: [],
     patientAge: '',
     patientGender: '',
     description: '',
+    descriptionAr: '',
     treatmentPlan: '',
+    treatmentPlanAr: '',
     chiefComplaint: '',
     diagnosis: '',
     treatmentPerformed: '',
@@ -99,6 +102,80 @@ export default function EditCasePage({ params }) {
 
   const { startCaseUpload } = useUploads();
 
+  const [activeTab, setActiveTab] = useState('basic');
+  const [isTranslatingAll, setIsTranslatingAll] = useState(false);
+
+  const handleAutoTranslateAll = async () => {
+    setIsTranslatingAll(true);
+    const fieldsToTranslate = [
+      { en: formData.title, setKey: 'titleAr' },
+      { en: formData.description, setKey: 'descriptionAr' },
+      { en: formData.treatmentPlan, setKey: 'treatmentPlanAr' },
+      { en: formData.chiefComplaint, setKey: 'chiefComplaintAr' },
+      { en: formData.diagnosis, setKey: 'diagnosisAr' },
+      { en: formData.treatmentPerformed, setKey: 'treatmentPerformedAr' },
+      { en: formData.techniques, setKey: 'techniquesAr' },
+      { en: formData.challenges, setKey: 'challengesAr' },
+      { en: formData.result, setKey: 'resultAr' },
+      { en: formData.keyTakeaways, setKey: 'keyTakeawaysAr' },
+    ];
+
+    try {
+      const updates = {};
+      const promises = fieldsToTranslate.map(async ({ en, setKey }) => {
+        if (!en) return;
+        const res = await fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: en, target: 'ar' })
+        });
+        const data = await res.json();
+        if (data.translatedText) {
+          updates[setKey] = data.translatedText;
+        }
+      });
+
+      await Promise.all(promises);
+
+      // Translate Steps
+      const translatedSteps = [...(formData.steps || [])];
+      const stepPromises = translatedSteps.map(async (step, index) => {
+        if (step.title) {
+          const res = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: step.title, target: 'ar' })
+          });
+          const data = await res.json();
+          if (data.translatedText) translatedSteps[index].titleAr = data.translatedText;
+        }
+        if (step.description) {
+          const res = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: step.description, target: 'ar' })
+          });
+          const data = await res.json();
+          if (data.translatedText) translatedSteps[index].descriptionAr = data.translatedText;
+        }
+      });
+
+      await Promise.all(stepPromises);
+      
+      setFormData(prev => ({
+        ...prev,
+        ...updates,
+        steps: translatedSteps
+      }));
+
+    } catch (e) {
+      console.error(e);
+      alert('Failed to translate some fields');
+    } finally {
+      setIsTranslatingAll(false);
+    }
+  };
+
   const handleSave = async (e, asDraft = false) => {
     e?.preventDefault();
     setIsSaving(true);
@@ -135,13 +212,16 @@ export default function EditCasePage({ params }) {
 
   // Adapter setters
   const setTitle = (val) => setFormData(p => ({ ...p, title: val }));
+  const setTitleAr = (val) => setFormData(p => ({ ...p, titleAr: val }));
   const setCategories = (val) => setFormData(p => ({ ...p, categories: val }));
   const setDescription = (val) => setFormData(p => ({ ...p, description: val }));
+  const setDescriptionAr = (val) => setFormData(p => ({ ...p, descriptionAr: val }));
   const setFeatured = (val) => setFormData(p => ({ ...p, featured: val }));
   const setPatientAge = (val) => setFormData(p => ({ ...p, patientAge: val }));
   const setPatientGender = (val) => setFormData(p => ({ ...p, patientGender: val }));
   
   const setTreatmentDetails = (val) => setFormData(p => ({ ...p, treatmentPlan: val }));
+  const setTreatmentDetailsAr = (val) => setFormData(p => ({ ...p, treatmentPlanAr: val }));
   const setTreatmentSteps = (updaterOrValue) => {
     setFormData(p => ({
       ...p,
@@ -157,9 +237,13 @@ export default function EditCasePage({ params }) {
   };
 
   const setChiefComplaint = (val) => setFormData(p => ({ ...p, chiefComplaint: val }));
+  const setChiefComplaintAr = (val) => setFormData(p => ({ ...p, chiefComplaintAr: val }));
   const setDiagnosis = (val) => setFormData(p => ({ ...p, diagnosis: val }));
+  const setDiagnosisAr = (val) => setFormData(p => ({ ...p, diagnosisAr: val }));
   const setTreatmentPerformed = (val) => setFormData(p => ({ ...p, treatmentPerformed: val }));
+  const setTreatmentPerformedAr = (val) => setFormData(p => ({ ...p, treatmentPerformedAr: val }));
   const setTechniques = (val) => setFormData(p => ({ ...p, techniques: val }));
+  const setTechniquesAr = (val) => setFormData(p => ({ ...p, techniquesAr: val }));
   const setMaterials = (val) => setFormData(p => ({ ...p, materials: val }));
   
   const setDuration = (val) => setFormData(p => ({ ...p, duration: val }));
@@ -167,8 +251,11 @@ export default function EditCasePage({ params }) {
   const setDifficulty = (val) => setFormData(p => ({ ...p, difficulty: val }));
   
   const setChallenges = (val) => setFormData(p => ({ ...p, challenges: val }));
+  const setChallengesAr = (val) => setFormData(p => ({ ...p, challengesAr: val }));
   const setResult = (val) => setFormData(p => ({ ...p, result: val }));
+  const setResultAr = (val) => setFormData(p => ({ ...p, resultAr: val }));
   const setKeyTakeaways = (val) => setFormData(p => ({ ...p, keyTakeaways: val }));
+  const setKeyTakeawaysAr = (val) => setFormData(p => ({ ...p, keyTakeawaysAr: val }));
 
   const setXrayItems = (updaterOrValue) => {
     setFormData(p => ({
@@ -185,7 +272,27 @@ export default function EditCasePage({ params }) {
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           Back to Cases
         </Link>
-        <div className={styles.headerActions} style={{ display: 'flex', gap: '1rem' }}>
+        <div className={styles.headerActions} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <button 
+            type="button" 
+            className="btn-secondary" 
+            onClick={handleAutoTranslateAll}
+            disabled={isTranslatingAll}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem',
+              backgroundColor: 'rgba(var(--primary-rgb), 0.05)',
+              borderColor: 'rgba(var(--primary-rgb), 0.2)',
+              color: 'var(--primary-color)'
+            }}
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+            </svg>
+            {isTranslatingAll ? 'Translating...' : 'Auto-Translate All'}
+          </button>
+          <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--border-color)', margin: '0 0.25rem' }}></div>
           <button 
             type="button" 
             className="btn-secondary" 
@@ -214,72 +321,85 @@ export default function EditCasePage({ params }) {
 
       {/* Main Form Layout */}
       <form onSubmit={(e) => handleSave(e, false)}>
-        <BasicInfoSection 
-          title={formData.title} setTitle={setTitle}
-          categories={formData.categories} setCategories={setCategories}
-          description={formData.description} setDescription={setDescription}
-          featured={formData.featured} setFeatured={setFeatured}
-          patientAge={formData.patientAge} setPatientAge={setPatientAge}
-          patientGender={formData.patientGender} setPatientGender={setPatientGender}
-          styles={styles}
-        />
-
-        {/* Procedure Notes specific to Edit Page */}
-        <div className={styles.formSection}>
-          <div className={styles.formSectionTitle}>Internal Procedure Notes</div>
-          <div className={styles.formGroup}>
-            <label>Procedure Notes (Not visible to patients)</label>
-            <textarea 
-              value={formData.procedureNotes || ''} 
-              onChange={(e) => setFormData(p => ({ ...p, procedureNotes: e.target.value }))}
-              placeholder="Detail the materials used, internal technique, billing notes, etc."
-              style={{ width: '100%', padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-primary)', resize: 'vertical', minHeight: '120px' }}
-            />
-          </div>
+        <div className={styles.tabsContainer}>
+          <button type="button" onClick={() => setActiveTab('basic')} className={activeTab === 'basic' ? styles.tabActive : styles.tabInactive}>Basic Info</button>
+          <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
+          <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
+          <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+          <button type="button" onClick={() => setActiveTab('media')} className={activeTab === 'media' ? styles.tabActive : styles.tabInactive}>Media & Images</button>
         </div>
 
-        <ClinicalAssessmentSection 
-          chiefComplaint={formData.chiefComplaint} setChiefComplaint={setChiefComplaint}
-          diagnosis={formData.diagnosis} setDiagnosis={setDiagnosis}
-          treatmentPerformed={formData.treatmentPerformed} setTreatmentPerformed={setTreatmentPerformed}
-          techniques={formData.techniques} setTechniques={setTechniques}
-          materials={formData.materials} setMaterials={setMaterials}
-          styles={styles}
-        />
+        <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
+          <BasicInfoSection 
+            title={formData.title} setTitle={setTitle}
+            titleAr={formData.titleAr} setTitleAr={setTitleAr}
+            categories={formData.categories} setCategories={setCategories}
+            description={formData.description} setDescription={setDescription}
+            descriptionAr={formData.descriptionAr} setDescriptionAr={setDescriptionAr}
+            featured={formData.featured} setFeatured={setFeatured}
+            patientAge={formData.patientAge} setPatientAge={setPatientAge}
+            patientGender={formData.patientGender} setPatientGender={setPatientGender}
+            styles={styles}
+          />
+          <CaseDetailsSection 
+            duration={formData.duration} setDuration={setDuration}
+            year={formData.year} setYear={setYear}
+            difficulty={formData.difficulty} setDifficulty={setDifficulty}
+            styles={styles}
+          />
+        </div>
 
-        <TreatmentDetailsSection 
-          treatmentDetails={formData.treatmentPlan} setTreatmentDetails={setTreatmentDetails}
-          treatmentSteps={formData.steps} setTreatmentSteps={setTreatmentSteps}
-          styles={styles}
-        />
+        <div style={{ display: activeTab === 'clinical' ? 'block' : 'none' }}>
+          <ClinicalAssessmentSection 
+            chiefComplaint={formData.chiefComplaint} setChiefComplaint={setChiefComplaint}
+            chiefComplaintAr={formData.chiefComplaintAr} setChiefComplaintAr={setChiefComplaintAr}
+            diagnosis={formData.diagnosis} setDiagnosis={setDiagnosis}
+            diagnosisAr={formData.diagnosisAr} setDiagnosisAr={setDiagnosisAr}
+            treatmentPerformed={formData.treatmentPerformed} setTreatmentPerformed={setTreatmentPerformed}
+            treatmentPerformedAr={formData.treatmentPerformedAr} setTreatmentPerformedAr={setTreatmentPerformedAr}
+            techniques={formData.techniques} setTechniques={setTechniques}
+            techniquesAr={formData.techniquesAr} setTechniquesAr={setTechniquesAr}
+            materials={formData.materials} setMaterials={setMaterials}
+            styles={styles}
+          />
+        </div>
 
-        <ImageUploadSection 
-          beforePreview={beforePreview || formData.beforeImageUrl || formData.beforeImage} 
-          setBeforePreview={setBeforePreview} 
-          setBeforeImage={setBeforeImage}
-          afterPreview={afterPreview || formData.afterImageUrl || formData.afterImage} 
-          setAfterPreview={setAfterPreview} 
-          setAfterImage={setAfterImage}
-          galleryItems={formData.images} 
-          setGalleryItems={setGalleryItems}
-          xrayItems={formData.xrays}
-          setXrayItems={setXrayItems}
-          styles={styles}
-        />
+        <div style={{ display: activeTab === 'steps' ? 'block' : 'none' }}>
+          <TreatmentDetailsSection 
+            treatmentDetails={formData.treatmentPlan} setTreatmentDetails={setTreatmentDetails}
+            treatmentDetailsAr={formData.treatmentPlanAr} setTreatmentDetailsAr={setTreatmentDetailsAr}
+            treatmentSteps={formData.steps} setTreatmentSteps={setTreatmentSteps}
+            styles={styles}
+          />
+        </div>
 
-        <CaseDetailsSection 
-          duration={formData.duration} setDuration={setDuration}
-          year={formData.year} setYear={setYear}
-          difficulty={formData.difficulty} setDifficulty={setDifficulty}
-          styles={styles}
-        />
+        <div style={{ display: activeTab === 'outcome' ? 'block' : 'none' }}>
+          <OutcomeSection 
+            challenges={formData.challenges} setChallenges={setChallenges}
+            challengesAr={formData.challengesAr} setChallengesAr={setChallengesAr}
+            result={formData.result} setResult={setResult}
+            resultAr={formData.resultAr} setResultAr={setResultAr}
+            keyTakeaways={formData.keyTakeaways} setKeyTakeaways={setKeyTakeaways}
+            keyTakeawaysAr={formData.keyTakeawaysAr} setKeyTakeawaysAr={setKeyTakeawaysAr}
+            styles={styles}
+          />
+        </div>
 
-        <OutcomeSection 
-          challenges={formData.challenges} setChallenges={setChallenges}
-          result={formData.result} setResult={setResult}
-          keyTakeaways={formData.keyTakeaways} setKeyTakeaways={setKeyTakeaways}
-          styles={styles}
-        />
+        <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
+          <ImageUploadSection 
+            beforePreview={beforePreview || formData.beforeImageUrl || formData.beforeImage} 
+            setBeforePreview={setBeforePreview} 
+            setBeforeImage={setBeforeImage}
+            afterPreview={afterPreview || formData.afterImageUrl || formData.afterImage} 
+            setAfterPreview={setAfterPreview} 
+            setAfterImage={setAfterImage}
+            galleryItems={formData.images} 
+            setGalleryItems={setGalleryItems}
+            xrayItems={formData.xrays}
+            setXrayItems={setXrayItems}
+            styles={styles}
+          />
+        </div>
       </form>
     </div>
   );

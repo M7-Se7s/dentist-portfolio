@@ -4,18 +4,11 @@ import { useEffect, useState } from 'react';
 import { Link } from '@/i18n/routing';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import ImageSlider from '@/components/ImageSlider';
+import dynamic from 'next/dynamic';
+const ImageSlider = dynamic(() => import('@/components/ImageSlider'), { ssr: false });
 import { useTranslations, useLocale } from 'next-intl';
 import styles from './page.module.css';
 
-const CATEGORIES = [
-  "All",
-  "Composite",
-  "Endodontics",
-  "Prosthodontics",
-  "Esthetic",
-  "Posterior Restorations"
-];
 
 export default function CasesGallery() {
   const [cases, setCases] = useState([]);
@@ -25,6 +18,30 @@ export default function CasesGallery() {
 
   const t = useTranslations('Cases');
   const locale = useLocale();
+
+  const [dbCategories, setDbCategories] = useState([]);
+
+  useEffect(() => {
+    async function fetchCats() {
+      try {
+        const q = query(collection(db, "categories"), orderBy("nameEn", "asc"));
+        const snap = await getDocs(q);
+        const fetched = snap.docs.map(d => d.data());
+        setDbCategories([{ nameEn: "All", nameAr: "الكل" }, ...fetched]);
+      } catch(e) {
+        console.error("Failed to fetch categories:", e);
+        setDbCategories([
+          { nameEn: "All", nameAr: "الكل" },
+          { nameEn: "Composite", nameAr: "كومبوزيت" },
+          { nameEn: "Endodontics", nameAr: "علاج الجذور" },
+          { nameEn: "Prosthodontics", nameAr: "تركيبات أسنان" },
+          { nameEn: "Esthetic", nameAr: "تجميل الأسنان" },
+          { nameEn: "Posterior Restorations", nameAr: "حشوات خلفية" }
+        ]);
+      }
+    }
+    fetchCats();
+  }, []);
 
   useEffect(() => {
     async function fetchCases() {
@@ -77,16 +94,16 @@ export default function CasesGallery() {
       {/* 2. Filter Bar */}
       <div className="container">
         <div className={styles.filterBar}>
-          {CATEGORIES.map(category => (
+          {dbCategories.map(cat => (
             <button 
-              key={category}
-              className={`${styles.filterBtn} ${activeFilter === category ? styles.filterBtnActive : ''}`}
+              key={cat.nameEn}
+              className={`${styles.filterBtn} ${activeFilter === cat.nameEn ? styles.filterBtnActive : ''}`}
               onClick={() => {
-                setActiveFilter(category);
+                setActiveFilter(cat.nameEn);
                 setVisibleCount(9); // Reset pagination on filter change
               }}
             >
-              {t(`Categories.${category}`)}
+              {locale === 'ar' && cat.nameAr ? cat.nameAr : cat.nameEn}
             </button>
           ))}
         </div>

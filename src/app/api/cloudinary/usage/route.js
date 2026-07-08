@@ -7,7 +7,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function POST(request) {
+export async function GET(request) {
   try {
     // 1. Authenticate Request via Firebase REST API
     const authHeader = request.headers.get('authorization');
@@ -33,40 +33,18 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Forbidden: Insufficient privileges' }, { status: 403 });
     }
 
-    // 2. Process File Upload
-    const formData = await request.formData();
-    const file = formData.get('file');
-
-    if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
-    }
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Upload to Cloudinary using a Promise wrapper
-    const uploadResult = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'clinical_cases' },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      
-      uploadStream.end(buffer);
-    });
-
-    return NextResponse.json({ 
-      success: true, 
-      url: uploadResult.secure_url,
-      public_id: uploadResult.public_id 
+    // 2. Fetch Usage
+    const usage = await cloudinary.api.usage();
+    return NextResponse.json({
+      storage: usage.storage,
+      bandwidth: usage.bandwidth,
+      credits: usage.credits
     });
 
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
+    console.error('Cloudinary usage error:', error);
     return NextResponse.json({ 
-      error: 'Failed to upload image', 
+      error: 'Failed to fetch usage', 
       details: error?.message || error?.toString() || 'Unknown error'
     }, { status: 500 });
   }

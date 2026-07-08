@@ -1,12 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, use } from 'react';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import ImageSlider from '@/components/ImageSlider';
+import dynamic from 'next/dynamic';
+const ImageSlider = dynamic(() => import('@/components/ImageSlider'), { ssr: false });
 import Collapsible from '@/components/Collapsible';
 import { useTranslations, useLocale } from 'next-intl';
 import styles from './detail.module.css';
@@ -22,38 +23,62 @@ export default function CaseDetail({ params }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImages, setLightboxImages] = useState([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const previousFocusRef = React.useRef(null);
 
   const t = useTranslations('CaseDetail');
   const locale = useLocale();
 
   useEffect(() => {
+    let isMounted = true;
     async function fetchCase() {
       try {
         const docRef = doc(db, "cases", id);
         const docSnap = await getDoc(docRef);
 
+        if (!isMounted) return;
+
         if (docSnap.exists()) {
           setCaseData({ id: docSnap.id, ...docSnap.data() });
+
+          // Track case view (once per session per case)
+          if (typeof window !== 'undefined') {
+            const viewedKey = `viewed_case_${id}`;
+            if (!sessionStorage.getItem(viewedKey)) {
+              sessionStorage.setItem(viewedKey, 'true');
+              try {
+                await updateDoc(docRef, { views: increment(1) });
+              } catch (trackErr) {
+                console.error("Failed to track case view", trackErr);
+              }
+            }
+          }
         } else {
           setError(t('notFound'));
         }
       } catch (err) {
+        if (!isMounted) return;
         console.error("Error fetching case: ", err);
         setError(t('notFound'));
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     if (id) {
       fetchCase();
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [id, t]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!lightboxOpen) return;
-      if (e.key === 'Escape') setLightboxOpen(false);
+      if (e.key === 'Escape') closeLightbox();
       if (e.key === 'ArrowRight') setLightboxIndex(prev => (prev + 1) % lightboxImages.length);
       if (e.key === 'ArrowLeft') setLightboxIndex(prev => (prev - 1 + lightboxImages.length) % lightboxImages.length);
     };
@@ -61,7 +86,15 @@ export default function CaseDetail({ params }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxOpen, lightboxImages]);
 
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+    }
+  };
+
   const openLightbox = (imagesList, startIndex) => {
+    previousFocusRef.current = document.activeElement;
     const urls = imagesList.map(img => typeof img === 'string' ? img : (img.url || ''));
     setLightboxImages(urls);
     setLightboxIndex(startIndex);
@@ -84,6 +117,14 @@ export default function CaseDetail({ params }) {
   const title = locale === 'ar' ? (caseData.titleAr || caseData.title) : caseData.title;
   const description = locale === 'ar' ? (caseData.descriptionAr || caseData.description) : caseData.description;
   const treatmentPlan = locale === 'ar' ? (caseData.treatmentPlanAr || caseData.treatmentPlan || caseData.treatmentDetails) : (caseData.treatmentPlan || caseData.treatmentDetails);
+  
+  const chiefComplaint = locale === 'ar' ? (caseData.chiefComplaintAr || caseData.chiefComplaint) : caseData.chiefComplaint;
+  const diagnosis = locale === 'ar' ? (caseData.diagnosisAr || caseData.diagnosis) : caseData.diagnosis;
+  const treatmentPerformed = locale === 'ar' ? (caseData.treatmentPerformedAr || caseData.treatmentPerformed) : caseData.treatmentPerformed;
+  const techniques = locale === 'ar' ? (caseData.techniquesAr || caseData.techniques) : caseData.techniques;
+  const challenges = locale === 'ar' ? (caseData.challengesAr || caseData.challenges) : caseData.challenges;
+  const result = locale === 'ar' ? (caseData.resultAr || caseData.result) : caseData.result;
+  const keyTakeaways = locale === 'ar' ? (caseData.keyTakeawaysAr || caseData.keyTakeaways) : caseData.keyTakeaways;
 
   return (
     <main>
@@ -170,8 +211,8 @@ export default function CaseDetail({ params }) {
                   <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
                     <span className={styles.summaryLabel} style={{ display: 'block', marginBottom: '0.75rem' }}>Materials Used</span>
                     <div className={styles.materialsList}>
-                      {caseData.materials.map((mat, i) => (
-                        <span key={i} className={styles.materialTag}>{mat}</span>
+                      {caseData.materials.map((mat) => (
+                        <span key={mat} className={styles.materialTag}>{mat}</span>
                       ))}
                     </div>
                   </div>
@@ -181,62 +222,62 @@ export default function CaseDetail({ params }) {
           </div>
 
           {/* Clinical Story (Narrative) */}
-          {(caseData.diagnosis || caseData.treatmentPerformed || caseData.chiefComplaint || caseData.techniques || caseData.challenges || caseData.result || caseData.keyTakeaways) && (
+          {(diagnosis || treatmentPerformed || chiefComplaint || techniques || challenges || result || keyTakeaways) && (
             <div className={styles.clinicalStory}>
               <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>Clinical Narrative</h3>}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                {caseData.chiefComplaint && (
+                {chiefComplaint && (
                   <div className={styles.storyBlock}>
                     <Collapsible titleElement={<h4 style={{margin: 0}}>Chief Complaint</h4>}>
-                      <p style={{marginTop: '1rem'}}>{caseData.chiefComplaint}</p>
+                      <p style={{marginTop: '1rem'}}>{chiefComplaint}</p>
                     </Collapsible>
                   </div>
                 )}
                 
-                {caseData.diagnosis && (
+                {diagnosis && (
                   <div className={styles.storyBlock}>
                     <Collapsible titleElement={<h4 style={{margin: 0}}>Diagnosis</h4>}>
-                      <p style={{marginTop: '1rem'}}>{caseData.diagnosis}</p>
+                      <p style={{marginTop: '1rem'}}>{diagnosis}</p>
                     </Collapsible>
                   </div>
                 )}
                 
-                {caseData.treatmentPerformed && (
+                {treatmentPerformed && (
                   <div className={styles.storyBlock}>
                     <Collapsible titleElement={<h4 style={{margin: 0}}>Treatment Performed</h4>}>
-                      <p style={{marginTop: '1rem'}}>{caseData.treatmentPerformed}</p>
+                      <p style={{marginTop: '1rem'}}>{treatmentPerformed}</p>
                     </Collapsible>
                   </div>
                 )}
                 
-                {caseData.techniques && (
+                {techniques && (
                   <div className={styles.storyBlock}>
                     <Collapsible titleElement={<h4 style={{margin: 0}}>Techniques & Workflow</h4>}>
-                      <p style={{marginTop: '1rem'}}>{caseData.techniques}</p>
+                      <p style={{marginTop: '1rem'}}>{techniques}</p>
                     </Collapsible>
                   </div>
                 )}
 
-                {caseData.challenges && (
+                {challenges && (
                   <div className={styles.storyBlock}>
                     <Collapsible titleElement={<h4 style={{margin: 0}}>Challenges</h4>}>
-                      <p style={{marginTop: '1rem'}}>{caseData.challenges}</p>
+                      <p style={{marginTop: '1rem'}}>{challenges}</p>
                     </Collapsible>
                   </div>
                 )}
 
-                {caseData.result && (
+                {result && (
                   <div className={styles.storyBlock}>
                     <Collapsible titleElement={<h4 style={{margin: 0}}>Outcome</h4>}>
-                      <p style={{marginTop: '1rem'}}>{caseData.result}</p>
+                      <p style={{marginTop: '1rem'}}>{result}</p>
                     </Collapsible>
                   </div>
                 )}
 
-                {caseData.keyTakeaways && (
+                {keyTakeaways && (
                   <div className={styles.storyBlock}>
                     <Collapsible titleElement={<h4 style={{margin: 0}}>Key Takeaways</h4>}>
-                      <p style={{marginTop: '1rem'}}>{caseData.keyTakeaways}</p>
+                      <p style={{marginTop: '1rem'}}>{keyTakeaways}</p>
                     </Collapsible>
                   </div>
                 )}
@@ -360,7 +401,7 @@ export default function CaseDetail({ params }) {
         <div 
           className={styles.lightboxOverlay}
           onKeyDown={(e) => {
-            if (e.key === 'Escape') setLightboxOpen(false);
+            if (e.key === 'Escape') closeLightbox();
           }}
           tabIndex={-1}
           ref={(el) => { if (el) el.focus(); }}
@@ -368,7 +409,7 @@ export default function CaseDetail({ params }) {
           {/* Close Button */}
           <button 
             autoFocus
-            onClick={() => setLightboxOpen(false)}
+            onClick={closeLightbox}
             className={styles.lightboxCloseBtn}
             aria-label="Close Lightbox"
           >&times;</button>

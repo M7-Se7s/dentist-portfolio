@@ -46,8 +46,6 @@ export default function ProfilePage() {
     fetchProfile();
   }, [locale, tProfile]);
 
-  if (loading) return <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Loading Profile...</div>;
-
   return (
     <main style={{backgroundColor: '#F8FAFC', minHeight: 'calc(100vh - 80px)', padding: '5rem 0'}}>
       <div className="container">
@@ -67,7 +65,7 @@ export default function ProfilePage() {
               <h1>{tProfile('title')}</h1>
               
               {/* Render biography paragraphs */}
-              {profile?.biography?.split('\n').map((paragraph, index) => {
+              {(profile?.biography || tProfile('biography')).split('\n').map((paragraph, index) => {
                 if (!paragraph.trim()) return null; // skip empty lines
                 return (
                   <p key={index} className={styles.bioParagraph}>
@@ -77,7 +75,7 @@ export default function ProfilePage() {
               })}
 
               <div className={styles.philosophyQuote}>
-                &quot;{profile?.quote}&quot;
+                &quot;{profile?.quote || tProfile('quote')}&quot;
               </div>
               
             </div>

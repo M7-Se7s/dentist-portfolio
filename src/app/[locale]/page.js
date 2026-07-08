@@ -3,14 +3,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from '../../i18n/routing';
 import Image from 'next/image';
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, setDoc, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import ImageSlider from '@/components/ImageSlider';
+import dynamic from 'next/dynamic';
 import styles from './page.module.css';
 import { useTranslations, useLocale } from 'next-intl';
 
+const ImageSlider = dynamic(() => import('@/components/ImageSlider'), { ssr: false });
+const DownloadCvButton = dynamic(() => import('@/components/DownloadCvButton'), { ssr: false });
+
 export default function Home() {
   const [profile, setProfile] = useState(null);
+  const [cvData, setCvData] = useState(null);
   const [recentCases, setRecentCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const locale = useLocale();
@@ -30,6 +34,13 @@ export default function Home() {
           setProfile(profileSnap.data());
         }
 
+        // Fetch CV for the PDF URLs
+        const cvRef = doc(db, "content", "cv");
+        const cvSnap = await getDoc(cvRef);
+        if (cvSnap.exists()) {
+          setCvData(cvSnap.data());
+        }
+
         // Fetch Featured Cases (limit to 3 for homepage)
         const casesSnapshot = await getDocs(collection(db, "cases"));
         let casesList = casesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
@@ -37,6 +48,17 @@ export default function Home() {
         casesList.sort((a, b) => b.createdAt - a.createdAt);
 
         setRecentCases(casesList.slice(0, 3));
+
+        // Track profile visit (only once per session)
+        if (typeof window !== 'undefined' && !sessionStorage.getItem('hasVisitedProfile')) {
+          sessionStorage.setItem('hasVisitedProfile', 'true');
+          try {
+            const analyticsRef = doc(db, "analytics", "visits");
+            await setDoc(analyticsRef, { count: increment(1) }, { merge: true });
+          } catch (analyticsError) {
+            console.error("Error tracking visit:", analyticsError);
+          }
+        }
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -47,10 +69,6 @@ export default function Home() {
     
     fetchData();
   }, []);
-
-  if (loading) {
-    return <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Loading Portfolio...</div>;
-  }
 
   return (
     <main>
@@ -70,9 +88,12 @@ export default function Home() {
               <Link href="/cases" className="btn-primary">
                 {tHero('viewWork')}
               </Link>
-              <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="btn-secondary">
-                {tHero('downloadCV')}
-              </a>
+              <DownloadCvButton 
+                pdfUrl={cvData?.pdfUrl} 
+                pdfUrlAr={cvData?.pdfUrlAr} 
+                className="btn-secondary" 
+                label={tHero('downloadCV')} 
+              />
             </div>
           </div>
           <div className={styles.heroImageWrapper}>
@@ -152,9 +173,13 @@ export default function Home() {
             {tContact('title')}
           </h2>
           <div style={{display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap'}}>
-            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="btn-primary" style={{backgroundColor: 'var(--white)', color: 'var(--primary-color)'}}>
-              {tContact('downloadCV')}
-            </a>
+            <DownloadCvButton 
+              pdfUrl={cvData?.pdfUrl} 
+              pdfUrlAr={cvData?.pdfUrlAr} 
+              className="btn-primary" 
+              style={{backgroundColor: 'var(--white)', color: 'var(--primary-color)'}}
+              label={tContact('downloadCV')} 
+            />
             <a href="mailto:avatarmohammedy@gmail.com" className="btn-primary" style={{backgroundColor: 'var(--secondary-color)', color: 'var(--white)'}}>
               {tContact('contactMe')}
             </a>

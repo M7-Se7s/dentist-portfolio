@@ -35,7 +35,7 @@
 .hero {
   background: linear-gradient(135deg, rgba(14, 94, 122, 0.05) 0%, rgba(255, 255, 255, 1) 100%);
   padding: 4rem 0 0 0; /* No bottom padding to let the image sit on the baseline */
-  overflow: hidden;
+  overflow: visible;
 }
 
 .heroContainer {

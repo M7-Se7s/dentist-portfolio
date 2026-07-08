@@ -41,7 +41,7 @@ export default function Navbar() {
       <nav className={`${styles.navbar} glass animate-fadeIn`}>
         <div className={styles.navContainer}>
           <Link href="/" className={styles.brand} onClick={() => setMenuOpen(false)}>
-            <Image src="/logo.png?v=2" alt="Dr. Mohamed Shaaban Logo" className={styles.logoImage} width={200} height={60} unoptimized={true} />
+            <Image src="/logo.png" alt="Dr. Mohamed Shaaban Logo" className={styles.logoImage} width={200} height={60} />
           </Link>
 
           <div className={`${styles.navLinks} ${menuOpen ? styles.navLinksOpen : ''}`}>
