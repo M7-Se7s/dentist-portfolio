@@ -129,6 +129,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   transition: var(--transition-fast);
 }
 
@@ -137,7 +138,11 @@
   color: var(--primary-color);
 }
 
-.mobileLangContainer {
+.drawerHeader {
+  display: none;
+}
+
+.navIcon {
   display: none;
 }
 
@@ -157,6 +162,7 @@
 
   .hamburger {
     display: block;
+    position: relative;
     z-index: 1001;
     /* Keep above overlay and drawer */
   }
@@ -166,27 +172,76 @@
     top: 0;
     right: 0;
     width: 250px;
-    height: 100vh;
+    height: 100dvh;
     background-color: var(--white);
     flex-direction: column;
-    padding: 5rem 0 0 0;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 0;
     gap: 0;
     box-shadow: -4px 0 15px rgba(0, 0, 0, 0.05);
     transform: translateX(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
+    z-index: 1002;
+    overscroll-behavior: none;
+    overflow-y: auto;
   }
 
   .navLinksOpen {
     transform: translateX(0);
   }
 
-  .navLink {
-    padding: 1.2rem 2rem;
-    border-bottom: 1px solid #f1f5f9;
-    width: 100%;
+  .drawerHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.5rem;
+  }
+
+  .drawerName {
+    font-family: var(--font-heading);
+    font-weight: 700;
     font-size: 1.1rem;
+    color: var(--primary-color);
+  }
+
+  .closeDrawerBtn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast);
+  }
+
+  .closeDrawerBtn:hover {
+    color: var(--primary-color);
+  }
+
+  .navLink {
+    padding: 1rem 1.5rem;
+    width: 100%;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: none;
+  }
+
+  .navIcon {
     display: block;
+    opacity: 0.7;
+    transition: opacity var(--transition-fast);
+  }
+
+  .navLink.active .navIcon,
+  .navLink:hover .navIcon {
+    opacity: 1;
   }
 
   .navLink.active::after {
@@ -196,36 +251,11 @@
   .navLink.active {
     background-color: var(--primary-light);
     color: var(--primary-color);
+    border-left: 3px solid var(--primary-color);
   }
 
   .desktopLangBtn {
-    display: none;
-  }
-
-  .mobileLangContainer {
-    display: flex;
-    margin-top: auto;
-    padding: 2rem;
-    border-top: 1px solid var(--border);
-    justify-content: flex-start;
-  }
-
-  .mobileLangBtn {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: var(--font-primary);
-    transition: color var(--transition-fast);
-  }
-
-  .mobileLangBtn:active {
-    color: var(--primary-color);
+    padding: 0.3rem 0.6rem;
   }
 }
 
@@ -241,6 +271,8 @@
   pointer-events: none;
   transition: opacity 0.3s ease;
   backdrop-filter: blur(2px);
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 .overlayOpen {

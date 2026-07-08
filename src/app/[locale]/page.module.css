@@ -88,8 +88,25 @@
 }
 
 .heroActions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  max-width: 500px;
   gap: 1rem;
+}
+
+.heroActions > :first-child {
+  grid-column: span 2;
+}
+
+.heroActions > * {
+  width: 100%;
+  height: 100%;
+}
+
+.heroActions button,
+.heroActions a:not(:first-child) {
+  white-space: nowrap;
 }
 
 .heroImageWrapper {
@@ -180,7 +197,7 @@
   }
   
   .heroActions {
-    justify-content: center;
+    margin: 0 auto;
   }
   
   .heroImageWrapper {
@@ -211,13 +228,15 @@
   }
 
   .heroActions {
-    flex-direction: column;
     width: 100%;
-    gap: 1rem;
+    max-width: 100%;
   }
 
-  .heroActions a {
-    width: 100%;
+  .heroActions button,
+  .heroActions a:not(:first-child) {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    font-size: 0.9rem;
   }
 
   .heroImageWrapper {

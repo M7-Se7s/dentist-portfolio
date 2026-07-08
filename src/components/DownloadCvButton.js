@@ -42,11 +42,11 @@ export default function DownloadCvButton({ pdfUrl, pdfUrlAr, className, style, l
 
   // If both exist, show the dropdown button
   return (
-    <div style={{ position: 'relative', display: 'inline-block', zIndex: 50 }} ref={dropdownRef}>
+    <div style={{ position: 'relative', display: 'inline-flex', flexDirection: 'column', zIndex: 50, width: '100%', height: '100%' }} ref={dropdownRef}>
       <button 
         type="button"
         className={className}
-        style={{ ...style, display: 'inline-flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
+        style={{ ...style, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', gap: '0.5rem', cursor: 'pointer' }}
         onClick={() => setIsOpen(!isOpen)}
         aria-haspopup="true"
         aria-expanded={isOpen}
@@ -94,7 +94,7 @@ export default function DownloadCvButton({ pdfUrl, pdfUrlAr, className, style, l
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
             onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
-            <span style={{ fontSize: '1.2rem' }}>🇬🇧</span> English Version
+            English Version
           </a>
           <a 
             href={pdfUrlAr} 
@@ -114,7 +114,7 @@ export default function DownloadCvButton({ pdfUrl, pdfUrlAr, className, style, l
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
             onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
-            <span style={{ fontSize: '1.2rem' }}>🇸🇦</span> Arabic Version
+            Arabic Version
           </a>
         </div>
       )}

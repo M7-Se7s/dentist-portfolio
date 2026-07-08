@@ -15,6 +15,7 @@ const DownloadCvButton = dynamic(() => import('@/components/DownloadCvButton'), 
 export default function Home() {
   const [profile, setProfile] = useState(null);
   const [cvData, setCvData] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [recentCases, setRecentCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const locale = useLocale();
@@ -41,11 +42,28 @@ export default function Home() {
           setCvData(cvSnap.data());
         }
 
+        // Fetch Settings for Contact Info
+        const settingsRef = doc(db, "settings", "global");
+        const settingsSnap = await getDoc(settingsRef);
+        if (settingsSnap.exists()) {
+          setSettings(settingsSnap.data());
+        }
+
         // Fetch Featured Cases (limit to 3 for homepage)
         const casesSnapshot = await getDocs(collection(db, "cases"));
         let casesList = casesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
                                           .filter(c => c.isDraft !== true && c.featured === true);
-        casesList.sort((a, b) => b.createdAt - a.createdAt);
+        casesList.sort((a, b) => {
+          let dateA = 0;
+          let dateB = 0;
+          if (a.createdAt) {
+            dateA = typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(a.createdAt).getTime();
+          }
+          if (b.createdAt) {
+            dateB = typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(b.createdAt).getTime();
+          }
+          return dateB - dateA;
+        });
 
         setRecentCases(casesList.slice(0, 3));
 
@@ -87,6 +105,9 @@ export default function Home() {
             <div className={`${styles.heroActions} animate-slideUp stagger-4`}>
               <Link href="/cases" className="btn-primary">
                 {tHero('viewWork')}
+              </Link>
+              <Link href="/cv" className="btn-secondary">
+                {tHero('viewCV')}
               </Link>
               <DownloadCvButton 
                 pdfUrl={cvData?.pdfUrl} 
@@ -173,16 +194,21 @@ export default function Home() {
             {tContact('title')}
           </h2>
           <div style={{display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap'}}>
-            <DownloadCvButton 
-              pdfUrl={cvData?.pdfUrl} 
-              pdfUrlAr={cvData?.pdfUrlAr} 
-              className="btn-primary" 
-              style={{backgroundColor: 'var(--white)', color: 'var(--primary-color)'}}
-              label={tContact('downloadCV')} 
-            />
-            <a href="mailto:avatarmohammedy@gmail.com" className="btn-primary" style={{backgroundColor: 'var(--secondary-color)', color: 'var(--white)'}}>
-              {tContact('contactMe')}
-            </a>
+
+            {(() => {
+              const waNumber = settings?.whatsapp || settings?.phone || '01553911135';
+              return (
+                <a 
+                  href={`https://wa.me/${waNumber.replace(/[^0-9]/g, '')}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn-primary" 
+                  style={{backgroundColor: 'var(--secondary-color)', color: 'var(--white)'}}
+                >
+                  {tContact('contactMe')}
+                </a>
+              );
+            })()}
           </div>
         </div>
       </section>

@@ -26,7 +26,17 @@ export default function DashboardPage() {
           ...doc.data()
         }));
         // Sort by latest first
-        casesList.sort((a, b) => b.createdAt - a.createdAt);
+        casesList.sort((a, b) => {
+          let dateA = 0;
+          let dateB = 0;
+          if (a.createdAt) {
+            dateA = typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(a.createdAt).getTime();
+          }
+          if (b.createdAt) {
+            dateB = typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(b.createdAt).getTime();
+          }
+          return dateB - dateA;
+        });
         setCases(casesList);
 
         // Fetch Profile Views
