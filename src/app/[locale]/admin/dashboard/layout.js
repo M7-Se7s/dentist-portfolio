@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from '@/i18n/routing';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onIdTokenChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Link } from '@/i18n/routing';
 import styles from '../admin.module.css';
@@ -18,10 +18,13 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onIdTokenChanged(auth, async (user) => {
       if (!user) {
+        document.cookie = "admin_session=; path=/; max-age=0";
         router.push('/admin/login');
       } else {
+        const idToken = await user.getIdToken();
+        document.cookie = `admin_session=${idToken}; path=/; max-age=86400; Secure; SameSite=Strict`;
         setLoading(false);
       }
     });

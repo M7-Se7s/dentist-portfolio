@@ -188,19 +188,19 @@ export default function CaseDetail({ params }) {
                   <div className={styles.summaryGrid}>
                   {caseData.duration && (
                     <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Duration</span>
+                      <span className={styles.summaryLabel}>{t('duration')}</span>
                       <span className={styles.summaryValue}>{caseData.duration}</span>
                     </div>
                   )}
                   {caseData.year && (
                     <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Year</span>
+                      <span className={styles.summaryLabel}>{t('year')}</span>
                       <span className={styles.summaryValue}>{caseData.year}</span>
                     </div>
                   )}
                   {caseData.difficulty && (
                     <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Difficulty</span>
+                      <span className={styles.summaryLabel}>{t('difficulty')}</span>
                       <span className={styles.summaryValue}>{caseData.difficulty}</span>
                     </div>
                   )}
@@ -209,7 +209,7 @@ export default function CaseDetail({ params }) {
                 
                 {caseData.materials && caseData.materials.length > 0 && (
                   <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
-                    <span className={styles.summaryLabel} style={{ display: 'block', marginBottom: '0.75rem' }}>Materials Used</span>
+                    <span className={styles.summaryLabel} style={{ display: 'block', marginBottom: '0.75rem' }}>{t('materialsUsed')}</span>
                     <div className={styles.materialsList}>
                       {caseData.materials.map((mat) => (
                         <span key={mat} className={styles.materialTag}>{mat}</span>
@@ -224,61 +224,54 @@ export default function CaseDetail({ params }) {
           {/* Clinical Story (Narrative) */}
           {(diagnosis || treatmentPerformed || chiefComplaint || techniques || challenges || result || keyTakeaways) && (
             <div className={styles.clinicalStory}>
-              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>Clinical Narrative</h3>}>
+              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('clinicalNarrative')}</h3>}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 {chiefComplaint && (
                   <div className={styles.storyBlock}>
-                    <Collapsible titleElement={<h4 style={{margin: 0}}>Chief Complaint</h4>}>
-                      <p style={{marginTop: '1rem'}}>{chiefComplaint}</p>
-                    </Collapsible>
+                    <h4 style={{margin: 0}}>{t('chiefComplaint')}</h4>
+                    <p style={{marginTop: '1rem'}}>{chiefComplaint}</p>
                   </div>
                 )}
                 
                 {diagnosis && (
                   <div className={styles.storyBlock}>
-                    <Collapsible titleElement={<h4 style={{margin: 0}}>Diagnosis</h4>}>
-                      <p style={{marginTop: '1rem'}}>{diagnosis}</p>
-                    </Collapsible>
+                    <h4 style={{margin: 0}}>{t('diagnosis')}</h4>
+                    <p style={{marginTop: '1rem'}}>{diagnosis}</p>
                   </div>
                 )}
                 
                 {treatmentPerformed && (
                   <div className={styles.storyBlock}>
-                    <Collapsible titleElement={<h4 style={{margin: 0}}>Treatment Performed</h4>}>
-                      <p style={{marginTop: '1rem'}}>{treatmentPerformed}</p>
-                    </Collapsible>
+                    <h4 style={{margin: 0}}>{t('treatmentPerformed')}</h4>
+                    <p style={{marginTop: '1rem'}}>{treatmentPerformed}</p>
                   </div>
                 )}
                 
                 {techniques && (
                   <div className={styles.storyBlock}>
-                    <Collapsible titleElement={<h4 style={{margin: 0}}>Techniques & Workflow</h4>}>
-                      <p style={{marginTop: '1rem'}}>{techniques}</p>
-                    </Collapsible>
+                    <h4 style={{margin: 0}}>{t('techniquesWorkflow')}</h4>
+                    <p style={{marginTop: '1rem'}}>{techniques}</p>
                   </div>
                 )}
 
                 {challenges && (
                   <div className={styles.storyBlock}>
-                    <Collapsible titleElement={<h4 style={{margin: 0}}>Challenges</h4>}>
-                      <p style={{marginTop: '1rem'}}>{challenges}</p>
-                    </Collapsible>
+                    <h4 style={{margin: 0}}>{t('challenges')}</h4>
+                    <p style={{marginTop: '1rem'}}>{challenges}</p>
                   </div>
                 )}
 
                 {result && (
                   <div className={styles.storyBlock}>
-                    <Collapsible titleElement={<h4 style={{margin: 0}}>Outcome</h4>}>
-                      <p style={{marginTop: '1rem'}}>{result}</p>
-                    </Collapsible>
+                    <h4 style={{margin: 0}}>{t('outcome')}</h4>
+                    <p style={{marginTop: '1rem'}}>{result}</p>
                   </div>
                 )}
 
                 {keyTakeaways && (
                   <div className={styles.storyBlock}>
-                    <Collapsible titleElement={<h4 style={{margin: 0}}>Key Takeaways</h4>}>
-                      <p style={{marginTop: '1rem'}}>{keyTakeaways}</p>
-                    </Collapsible>
+                    <h4 style={{margin: 0}}>{t('keyTakeaways')}</h4>
+                    <p style={{marginTop: '1rem'}}>{keyTakeaways}</p>
                   </div>
                 )}
               </div>
@@ -307,33 +300,30 @@ export default function CaseDetail({ params }) {
                   const stepDesc = locale === 'ar' ? (step.descriptionAr || step.description) : step.description;
                   return (
                   <div key={index} className={styles.stepCard}>
-                    <Collapsible titleElement={
-                      <h4 className={styles.stepTitle} style={{margin: 0}}>
-                        {t('step')} {index + 1}: {stepTitle}
-                      </h4>
-                    }>
-                      <div style={{ paddingTop: '1rem' }}>
-                        {stepDesc && (
-                          <p className={styles.stepDesc}>{stepDesc}</p>
-                        )}
-                        
-                        {step.images && step.images.length > 0 && (
-                          <div className={styles.stepImageGrid}>
-                            {step.images.map((imgUrl, imgIdx) => (
-                              <div key={imgIdx} className={styles.gallerySquare} onClick={() => openLightbox(step.images, imgIdx)}>
-                                <Image 
-                                  src={imgUrl} 
-                                  alt={`${stepTitle} image ${imgIdx + 1}`} 
-                                  fill
-                                  sizes="(max-width: 768px) 50vw, 33vw"
-                                  className={styles.galleryImage}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </Collapsible>
+                    <h4 className={styles.stepTitle} style={{margin: 0, marginBottom: '1rem'}}>
+                      {t('step')} {index + 1}: {stepTitle}
+                    </h4>
+                    <div>
+                      {stepDesc && (
+                        <p className={styles.stepDesc}>{stepDesc}</p>
+                      )}
+                      
+                      {step.images && step.images.length > 0 && (
+                        <div className={styles.stepImageGrid}>
+                          {step.images.map((imgUrl, imgIdx) => (
+                            <div key={imgIdx} className={styles.gallerySquare} onClick={() => openLightbox(step.images, imgIdx)}>
+                              <Image 
+                                src={imgUrl} 
+                                alt={`${stepTitle} image ${imgIdx + 1}`} 
+                                fill
+                                sizes="(max-width: 768px) 50vw, 33vw"
+                                className={styles.galleryImage}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )})}
               </div>
@@ -344,7 +334,7 @@ export default function CaseDetail({ params }) {
           {/* Gallery Section */}
           {(caseData.images || caseData.galleryImages) && (caseData.images || caseData.galleryImages).length > 0 && (
             <div className={styles.gallerySection}>
-              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>Procedure Gallery</h3>}>
+              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('procedureGallery')}</h3>}>
               <div className={styles.galleryGrid}>
                 {(caseData.images || caseData.galleryImages).map((img, idx) => {
                   const imagesArray = caseData.images || caseData.galleryImages;
@@ -368,7 +358,7 @@ export default function CaseDetail({ params }) {
           {/* X-Rays Section */}
           {caseData.xrays && caseData.xrays.length > 0 && (
             <div className={styles.gallerySection}>
-              <h3 className={styles.sectionHeading}>X-Rays & Radiographs</h3>
+              <h3 className={styles.sectionHeading}>{t('xraysRadiographs')}</h3>
               <div className={styles.galleryGrid}>
                 {caseData.xrays.map((img, idx) => {
                   return (

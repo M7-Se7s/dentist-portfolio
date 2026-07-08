@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from '@/i18n/routing';
 import styles from '../../admin.module.css';
 import { casesService } from '@/lib/services/casesService';
@@ -9,6 +9,9 @@ import { useUploads } from '@/lib/contexts/UploadContext';
 export default function CaseManagementPage() {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+  const filterDropdownRef = useRef(null);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [caseToDelete, setCaseToDelete] = useState(null);
@@ -34,7 +37,19 @@ export default function CaseManagementPage() {
     // Listen for custom event from UploadContext to refresh list when an upload succeeds
     const handleCaseUploaded = () => loadCases();
     window.addEventListener('case_uploaded', handleCaseUploaded);
-    return () => window.removeEventListener('case_uploaded', handleCaseUploaded);
+
+    // Click outside listener for filter dropdown
+    const handleClickOutside = (event) => {
+      if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target)) {
+        setFilterDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener('case_uploaded', handleCaseUploaded);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const promptDelete = (caseItem) => {
@@ -60,6 +75,12 @@ export default function CaseManagementPage() {
     }
   };
 
+  const filteredCases = cases.filter(c => {
+    if (statusFilter === 'Published') return !c.isDraft;
+    if (statusFilter === 'Draft') return c.isDraft;
+    return true;
+  });
+
   return (
     <>
       <div className="animate-slideUp stagger-1">
@@ -74,6 +95,45 @@ export default function CaseManagementPage() {
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
             <span className={styles.newCaseBtnText}>Add New Case</span>
           </Link>
+        </div>
+
+        {/* Status Filter */}
+        <div className={styles.statusFilterContainer}>
+          <label className={styles.statusFilterLabel}>Filter Status:</label>
+          <div className={styles.customStatusDropdownWrapper} ref={filterDropdownRef}>
+            <button 
+              type="button"
+              className={styles.statusFilterSelect}
+              onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
+            >
+              <span className={styles.statusSelectedText}>
+                {statusFilter === 'All' ? 'All Cases' : statusFilter === 'Published' ? 'Published' : 'Drafts'}
+              </span>
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ transform: filterDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease', position: 'absolute', right: '1rem', top: '50%', marginTop: '-8px' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+
+            {filterDropdownOpen && (
+              <div className={styles.statusDropdownMenu}>
+                {['All', 'Published', 'Draft'].map(option => (
+                  <div 
+                    key={option}
+                    className={`${styles.statusDropdownItem} ${statusFilter === option ? styles.statusDropdownItemActive : ''}`}
+                    onClick={() => {
+                      setStatusFilter(option);
+                      setFilterDropdownOpen(false);
+                    }}
+                  >
+                    <div className={styles.statusRadioBtn}>
+                      {statusFilter === option && <div className={styles.statusRadioInner}></div>}
+                    </div>
+                    <span>{option === 'All' ? 'All Cases' : option === 'Published' ? 'Published' : 'Drafts'}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
       <div className={styles.caseCardGrid}>
@@ -121,12 +181,12 @@ export default function CaseManagementPage() {
           <div style={{gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--text-muted)'}}>
             Loading cases...
           </div>
-        ) : cases.length === 0 && activeUploads.length === 0 ? (
+        ) : filteredCases.length === 0 && activeUploads.length === 0 ? (
           <div style={{gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--text-muted)'}}>
-            No cases found. Start by adding a new case!
+            No cases found matching your criteria.
           </div>
         ) : (
-          cases.map(caseItem => {
+          filteredCases.map(caseItem => {
             const date = new Date(caseItem.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             return (
               <div key={caseItem.id} className={styles.caseCardItem}>

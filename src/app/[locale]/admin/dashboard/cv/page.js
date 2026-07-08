@@ -15,6 +15,8 @@ import SkillsTextEditor from './components/SkillsTextEditor';
 import PdfUploadSection from './components/PdfUploadSection';
 
 export default function CVEditorPage() {
+  const [activeTab, setActiveTab] = useState('basic');
+
   const [basicInfo, setBasicInfo] = useState({
     name: 'Dr. Mohamed El Sayed Mohamed Shabaan',
     title: 'General Dentist | SCFHS Professionally Classified',
@@ -333,41 +335,55 @@ export default function CVEditorPage() {
         </div>
       )}
 
-      <PdfUploadSection 
-        pdfUrl={pdfUrl} 
-        setPdfUrl={setPdfUrl}
-        pdfUrlAr={pdfUrlAr} 
-        setPdfUrlAr={setPdfUrlAr}
-        styles={styles} 
-      />
-      
-      <BasicInfoEditor 
-        basicInfo={basicInfo} setBasicInfo={setBasicInfo} 
-        basicInfoAr={basicInfoAr} setBasicInfoAr={setBasicInfoAr} 
-        summary={summary} setSummary={setSummary} 
-        summaryAr={summaryAr} setSummaryAr={setSummaryAr} 
-        styles={styles} 
-      />
-      
-      <SkillsTextEditor 
-        coreCompetencies={coreCompetencies} setCoreCompetencies={setCoreCompetencies}
-        coreCompetenciesAr={coreCompetenciesAr} setCoreCompetenciesAr={setCoreCompetenciesAr}
-        licensure={licensure} setLicensure={setLicensure}
-        licensureAr={licensureAr} setLicensureAr={setLicensureAr}
-        clinicalSkills={clinicalSkills} setClinicalSkills={setClinicalSkills}
-        clinicalSkillsAr={clinicalSkillsAr} setClinicalSkillsAr={setClinicalSkillsAr}
-        courses={courses} setCourses={setCourses}
-        coursesAr={coursesAr} setCoursesAr={setCoursesAr}
-        languages={languages} setLanguages={setLanguages}
-        languagesAr={languagesAr} setLanguagesAr={setLanguagesAr}
-        references={references} setReferences={setReferences}
-        referencesAr={referencesAr} setReferencesAr={setReferencesAr}
-        styles={styles}
-      />
-      
-      <EducationEditor education={education} setEducation={setEducation} styles={styles} />
-      
-      <ExperienceEditor experiences={experiences} setExperiences={setExperiences} styles={styles} />
+      <div className={styles.tabsContainer}>
+        <button type="button" onClick={() => setActiveTab('basic')} className={activeTab === 'basic' ? styles.tabActive : styles.tabInactive}>Basic Info</button>
+        <button type="button" onClick={() => setActiveTab('experience')} className={activeTab === 'experience' ? styles.tabActive : styles.tabInactive}>Experience & Education</button>
+        <button type="button" onClick={() => setActiveTab('skills')} className={activeTab === 'skills' ? styles.tabActive : styles.tabInactive}>Skills & Languages</button>
+        <button type="button" onClick={() => setActiveTab('media')} className={activeTab === 'media' ? styles.tabActive : styles.tabInactive}>PDF Resume</button>
+      </div>
+
+      <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
+        <BasicInfoEditor 
+          basicInfo={basicInfo} setBasicInfo={setBasicInfo} 
+          basicInfoAr={basicInfoAr} setBasicInfoAr={setBasicInfoAr} 
+          summary={summary} setSummary={setSummary} 
+          summaryAr={summaryAr} setSummaryAr={setSummaryAr} 
+          styles={styles} 
+        />
+      </div>
+
+      <div style={{ display: activeTab === 'experience' ? 'block' : 'none' }}>
+        <ExperienceEditor experiences={experiences} setExperiences={setExperiences} styles={styles} />
+        <EducationEditor education={education} setEducation={setEducation} styles={styles} />
+      </div>
+
+      <div style={{ display: activeTab === 'skills' ? 'block' : 'none' }}>
+        <SkillsTextEditor 
+          coreCompetencies={coreCompetencies} setCoreCompetencies={setCoreCompetencies}
+          coreCompetenciesAr={coreCompetenciesAr} setCoreCompetenciesAr={setCoreCompetenciesAr}
+          licensure={licensure} setLicensure={setLicensure}
+          licensureAr={licensureAr} setLicensureAr={setLicensureAr}
+          clinicalSkills={clinicalSkills} setClinicalSkills={setClinicalSkills}
+          clinicalSkillsAr={clinicalSkillsAr} setClinicalSkillsAr={setClinicalSkillsAr}
+          courses={courses} setCourses={setCourses}
+          coursesAr={coursesAr} setCoursesAr={setCoursesAr}
+          languages={languages} setLanguages={setLanguages}
+          languagesAr={languagesAr} setLanguagesAr={setLanguagesAr}
+          references={references} setReferences={setReferences}
+          referencesAr={referencesAr} setReferencesAr={setReferencesAr}
+          styles={styles}
+        />
+      </div>
+
+      <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
+        <PdfUploadSection 
+          pdfUrl={pdfUrl} 
+          setPdfUrl={setPdfUrl}
+          pdfUrlAr={pdfUrlAr} 
+          setPdfUrlAr={setPdfUrlAr}
+          styles={styles} 
+        />
+      </div>
     </form>
   );
 }

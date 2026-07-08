@@ -20,7 +20,7 @@ export default function BasicInfoEditor({
   const icon = <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>;
 
   return (
-    <AccordionSection title="Basic Profile" icon={icon} defaultOpen={true} styles={styles}>
+    <AccordionSection title="Basic Profile" icon={icon} defaultOpen={true} collapsible={false} styles={styles}>
       <div className={styles.splitImages}>
         <div className={styles.formGroup}>
           <label>Full Name (EN) *</label>
@@ -45,17 +45,6 @@ export default function BasicInfoEditor({
 
       <div className={styles.splitImages}>
         <div className={styles.formGroup}>
-          <label>Email Address</label>
-          <input type="email" name="email" value={basicInfo.email || ''} onChange={handleBasicInfoChange} />
-        </div>
-        <div className={styles.formGroup}>
-          <label>Phone Number</label>
-          <input type="text" name="phone" value={basicInfo.phone || ''} onChange={handleBasicInfoChange} />
-        </div>
-      </div>
-
-      <div className={styles.splitImages}>
-        <div className={styles.formGroup}>
           <label>Location (EN)</label>
           <input type="text" name="location" value={basicInfo.location || ''} onChange={handleBasicInfoChange} placeholder="e.g. Giza, Egypt" />
         </div>
@@ -65,9 +54,9 @@ export default function BasicInfoEditor({
         </div>
       </div>
       
-      <div className={styles.formGroup}>
-        <label>LinkedIn URL</label>
-        <input type="url" name="linkedin" value={basicInfo.linkedin || ''} onChange={handleBasicInfoChange} placeholder="https://linkedin.com/in/..." />
+      <div style={{ backgroundColor: '#F0F9FF', color: '#0369A1', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid #BAE6FD', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Your Contact Info (Email, Phone, LinkedIn) is automatically synced from your global Settings page.
       </div>
 
       <div className={styles.splitImages}>

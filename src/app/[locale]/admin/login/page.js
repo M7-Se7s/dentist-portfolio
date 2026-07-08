@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useState, useEffect } from 'react';
+import { signInWithEmailAndPassword, onIdTokenChanged } from 'firebase/auth';
 import { useRouter } from '@/i18n/routing';
 import { auth } from '@/lib/firebase';
 import styles from '../admin.module.css';
@@ -10,8 +10,23 @@ export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  // Auto-redirect if already logged in (Firebase local persistence)
+  useEffect(() => {
+    const unsubscribe = onIdTokenChanged(auth, async (user) => {
+      if (user && user.email === 'dr-mohammed-shabaan@dr.com') {
+        const idToken = await user.getIdToken();
+        document.cookie = `admin_session=${idToken}; path=/; max-age=86400; Secure; SameSite=Strict`;
+        router.push('/admin/dashboard');
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -39,6 +54,10 @@ export default function AdminLogin() {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>Loading...</div>;
+  }
 
   return (
     <div className={styles.loginSplitContainer}>

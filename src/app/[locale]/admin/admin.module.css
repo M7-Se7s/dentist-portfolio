@@ -1161,6 +1161,111 @@ input:checked+.toggleSlider:before {
   font-size: 0.9rem;
 }
 
+/* Status Filter */
+.statusFilterContainer {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+  background-color: var(--white);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  width: fit-content;
+}
+
+.statusFilterLabel {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.statusFilterSelect {
+  position: relative;
+  padding: 0.5rem 2.5rem 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: #f8fafc;
+  color: var(--primary-color);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  min-width: 150px;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.statusFilterSelect:hover,
+.statusFilterSelect:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(14, 94, 122, 0.1);
+}
+
+.customStatusDropdownWrapper {
+  position: relative;
+}
+
+.statusDropdownMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: 200px;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  padding: 0.5rem;
+  animation: slideDown 0.2s ease-out;
+}
+
+.statusDropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.statusDropdownItem:hover {
+  background-color: #f1f5f9;
+}
+
+.statusDropdownItemActive {
+  background-color: rgba(14, 94, 122, 0.05);
+  color: var(--primary-color);
+}
+
+.statusRadioBtn {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.statusDropdownItemActive .statusRadioBtn {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
+}
+
+.statusRadioInner {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+}
+
 .viewAllLink {
   display: flex;
   align-items: center;

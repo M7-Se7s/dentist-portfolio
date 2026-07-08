@@ -120,11 +120,11 @@ export default function CategoryManager() {
   };
 
   return (
-    <div className={styles.adminContent}>
-      <div className={styles.dashboardHeader}>
+    <div className="animate-slideUp stagger-1">
+      <div className={styles.caseManagementHeader} style={{ marginBottom: '2rem' }}>
         <div>
-          <h2>Category Manager</h2>
-          <p style={{ color: 'var(--text-muted)' }}>Manage custom categories for your cases and gallery.</p>
+          <h1 className={styles.pageTitle}>Category Manager</h1>
+          <p className={styles.pageSubtitle}>Manage custom categories for your cases and gallery.</p>
         </div>
       </div>
 

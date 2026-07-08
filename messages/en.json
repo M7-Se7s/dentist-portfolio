@@ -49,7 +49,21 @@
     "fullCaseReport": "Full Case Report",
     "treatmentProcessSteps": "Treatment Process Steps",
     "step": "Step",
-    "caseGallery": "Case Gallery"
+    "caseGallery": "Case Gallery",
+    "duration": "Duration",
+    "year": "Year",
+    "difficulty": "Difficulty",
+    "materialsUsed": "Materials Used",
+    "clinicalNarrative": "Clinical Narrative",
+    "chiefComplaint": "Chief Complaint",
+    "diagnosis": "Diagnosis",
+    "treatmentPerformed": "Treatment Performed",
+    "techniquesWorkflow": "Techniques & Workflow",
+    "challenges": "Challenges",
+    "outcome": "Outcome",
+    "keyTakeaways": "Key Takeaways",
+    "procedureGallery": "Procedure Gallery",
+    "xraysRadiographs": "X-Rays & Radiographs"
   },
   "Contact": {
     "title": "Interested in working together?",
