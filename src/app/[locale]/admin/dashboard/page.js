@@ -30,12 +30,14 @@ export default function DashboardPage() {
           let dateA = 0;
           let dateB = 0;
           if (a.createdAt) {
-            dateA = typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(a.createdAt).getTime();
+            const dateStrA = typeof a.createdAt === 'string' ? a.createdAt.replace(' ', 'T') : a.createdAt;
+            dateA = typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(dateStrA).getTime();
           }
           if (b.createdAt) {
-            dateB = typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(b.createdAt).getTime();
+            const dateStrB = typeof b.createdAt === 'string' ? b.createdAt.replace(' ', 'T') : b.createdAt;
+            dateB = typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(dateStrB).getTime();
           }
-          return dateB - dateA;
+          return (dateB || 0) - (dateA || 0);
         });
         setCases(casesList);
 

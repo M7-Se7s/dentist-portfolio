@@ -187,7 +187,8 @@ export default function CaseManagementPage() {
           </div>
         ) : (
           filteredCases.map(caseItem => {
-            const date = new Date(caseItem.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const dateStr = typeof caseItem.createdAt === 'string' ? caseItem.createdAt.replace(' ', 'T') : caseItem.createdAt;
+            const date = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             return (
               <div key={caseItem.id} className={styles.caseCardItem}>
                 <div className={styles.caseCardHeader}>
