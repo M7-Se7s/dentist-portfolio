@@ -82,7 +82,7 @@ export default function DashboardLayout({ children }) {
               <Image src="/logo.png" alt="Logo" width={48} height={48} style={{ objectFit: 'contain' }} priority />
             </div>
             <div>
-              <h2 className={styles.sidebarTitle} style={{marginBottom: 0, paddingBottom: 0, borderBottom: 'none'}}>Dr. Mohamed<br/>Shaaban</h2>
+              <h2 className={styles.sidebarTitle} style={{marginBottom: 0, paddingBottom: 0, borderBottom: 'none'}}>Dr. Mohamed<br/>Shabaan</h2>
               <p className={styles.sidebarRole} style={{marginTop: '0.25rem', opacity: 0.8, fontSize: '0.85rem', color: '#fff'}}>Clinical Specialist</p>
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function DashboardLayout({ children }) {
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
               </div>
               <div className={styles.profileDetails}>
-                <span className={styles.profileName}>Dr. M. Shaaban</span>
+                <span className={styles.profileName}>Dr. M. Shabaan</span>
                 <span className={styles.profileRole}>Admin</span>
               </div>
             </div>

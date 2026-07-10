@@ -131,7 +131,7 @@ export default function CVPage() {
           <header className="cv-header">
             <div>
               <h1 style={{ color: 'var(--primary-color)', fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', fontFamily: 'var(--font-heading)', marginBottom: '0.25rem', lineHeight: '1.2', letterSpacing: '-0.5px' }}>
-                {nameToUse || "Dr. Mohamed Shaaban"}
+                {nameToUse || "Dr. Mohamed Shabaan"}
               </h1>
               <p style={{ color: 'var(--secondary-color)', fontSize: 'clamp(1rem, 2.5vw, 1.15rem)', fontWeight: '500', marginBottom: '1.5rem' }}>
                 {titleToUse || "General Dentist"}

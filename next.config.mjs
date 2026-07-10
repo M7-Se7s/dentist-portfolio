@@ -4,7 +4,7 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.js');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactCompiler: true,
+  transpilePackages: ['next-intl', 'use-intl', 'intl-messageformat', '@formatjs/icu-messageformat-parser'],
   images: {
     remotePatterns: [
       {

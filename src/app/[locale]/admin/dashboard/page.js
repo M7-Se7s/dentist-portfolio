@@ -97,7 +97,7 @@ export default function DashboardPage() {
     <>
       <div className={`${styles.dashboardMainColumn} animate-slideUp stagger-1`}>
         <div className={styles.pageWelcomeSection}>
-          <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-dark)', marginBottom: '0.25rem'}}>Welcome back, Dr. Shaaban 👋</h1>
+          <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-dark)', marginBottom: '0.25rem'}}>Welcome back, Dr. Shabaan 👋</h1>
           <p style={{color: 'var(--text-muted)'}}>Here is what&apos;s happening with your clinic today.</p>
         </div>
 
