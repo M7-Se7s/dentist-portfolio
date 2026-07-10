@@ -231,17 +231,32 @@ export default function CVPage() {
                 <section>
                   <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>{t('professionalLicensure')}</h2>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {licensureToUse.map((item, idx) => (
-                      <li key={idx} className="licensure-item">
-                        <div className="licensure-icon-wrapper">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                          </svg>
-                        </div>
-                        <span style={{ lineHeight: '1.5' }}>{item}</span>
-                      </li>
-                    ))}
+                    {licensureToUse.map((item, idx) => {
+                      const isObject = typeof item === 'object' && item !== null;
+                      const name = isObject ? (isAr && item.nameAr ? item.nameAr : item.name) : item;
+                      const details = isObject ? (isAr && item.detailsAr ? item.detailsAr : item.details) : '';
+
+                      return (
+                        <li key={idx} className="licensure-item">
+                          <div className="licensure-icon-wrapper" style={{ marginTop: details ? '0.2rem' : '0' }}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                            <span style={{ lineHeight: '1.5', fontWeight: '700', color: 'var(--primary-color)', fontSize: 'clamp(0.95rem, 2vw, 1.05rem)' }}>{name}</span>
+                            {details && (
+                              <div style={{ fontSize: 'clamp(0.85rem, 1.5vw, 0.95rem)', color: 'var(--text-muted)', lineHeight: '1.4', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                                {details.split(/[|\n]/).map((line, lIdx) => (
+                                  <span key={lIdx}>{line.trim()}</span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </section>
               )}
@@ -376,16 +391,31 @@ export default function CVPage() {
                       <section>
                         <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>{t('professionalCourses')}</h2>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                          {flatCourses.map((item, idx) => (
-                            <li key={idx} className="licensure-item">
-                              <div className="licensure-icon-wrapper">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-                                </svg>
-                              </div>
-                              <span style={{ lineHeight: '1.5' }}>{item}</span>
-                            </li>
-                          ))}
+                          {flatCourses.map((item, idx) => {
+                            const isObject = typeof item === 'object' && item !== null;
+                            const name = isObject ? (isAr && item.nameAr ? item.nameAr : item.name) : item;
+                            const details = isObject ? (isAr && item.detailsAr ? item.detailsAr : item.details) : '';
+                            
+                            return (
+                              <li key={idx} className="licensure-item">
+                                <div className="licensure-icon-wrapper" style={{ marginTop: details ? '0.2rem' : '0' }}>
+                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                                  </svg>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                  <span style={{ lineHeight: '1.5', fontWeight: '700', color: 'var(--primary-color)', fontSize: 'clamp(0.95rem, 2vw, 1.05rem)' }}>{name}</span>
+                                  {details && (
+                                    <div style={{ fontSize: 'clamp(0.85rem, 1.5vw, 0.95rem)', color: 'var(--text-muted)', lineHeight: '1.4', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                                      {details.split(/[|\n]/).map((line, lIdx) => (
+                                        <span key={lIdx}>{line.trim()}</span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </section>
                     )}

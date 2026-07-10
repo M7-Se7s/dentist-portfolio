@@ -10,7 +10,7 @@ import styles from './page.module.css';
 import { useTranslations, useLocale } from 'next-intl';
 
 const ImageSlider = dynamic(() => import('@/components/ImageSlider'), { ssr: false });
-const DownloadCvButton = dynamic(() => import('@/components/DownloadCvButton'), { ssr: false });
+import DownloadCvButton from '@/components/DownloadCvButton';
 
 export default function Home() {
   const [profile, setProfile] = useState(null);
@@ -114,6 +114,7 @@ export default function Home() {
               <DownloadCvButton 
                 pdfUrl={cvData?.pdfUrl} 
                 pdfUrlAr={cvData?.pdfUrlAr} 
+                isLoading={loading}
                 className="btn-secondary" 
                 label={tHero('downloadCV')} 
               />
@@ -156,7 +157,7 @@ export default function Home() {
       </section>
 
       {/* Featured Cases */}
-      {recentCases.length > 0 && (
+      {(loading || recentCases.length > 0) && (
         <section className={styles.section} style={{backgroundColor: '#F8FAFC'}}>
           <div className="container">
             <div className={styles.sectionHeader}>
@@ -164,27 +165,49 @@ export default function Home() {
               <div className={styles.divider}></div>
             </div>
             
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem' }}>
-              {recentCases.map(caseItem => (
-                <div key={caseItem.id} className="card" style={{padding: '0', overflow: 'hidden', width: '100%', maxWidth: '300px'}}>
-                  <div style={{position: 'relative', height: '200px', backgroundColor: '#E2E8F0'}} onClick={(e) => e.preventDefault()}>
-                    <ImageSlider 
-                      beforeImage={caseItem.beforeImage || caseItem.beforeImageUrl} 
-                      afterImage={caseItem.afterImage || caseItem.afterImageUrl} 
-                    />
-                  </div>
-                  <div className={styles.caseCardContent} style={{padding: '1.5rem'}}>
-                    <h3 style={{marginBottom: '1rem', color: 'var(--primary-color)'}}>{caseItem.title}</h3>
-                    <Link href={`/cases/${caseItem.id}`} style={{color: 'var(--secondary-color)', fontWeight: '600', textDecoration: 'none'}}>
-                      {tCases('viewCase')}
-                    </Link>
-                  </div>
+            {loading ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '4rem 0', flexDirection: 'column', gap: '1rem' }}>
+                <div className="cases-spinner"></div>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: '500' }}>Loading cases...</span>
+                <style>{`
+                  .cases-spinner {
+                    width: 40px;
+                    height: 40px;
+                    border: 3px solid rgba(0, 0, 0, 0.05);
+                    border-left-color: var(--secondary-color);
+                    border-radius: 50%;
+                    animation: cases-spin 1s linear infinite;
+                  }
+                  @keyframes cases-spin {
+                    to { transform: rotate(360deg); }
+                  }
+                `}</style>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem' }}>
+                  {recentCases.map(caseItem => (
+                    <div key={caseItem.id} className="card" style={{padding: '0', overflow: 'hidden', width: '100%', maxWidth: '300px'}}>
+                      <div style={{position: 'relative', height: '200px', backgroundColor: '#E2E8F0'}} onClick={(e) => e.preventDefault()}>
+                        <ImageSlider 
+                          beforeImage={caseItem.beforeImage || caseItem.beforeImageUrl} 
+                          afterImage={caseItem.afterImage || caseItem.afterImageUrl} 
+                        />
+                      </div>
+                      <div className={styles.caseCardContent} style={{padding: '1.5rem'}}>
+                        <h3 style={{marginBottom: '1rem', color: 'var(--primary-color)'}}>{caseItem.title}</h3>
+                        <Link href={`/cases/${caseItem.id}`} style={{color: 'var(--secondary-color)', fontWeight: '600', textDecoration: 'none'}}>
+                          {tCases('viewCase')}
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div style={{textAlign: 'center', marginTop: '3rem'}}>
-              <Link href="/cases" className="btn-primary">{tCases('viewAll')}</Link>
-            </div>
+                <div style={{textAlign: 'center', marginTop: '3rem'}}>
+                  <Link href="/cases" className="btn-primary">{tCases('viewAll')}</Link>
+                </div>
+              </>
+            )}
           </div>
         </section>
       )}

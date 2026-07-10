@@ -23,6 +23,33 @@ export default function CaseDetail({ params }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImages, setLightboxImages] = useState([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  
+  // Touch swipe state for Lightbox
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEndHandler = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 50) {
+      // Swiped left (Next)
+      setLightboxIndex(prev => (prev + 1) % lightboxImages.length);
+    }
+    if (distance < -50) {
+      // Swiped right (Prev)
+      setLightboxIndex(prev => (prev - 1 + lightboxImages.length) % lightboxImages.length);
+    }
+  };
+  
   const previousFocusRef = React.useRef(null);
 
   const t = useTranslations('CaseDetail');
@@ -405,7 +432,12 @@ export default function CaseDetail({ params }) {
           >&times;</button>
 
           {/* Main Image */}
-          <div className={styles.lightboxContainer}>
+          <div 
+            className={styles.lightboxContainer}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEndHandler}
+          >
             {lightboxImages.length > 1 && (
               <button 
                 onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => (prev - 1 + lightboxImages.length) % lightboxImages.length); }}

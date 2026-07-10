@@ -51,10 +51,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  opacity: 0;
+  opacity: 0.001; /* Fixes iOS 15 Safari 0 opacity touch ignore bug */
   cursor: ew-resize;
   z-index: 10;
   margin: 0;
+  touch-action: pan-y;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .sliderLine {

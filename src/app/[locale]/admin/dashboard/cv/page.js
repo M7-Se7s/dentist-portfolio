@@ -11,6 +11,8 @@ import styles from '../../admin.module.css';
 import BasicInfoEditor from './components/BasicInfoEditor';
 import ExperienceEditor from './components/ExperienceEditor';
 import EducationEditor from './components/EducationEditor';
+import CoursesEditor from './components/CoursesEditor';
+import LicensureEditor from './components/LicensureEditor';
 import SkillsTextEditor from './components/SkillsTextEditor';
 import PdfUploadSection from './components/PdfUploadSection';
 
@@ -40,14 +42,29 @@ export default function CVEditorPage() {
   
   const [education, setEducation] = useState([{ degree: 'Bachelor of Dental Surgery (BDS)', institution: 'Faculty of Dental Medicine\nAl-Azhar University – Egypt', year: 'Graduated: 2023' }]);
   
-  const [licensure, setLicensure] = useState(['Saudi Prometric Examination — Passed', 'Saudi Commission for Health Specialties (SCFHS) — Professionally Classified']);
-  const [licensureAr, setLicensureAr] = useState([]);
+  const [licensure, setLicensure] = useState([
+    {
+      id: 1,
+      name: 'Saudi Prometric Examination',
+      nameAr: 'امتحان البرومترك السعودي',
+      details: 'Passed',
+      detailsAr: 'مجتاز'
+    },
+    {
+      id: 2,
+      name: 'Saudi Commission for Health Specialties (SCFHS)',
+      nameAr: 'الهيئة السعودية للتخصصات الصحية (SCFHS)',
+      details: 'Professional Rank: General Dentist (General Dentistry) | Profile Number: 26904058 | Status: Practicing | Expiry Date: 30/03/2028',
+      detailsAr: 'الرتبة المهنية: طبيب أسنان عام (طب الأسنان العام) | رقم الملف: 26904058 | الحالة: ممارس | تاريخ الانتهاء: 30/03/2028'
+    }
+  ]);
   
   const [experiences, setExperiences] = useState([
     { id: 1, role: 'General Dentist', clinic: 'Dr. Ahmed Saleh Dental Clinic', period: 'October 2023 – July 2024', responsibilities: 'Comprehensive diagnosis and treatment planning.\nRestorative dentistry.\nRoot canal treatment.\nFixed prosthodontics.\nSimple and surgical extractions.' },
     { id: 2, role: 'General Dentist', clinic: 'Dr. Ali Naguib Dental Clinic', period: 'July 2024 – January 2025', responsibilities: 'Comprehensive restorative procedures.\nEndodontic treatment.\nCrown & Bridge procedures.\nPediatric dentistry.\nEmergency dental management.' },
     { id: 3, role: 'General Dentist', clinic: 'Dr. Mostafa Yehia Dental Clinic', period: 'October 2024 – Present', responsibilities: 'Comprehensive dental treatment.\nOral surgery.\nFull-mouth rehabilitation.\nVeneer cases.\nSurgical management of impacted wisdom teeth.' },
-    { id: 4, role: 'General Dentist', clinic: 'Dr. Gamal Saad El-Din Dental Clinic', period: 'January 2025 – Present', responsibilities: 'Restorative dentistry.\nFixed and removable prosthodontics.\nEndodontic retreatment.\nMinor oral surgery.' }
+    { id: 4, role: 'General Dentist', clinic: 'Dr. Gamal Saad El-Din Dental Clinic', period: 'January 2025 – Present', responsibilities: 'Restorative dentistry.\nFixed and removable prosthodontics.\nEndodontic retreatment.\nMinor oral surgery.' },
+    { id: 5, role: 'Intern Dentist (Rotational Internship)', clinic: 'Al-Azhar University Hospitals, Boulak Teaching Hospital, & Shibin El-Kom Teaching Hospital, Egypt', period: 'October 2023 – October 2024', responsibilities: 'Completed clinical rotations across multiple dental specialties including Endodontics, Oral Surgery, Prosthodontics, and Pedodontics.\nGained extensive hands-on experience in emergency dental care, infection control validation, and basic surgical maneuvers within high-volume educational and public health settings.' }
   ]);
 
   const defaultClinicalSkillsStr = '**Endodontics**\nAnterior & Posterior Root Canal Treatment\nRotary Endodontics (Multiple Rotary Systems)\nEndodontic Retreatment\nManagement of Separated Instrument Cases (Bypassing)\n\n**Fixed Prosthodontics**\nCrown & Bridge\nFull Mouth Rehabilitation\nFull Arch Crown Rehabilitation\nPorcelain Veneers\n\n**Removable Prosthodontics**\nComplete Dentures\nRemovable Partial Dentures\n\n**Oral Surgery**\nSimple Dental Extractions\nSurgical Extractions\nSurgical Removal of Impacted Wisdom Teeth\nCoronectomy\nApicoectomy\n\n**Pediatric Dentistry**\nPediatric Restorative Dentistry\nPulpotomy for Primary Teeth\nPulpectomy for Primary Teeth\nStainless Steel Crowns (SSC)\n\n**Restorative Dentistry**\nDirect Composite Restorations\nEsthetic Restorative Procedures\nComprehensive Treatment Planning\n\n**Preventive Dentistry**\nScaling & Root Planing\nOral Hygiene Instructions\n\n**Additional Skills**\nEmergency Dental Care\nAssisting in Dental Implant Surgery\nInfection Prevention & Control';
@@ -81,8 +98,29 @@ export default function CVEditorPage() {
   const [clinicalSkills, setClinicalSkills] = useState(parseMarkdownToCategories(defaultClinicalSkillsStr));
   const [clinicalSkillsAr, setClinicalSkillsAr] = useState([]);
   
-  const [courses, setCourses] = useState(['Online Endodontic Courses', 'Oral Surgery Courses', 'Continuous Professional Development in General Dentistry']);
-  const [coursesAr, setCoursesAr] = useState([]);
+  const [courses, setCourses] = useState([
+    {
+      id: 1,
+      name: 'Comprehensive Online Endodontic Course',
+      nameAr: 'دورة علاج الجذور الشاملة عبر الإنترنت',
+      details: 'Dr. Nebras AlDahash (Endodontic Community Group)',
+      detailsAr: 'د. نبراس الدهاش (مجموعة مجتمع علاج الجذور)'
+    },
+    {
+      id: 2,
+      name: 'Comprehensive Minor Oral Surgery & Extraction Workshops',
+      nameAr: 'ورش عمل جراحة الفم الصغرى والخلع الشاملة',
+      details: '',
+      detailsAr: ''
+    },
+    {
+      id: 3,
+      name: 'Continuous Professional Development in Modern General Dentistry',
+      nameAr: 'التطوير المهني المستمر في طب الأسنان العام الحديث',
+      details: '',
+      detailsAr: ''
+    }
+  ]);
   
   const [languages, setLanguages] = useState(['Arabic: Native', 'English: Intermediate']);
   const [languagesAr, setLanguagesAr] = useState([]);
@@ -112,12 +150,33 @@ export default function CVEditorPage() {
           if (data.coreCompetenciesAr) setCoreCompetenciesAr(data.coreCompetenciesAr);
           if (data.education) setEducation(data.education);
           if (data.licensure) setLicensure(data.licensure);
-          if (data.licensureAr) setLicensureAr(data.licensureAr);
-          if (data.experiences) setExperiences(data.experiences);
+          if (data.experiences) {
+            const exps = data.experiences;
+            if (!exps.find(e => e.role && e.role.includes('Intern Dentist'))) {
+              exps.push({
+                id: Date.now(),
+                role: 'Intern Dentist (Rotational Internship)',
+                roleAr: 'طبيب أسنان امتياز (تدريب دوري)',
+                clinic: 'Al-Azhar University Hospitals, Boulak Teaching Hospital, & Shibin El-Kom Teaching Hospital, Egypt',
+                clinicAr: 'مستشفيات جامعة الأزهر، مستشفى بولاق الدكرور التعليمي، ومستشفى شبين الكوم التعليمي، مصر',
+                period: 'October 2023 – October 2024',
+                periodAr: 'أكتوبر 2023 – أكتوبر 2024',
+                responsibilities: 'Completed clinical rotations across multiple dental specialties including Endodontics, Oral Surgery, Prosthodontics, and Pedodontics.\nGained extensive hands-on experience in emergency dental care, infection control validation, and basic surgical maneuvers within high-volume educational and public health settings.',
+                responsibilitiesAr: 'إتمام دورات سريرية عبر تخصصات طب الأسنان المتعددة بما في ذلك علاج الجذور، جراحة الفم، الاستعاضة السنية، وطب أسنان الأطفال.\nاكتساب خبرة عملية واسعة في الرعاية الطارئة لطب الأسنان، التحقق من مكافحة العدوى، والمناورات الجراحية الأساسية في بيئات تعليمية وصحية عامة مزدحمة.'
+              });
+              exps.sort((a, b) => {
+                if (a.period.includes('2025')) return -1;
+                if (b.period.includes('2025')) return 1;
+                if (a.period.includes('2024')) return -1;
+                if (b.period.includes('2024')) return 1;
+                return 0;
+              });
+            }
+            setExperiences(exps);
+          }
           if (data.clinicalSkills) setClinicalSkills(parseMarkdownToCategories(data.clinicalSkills));
           if (data.clinicalSkillsAr) setClinicalSkillsAr(parseMarkdownToCategories(data.clinicalSkillsAr));
           if (data.courses) setCourses(data.courses);
-          if (data.coursesAr) setCoursesAr(data.coursesAr);
           if (data.languages) setLanguages(data.languages);
           if (data.languagesAr) setLanguagesAr(data.languagesAr);
           if (data.referencesAr) setReferencesAr(data.referencesAr);
@@ -168,8 +227,6 @@ export default function CVEditorPage() {
       };
       
       setCoreCompetenciesAr(await translateArray(coreCompetencies));
-      setLicensureAr(await translateArray(licensure));
-      setCoursesAr(await translateArray(courses));
       setLanguagesAr(await translateArray(languages));
 
       // 4. Clinical Skills Categories
@@ -206,6 +263,26 @@ export default function CVEditorPage() {
       }
       setEducation(newEducation);
 
+      const newLicensure = [];
+      for (const item of licensure) {
+        newLicensure.push({
+          ...item,
+          nameAr: await translateText(item.name),
+          detailsAr: await translateText(item.details)
+        });
+      }
+      setLicensure(newLicensure);
+
+      const newCourses = [];
+      for (const course of courses) {
+        newCourses.push({
+          ...course,
+          nameAr: await translateText(course.name),
+          detailsAr: await translateText(course.details)
+        });
+      }
+      setCourses(newCourses);
+
       setMessage('Translation complete! Please review the Arabic fields and hit Save.');
       setTimeout(() => setMessage(''), 4000);
     } catch (e) {
@@ -237,13 +314,11 @@ export default function CVEditorPage() {
         coreCompetencies: coreCompetencies.filter(s => s?.trim() !== ''),
         coreCompetenciesAr: coreCompetenciesAr.filter(s => s?.trim() !== ''),
         education,
-        licensure: licensure.filter(s => s?.trim() !== ''),
-        licensureAr: licensureAr.filter(s => s?.trim() !== ''),
+        licensure: licensure,
         experiences,
         clinicalSkills: formatClinicalSkills(clinicalSkills),
         clinicalSkillsAr: formatClinicalSkills(clinicalSkillsAr),
-        courses: courses.filter(s => s?.trim() !== ''),
-        coursesAr: coursesAr.filter(s => s?.trim() !== ''),
+        courses: courses,
         languages: languages.filter(s => s?.trim() !== ''),
         languagesAr: languagesAr.filter(s => s?.trim() !== ''),
         references,
@@ -362,11 +437,17 @@ export default function CVEditorPage() {
           coreCompetencies={coreCompetencies} setCoreCompetencies={setCoreCompetencies}
           coreCompetenciesAr={coreCompetenciesAr} setCoreCompetenciesAr={setCoreCompetenciesAr}
           licensure={licensure} setLicensure={setLicensure}
-          licensureAr={licensureAr} setLicensureAr={setLicensureAr}
-          clinicalSkills={clinicalSkills} setClinicalSkills={setClinicalSkills}
-          clinicalSkillsAr={clinicalSkillsAr} setClinicalSkillsAr={setClinicalSkillsAr}
-          courses={courses} setCourses={setCourses}
-          coursesAr={coursesAr} setCoursesAr={setCoursesAr}
+          education={education} setEducation={setEducation} styles={styles} 
+        />
+        <LicensureEditor 
+          licensure={licensure} setLicensure={setLicensure} styles={styles} 
+        />
+        <CoursesEditor 
+          courses={courses} setCourses={setCourses} styles={styles} 
+        />
+        <SkillsTextEditor 
+          clinicalSkills={clinicalSkills} setClinicalSkills={setClinicalSkills} 
+          clinicalSkillsAr={clinicalSkillsAr} setClinicalSkillsAr={setClinicalSkillsAr} 
           languages={languages} setLanguages={setLanguages}
           languagesAr={languagesAr} setLanguagesAr={setLanguagesAr}
           references={references} setReferences={setReferences}
