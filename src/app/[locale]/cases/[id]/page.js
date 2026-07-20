@@ -376,7 +376,7 @@ export default function CaseDetail({ params }) {
           {/* Gallery Section */}
           {(caseData.images || caseData.galleryImages) && (caseData.images || caseData.galleryImages).length > 0 && (
             <div className={styles.gallerySection}>
-              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('procedureGallery')}</h3>}>
+              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('procedureGallery')}</h3>} defaultOpen={false}>
               <div className={styles.galleryGrid}>
                 {(caseData.images || caseData.galleryImages).map((img, idx) => {
                   const imagesArray = caseData.images || caseData.galleryImages;
