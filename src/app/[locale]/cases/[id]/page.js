@@ -179,16 +179,31 @@ export default function CaseDetail({ params }) {
             <div className={styles.imageColumn}>
               <div className={styles.contentCard}>
                 <div className={styles.comparisonBox} style={{ border: 'none', boxShadow: 'none', padding: 0 }}>
-                  <ImageSlider 
-                    beforeImage={caseData.beforeImage || caseData.beforeImageUrl} 
-                    afterImage={caseData.afterImage || caseData.afterImageUrl} 
-                    priority={true}
-                  />
+                  {caseData.caseType === 'light' || (!caseData.beforeImage && !caseData.beforeImageUrl && caseData.coverImage) ? (
+                    <div style={{ position: 'relative', width: '100%', paddingTop: '66.66%' }}>
+                      <Image 
+                        src={caseData.coverImage || '/images/placeholder.jpg'} 
+                        alt={title} 
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        style={{ objectFit: 'cover', borderRadius: '12px' }}
+                        priority={true}
+                      />
+                    </div>
+                  ) : (
+                    <ImageSlider 
+                      beforeImage={caseData.beforeImage || caseData.beforeImageUrl} 
+                      afterImage={caseData.afterImage || caseData.afterImageUrl} 
+                      priority={true}
+                    />
+                  )}
                 </div>
                 <div className={styles.viewFullImagesWrapper} style={{ marginTop: '1.5rem' }}>
                   <button 
                     onClick={() => openLightbox(
-                      [caseData.beforeImage || caseData.beforeImageUrl, caseData.afterImage || caseData.afterImageUrl].filter(Boolean), 
+                      caseData.caseType === 'light' || (!caseData.beforeImage && !caseData.beforeImageUrl && caseData.coverImage)
+                        ? [caseData.coverImage].filter(Boolean)
+                        : [caseData.beforeImage || caseData.beforeImageUrl, caseData.afterImage || caseData.afterImageUrl].filter(Boolean), 
                       0
                     )}
                     className={styles.viewFullImagesBtn}

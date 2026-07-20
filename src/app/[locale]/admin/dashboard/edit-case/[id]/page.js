@@ -28,6 +28,10 @@ export default function EditCasePage({ params }) {
   const [beforePreview, setBeforePreview] = useState(null);
   const [afterImage, setAfterImage] = useState(null);
   const [afterPreview, setAfterPreview] = useState(null);
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
+  
+  const [caseType, setCaseType] = useState('detailed');
   
   // Form State
   const [formData, setFormData] = useState({
@@ -67,6 +71,10 @@ export default function EditCasePage({ params }) {
       try {
         const caseData = await casesService.getCaseById(caseId);
         if (caseData && isMounted) {
+          // Infer caseType if missing. Assuming existing cases are detailed.
+          const loadedCaseType = caseData.caseType || 'detailed';
+          setCaseType(loadedCaseType);
+          
           // Normalize existing arrays and fields for the form
           setFormData({ 
             ...caseData,
@@ -178,6 +186,13 @@ export default function EditCasePage({ params }) {
 
   const handleSave = async (e, asDraft = false) => {
     e?.preventDefault();
+    if (!asDraft) {
+      if (!formData.title || formData.categories.length === 0) {
+        alert("Please fill all required fields (Title, Categories)");
+        return;
+      }
+    }
+    
     setIsSaving(true);
     const payload = {
       mode: 'edit',
@@ -186,6 +201,8 @@ export default function EditCasePage({ params }) {
         ...formData,
         isDraft: asDraft
       },
+      caseType,
+      coverImageFile: coverImage,
       beforeImageFile: beforeImage,
       afterImageFile: afterImage,
       treatmentSteps: formData.steps,
@@ -323,14 +340,19 @@ export default function EditCasePage({ params }) {
       <form onSubmit={(e) => handleSave(e, false)}>
         <div className={styles.tabsContainer}>
           <button type="button" onClick={() => setActiveTab('basic')} className={activeTab === 'basic' ? styles.tabActive : styles.tabInactive}>Basic Info</button>
-          <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
-          <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
-          <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+          {caseType === 'detailed' && (
+            <>
+              <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
+              <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
+              <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+            </>
+          )}
           <button type="button" onClick={() => setActiveTab('media')} className={activeTab === 'media' ? styles.tabActive : styles.tabInactive}>Media & Images</button>
         </div>
 
         <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
           <BasicInfoSection 
+            caseType={caseType}
             title={formData.title} setTitle={setTitle}
             titleAr={formData.titleAr} setTitleAr={setTitleAr}
             categories={formData.categories} setCategories={setCategories}
@@ -387,6 +409,10 @@ export default function EditCasePage({ params }) {
 
         <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
           <ImageUploadSection 
+            caseType={caseType}
+            coverPreview={coverPreview || formData.coverImage}
+            setCoverPreview={setCoverPreview}
+            setCoverImage={setCoverImage}
             beforePreview={beforePreview || formData.beforeImageUrl || formData.beforeImage} 
             setBeforePreview={setBeforePreview} 
             setBeforeImage={setBeforeImage}

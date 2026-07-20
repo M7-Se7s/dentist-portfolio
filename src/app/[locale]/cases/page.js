@@ -61,7 +61,7 @@ export default function CasesGallery() {
   useEffect(() => {
     async function fetchCases() {
       try {
-        const q = query(collection(db, "cases"), orderBy("createdAt", "desc"));
+        const q = query(collection(db, "cases"), orderBy("updatedAt", "desc"));
         const querySnapshot = await getDocs(q);
         let fetchedCases = querySnapshot.docs.map(doc => ({
           id: doc.id,
@@ -207,17 +207,25 @@ export default function CasesGallery() {
                   return (
                   <div key={caseItem.id} className={styles.caseCard}>
                     <div className={styles.imageWrapper}>
-                      <ImageSlider 
-                        beforeImage={caseItem.beforeImage || caseItem.beforeImageUrl} 
-                        afterImage={caseItem.afterImage || caseItem.afterImageUrl} 
-                      />
+                      {caseItem.caseType === 'light' || (!caseItem.beforeImage && !caseItem.beforeImageUrl && caseItem.coverImage) ? (
+                        <img 
+                          src={caseItem.coverImage || '/images/placeholder.jpg'} 
+                          alt={title} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                        />
+                      ) : (
+                        <ImageSlider 
+                          beforeImage={caseItem.beforeImage || caseItem.beforeImageUrl} 
+                          afterImage={caseItem.afterImage || caseItem.afterImageUrl} 
+                        />
+                      )}
                     </div>
                     <div className={styles.caseInfo}>
                       {/* 4. Category Badges & Title */}
                       <div className={styles.categoriesWrapper}>
                         {allCategories.map(cat => (
                           <span key={cat} className={styles.caseCategory}>
-                            {t(`Categories.${cat}`)}
+                            {cat}
                           </span>
                         ))}
                       </div>

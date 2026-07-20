@@ -4,12 +4,22 @@ import dynamic from 'next/dynamic';
 const SortableGallery = dynamic(() => import('@/components/SortableGallery'), { ssr: false });
 
 export default function ImageUploadSection({
+  caseType = 'detailed',
+  coverPreview, setCoverPreview, setCoverImage,
   beforePreview, setBeforePreview, setBeforeImage,
   afterPreview, setAfterPreview, setAfterImage,
   galleryItems, setGalleryItems,
   xrayItems, setXrayItems,
   styles
 }) {
+
+  const handleCoverChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCoverImage(file);
+      setCoverPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleBeforeChange = (e) => {
     const file = e.target.files[0];
@@ -57,43 +67,63 @@ export default function ImageUploadSection({
 
   return (
     <>
-      <div className={styles.formSection}>
-        <div className={styles.formSectionTitle}>Before / After Comparison *</div>
-        <p className={styles.sectionHint}>These images are used for the interactive slider.</p>
-        <div className={styles.splitImages}>
-          
-          <div className={styles.formGroup}>
-            <label>Before Image *</label>
-            <div className={styles.imageDropzoneSplit}>
-              <input type="file" accept="image/*" onChange={handleBeforeChange} className={styles.hiddenFileInput} required />
-              {beforePreview ? (
-                <img src={beforePreview} alt="Preview" className={styles.imageDropzonePreview} />
-              ) : (
-                <div className={styles.uploadPlaceholder}>
-                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                  <p className={styles.uploadPlaceholderText}>Upload</p>
-                </div>
-              )}
+      {caseType === 'detailed' ? (
+        <div className={styles.formSection}>
+          <div className={styles.formSectionTitle}>Before / After Comparison *</div>
+          <p className={styles.sectionHint}>These images are used for the interactive slider.</p>
+          <div className={styles.splitImages}>
+            
+            <div className={styles.formGroup}>
+              <label>Before Image *</label>
+              <div className={styles.imageDropzoneSplit}>
+                <input type="file" accept="image/*" onChange={handleBeforeChange} className={styles.hiddenFileInput} required />
+                {beforePreview ? (
+                  <img src={beforePreview} alt="Preview" className={styles.imageDropzonePreview} />
+                ) : (
+                  <div className={styles.uploadPlaceholder}>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <p className={styles.uploadPlaceholderText}>Upload</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className={styles.formGroup}>
-            <label>After Image *</label>
-            <div className={styles.imageDropzoneSplit}>
-              <input type="file" accept="image/*" onChange={handleAfterChange} className={styles.hiddenFileInput} required />
-              {afterPreview ? (
-                <img src={afterPreview} alt="Preview" className={styles.imageDropzonePreview} />
-              ) : (
-                <div className={styles.uploadPlaceholder}>
-                  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                  <p className={styles.uploadPlaceholderText}>Upload</p>
-                </div>
-              )}
+            <div className={styles.formGroup}>
+              <label>After Image *</label>
+              <div className={styles.imageDropzoneSplit}>
+                <input type="file" accept="image/*" onChange={handleAfterChange} className={styles.hiddenFileInput} required />
+                {afterPreview ? (
+                  <img src={afterPreview} alt="Preview" className={styles.imageDropzonePreview} />
+                ) : (
+                  <div className={styles.uploadPlaceholder}>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <p className={styles.uploadPlaceholderText}>Upload</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className={styles.formSection}>
+          <div className={styles.formSectionTitle}>Cover Image *</div>
+          <p className={styles.sectionHint}>This image will be used as the primary display for the case.</p>
+          <div className={styles.formGroup} style={{ maxWidth: '400px' }}>
+            <div className={styles.imageDropzoneSplit} style={{ height: '300px' }}>
+              <input type="file" accept="image/*" onChange={handleCoverChange} className={styles.hiddenFileInput} required />
+              {coverPreview ? (
+                <img src={coverPreview} alt="Cover Preview" className={styles.imageDropzonePreview} />
+              ) : (
+                <div className={styles.uploadPlaceholder}>
+                  <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                  <p className={styles.uploadPlaceholderText}>Upload Cover Image</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={styles.formSection}>
         <div className={styles.formSectionTitle}>Case Gallery (Optional)</div>

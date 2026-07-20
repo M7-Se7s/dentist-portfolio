@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from '@/i18n/routing';
+import { useSearchParams } from 'next/navigation';
 import { Link } from '@/i18n/routing';
 import styles from '../../admin.module.css';
 import { useUploads } from '@/lib/contexts/UploadContext';
@@ -14,8 +15,10 @@ import ClinicalAssessmentSection from '../cases/components/ClinicalAssessmentSec
 import CaseDetailsSection from '../cases/components/CaseDetailsSection';
 import OutcomeSection from '../cases/components/OutcomeSection';
 
-export default function CreateCasePage() {
+function CreateCaseForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const caseType = searchParams.get('type') || 'detailed';
   
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -24,6 +27,8 @@ export default function CreateCasePage() {
   const [beforePreview, setBeforePreview] = useState(null);
   const [afterImage, setAfterImage] = useState(null);
   const [afterPreview, setAfterPreview] = useState(null);
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -66,6 +71,12 @@ export default function CreateCasePage() {
 
   const [activeTab, setActiveTab] = useState('basic');
   const [isTranslatingAll, setIsTranslatingAll] = useState(false);
+
+  useEffect(() => {
+    if (caseType === 'detailed') {
+      setFormData(prev => ({ ...prev, categories: ['Full Mouth Rehabilitation'] }));
+    }
+  }, [caseType]);
 
   const handleAutoTranslateAll = async () => {
     setIsTranslatingAll(true);
@@ -140,13 +151,22 @@ export default function CreateCasePage() {
 
   const handleSave = async (e, asDraft = false) => {
     e?.preventDefault();
-    if (!formData.title || formData.categories.length === 0) {
-      alert("Please fill all required fields (Title, Categories)");
-      return;
-    }
-    if (!beforeImage || !afterImage) {
-      alert("Please upload both before and after images.");
-      return;
+    if (!asDraft) {
+      if (!formData.title || formData.categories.length === 0) {
+        alert("Please fill all required fields (Title, Categories)");
+        return;
+      }
+      if (caseType === 'detailed') {
+        if (!beforeImage || !afterImage) {
+          alert("Please upload both before and after images.");
+          return;
+        }
+      } else {
+        if (!coverImage) {
+          alert("Please upload a cover image.");
+          return;
+        }
+      }
     }
 
     setIsSaving(true);
@@ -158,6 +178,8 @@ export default function CreateCasePage() {
         isDraft: asDraft,
         createdAt: new Date().toISOString()
       },
+      caseType,
+      coverImageFile: coverImage,
       beforeImageFile: beforeImage,
       afterImageFile: afterImage,
       treatmentSteps: formData.steps,
@@ -285,14 +307,19 @@ export default function CreateCasePage() {
       <form onSubmit={(e) => handleSave(e, false)}>
         <div className={styles.tabsContainer}>
           <button type="button" onClick={() => setActiveTab('basic')} className={activeTab === 'basic' ? styles.tabActive : styles.tabInactive}>Basic Info</button>
-          <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
-          <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
-          <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+          {caseType === 'detailed' && (
+            <>
+              <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
+              <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
+              <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+            </>
+          )}
           <button type="button" onClick={() => setActiveTab('media')} className={activeTab === 'media' ? styles.tabActive : styles.tabInactive}>Media & Images</button>
         </div>
 
         <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
           <BasicInfoSection 
+            caseType={caseType}
             title={formData.title} setTitle={setTitle}
             titleAr={formData.titleAr} setTitleAr={setTitleAr}
             categories={formData.categories} setCategories={setCategories}
@@ -349,6 +376,10 @@ export default function CreateCasePage() {
 
         <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
           <ImageUploadSection 
+            caseType={caseType}
+            coverPreview={coverPreview}
+            setCoverPreview={setCoverPreview}
+            setCoverImage={setCoverImage}
             beforePreview={beforePreview} 
             setBeforePreview={setBeforePreview} 
             setBeforeImage={setBeforeImage}
@@ -363,8 +394,15 @@ export default function CreateCasePage() {
           />
         </div>
 
-
       </form>
     </div>
+  );
+}
+
+export default function CreateCasePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CreateCaseForm />
+    </Suspense>
   );
 }

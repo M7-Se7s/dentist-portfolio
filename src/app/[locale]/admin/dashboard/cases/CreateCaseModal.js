@@ -80,13 +80,15 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title || categories.length === 0) {
-      alert("Please fill all required fields (Title, Categories)");
-      return;
-    }
-    if (!beforeImage || !afterImage) {
-      alert("Please upload both before and after images.");
-      return;
+    if (!isDraftSubmit) {
+      if (!title || categories.length === 0) {
+        alert("Please fill all required fields (Title, Categories)");
+        return;
+      }
+      if (!beforeImage || !afterImage) {
+        alert("Please upload both before and after images.");
+        return;
+      }
     }
 
     const payload = {
@@ -190,7 +192,7 @@ export default function CreateCaseModal({ onClose, onSuccess }) {
             <button type="button" className="btn-secondary" onClick={onClose} disabled={uploading}>
               Cancel
             </button>
-            <button type="submit" className="btn-secondary" disabled={uploading} onClick={() => setIsDraftSubmit(true)}>
+            <button type="submit" className="btn-secondary" disabled={uploading} onClick={() => setIsDraftSubmit(true)} formNoValidate>
               Save as Draft
             </button>
             <button type="submit" className="btn-primary" disabled={uploading} onClick={() => setIsDraftSubmit(false)}>

@@ -97,6 +97,8 @@ export function UploadProvider({ children }) {
         mode, // 'create' or 'edit'
         caseId, // if edit
         formData, 
+        caseType,
+        coverImageFile,
         beforeImageFile, 
         afterImageFile, 
         galleryItems,
@@ -121,6 +123,14 @@ export function UploadProvider({ children }) {
         totalFiles++;
         uploadTasks.push(async () => {
           finalAfterUrl = await uploadFile(afterImageFile);
+        });
+      }
+
+      let finalCoverUrl = formData.coverImage || '';
+      if (coverImageFile) {
+        totalFiles++;
+        uploadTasks.push(async () => {
+          finalCoverUrl = await uploadFile(coverImageFile);
         });
       }
 
@@ -185,6 +195,8 @@ export function UploadProvider({ children }) {
       // 2. All uploads succeeded, construct final document
       const caseDoc = {
         ...formData,
+        caseType: caseType || 'detailed',
+        coverImage: finalCoverUrl,
         beforeImage: finalBeforeUrl,
         afterImage: finalAfterUrl,
         images: finalGalleryItems,

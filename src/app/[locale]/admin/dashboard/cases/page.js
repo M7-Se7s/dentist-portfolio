@@ -10,8 +10,11 @@ export default function CaseManagementPage() {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('All');
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
   const filterDropdownRef = useRef(null);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const categoryDropdownRef = useRef(null);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [caseToDelete, setCaseToDelete] = useState(null);
@@ -42,6 +45,9 @@ export default function CaseManagementPage() {
     const handleClickOutside = (event) => {
       if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target)) {
         setFilterDropdownOpen(false);
+      }
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
+        setCategoryDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -75,10 +81,19 @@ export default function CaseManagementPage() {
     }
   };
 
+  const allCategories = Array.from(new Set(cases.reduce((acc, c) => {
+    const cats = c.categories && c.categories.length > 0 ? c.categories : (c.category ? [c.category] : []);
+    return [...acc, ...cats];
+  }, [])));
+  
   const filteredCases = cases.filter(c => {
     if (statusFilter === 'Published') return !c.isDraft;
     if (statusFilter === 'Draft') return c.isDraft;
     return true;
+  }).filter(c => {
+    if (categoryFilter === 'All') return true;
+    const cats = c.categories && c.categories.length > 0 ? c.categories : (c.category ? [c.category] : []);
+    return cats.includes(categoryFilter);
   });
 
   return (
@@ -90,15 +105,24 @@ export default function CaseManagementPage() {
             <p className={styles.pageSubtitle}>Manage, edit, and organize all your clinical procedures.</p>
           </div>
           
-          {/* Desktop Button - Hidden on Mobile */}
-          <Link href="/admin/dashboard/create-case" className={`${styles.newCaseBtn} ${styles.desktopBtn}`} style={{border: 'none', cursor: 'pointer', textDecoration: 'none'}}>
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-            <span className={styles.newCaseBtnText}>Add New Case</span>
-          </Link>
+          {/* Desktop Buttons - Hidden on Mobile */}
+          <div className={styles.desktopBtn} style={{ display: 'flex', gap: '1rem' }}>
+            <Link href="/admin/dashboard/create-case?type=detailed" className={styles.newCaseBtn} style={{border: 'none', cursor: 'pointer', textDecoration: 'none'}}>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+              <span className={styles.newCaseBtnText}>Add Full Mouth Rehab</span>
+            </Link>
+            <Link href="/admin/dashboard/create-case?type=light" className={styles.newCaseBtn} style={{border: 'none', cursor: 'pointer', textDecoration: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--primary-color)'}}>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+              <span className={styles.newCaseBtnText}>Add Standard Case</span>
+            </Link>
+          </div>
         </div>
 
-        {/* Status Filter */}
-        <div className={styles.statusFilterContainer}>
+        {/* Filters Wrapper */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
+          
+          {/* Status Filter */}
+          <div className={styles.statusFilterContainer} style={{ marginBottom: 0 }}>
           <label className={styles.statusFilterLabel}>Filter Status:</label>
           <div className={styles.customStatusDropdownWrapper} ref={filterDropdownRef}>
             <button 
@@ -133,6 +157,46 @@ export default function CaseManagementPage() {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+
+          {/* Category Filter */}
+          <div className={styles.statusFilterContainer} style={{ marginBottom: 0 }}>
+            <label className={styles.statusFilterLabel}>Category:</label>
+            <div className={styles.customStatusDropdownWrapper} ref={categoryDropdownRef}>
+              <button 
+                type="button"
+                className={styles.statusFilterSelect}
+                onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
+              >
+                <span className={styles.statusSelectedText}>
+                  {categoryFilter === 'All' ? 'All Categories' : categoryFilter}
+                </span>
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ transform: categoryDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease', position: 'absolute', right: '1rem', top: '50%', marginTop: '-8px' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+
+              {categoryDropdownOpen && (
+                <div className={styles.statusDropdownMenu} style={{ right: 0, left: 'auto', maxHeight: '300px', overflowY: 'auto' }}>
+                  {['All', ...allCategories].map(option => (
+                    <div 
+                      key={option}
+                      className={`${styles.statusDropdownItem} ${categoryFilter === option ? styles.statusDropdownItemActive : ''}`}
+                      onClick={() => {
+                        setCategoryFilter(option);
+                        setCategoryDropdownOpen(false);
+                      }}
+                    >
+                      <div className={styles.statusRadioBtn}>
+                        {categoryFilter === option && <div className={styles.statusRadioInner}></div>}
+                      </div>
+                      <span>{option === 'All' ? 'All Categories' : option}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -187,7 +251,7 @@ export default function CaseManagementPage() {
           </div>
         ) : (
           filteredCases.map(caseItem => {
-            const dateStr = typeof caseItem.createdAt === 'string' ? caseItem.createdAt.replace(' ', 'T') : caseItem.createdAt;
+            const dateStr = typeof caseItem.updatedAt === 'string' ? caseItem.updatedAt.replace(' ', 'T') : caseItem.updatedAt;
             const date = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             return (
               <div key={caseItem.id} className={styles.caseCardItem}>
@@ -253,10 +317,6 @@ export default function CaseManagementPage() {
         </div>
       )}
 
-      {/* Mobile FAB - Outside of animated container to preserve fixed positioning */}
-      <Link href="/admin/dashboard/create-case" className={`${styles.newCaseBtn} ${styles.mobileFab}`} style={{border: 'none', cursor: 'pointer'}}>
-        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-      </Link>
     </>
   );
 }

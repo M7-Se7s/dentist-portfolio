@@ -6,32 +6,54 @@ import styles from './ImageSlider.module.css';
 
 export default function ImageSlider({ beforeImage, afterImage, priority = false }) {
   const [sliderPosition, setSliderPosition] = useState(50);
-
   const sliderRef = useRef(null);
+  const touchState = useRef({ startX: 0, startY: 0, isHorizontal: null });
 
-  const handleMove = (e) => {
-    if (!sliderRef.current) return;
+  const handleTouchStart = (e) => {
+    touchState.current = {
+      startX: e.touches[0].clientX,
+      startY: e.touches[0].clientY,
+      isHorizontal: null
+    };
+  };
+
+  const handleTouchMove = (e) => {
+    if (!sliderRef.current || e.touches.length === 0) return;
     
-    // Support both Touch and Mouse coordinates
-    let clientX;
-    if (e.touches && e.touches.length > 0) {
-      clientX = e.touches[0].clientX;
-    } else if (e.clientX !== undefined) {
-      clientX = e.clientX;
+    const clientX = e.touches[0].clientX;
+    const clientY = e.touches[0].clientY;
+    
+    // If we haven't determined the swipe direction yet
+    if (touchState.current.isHorizontal === null) {
+      const dx = Math.abs(clientX - touchState.current.startX);
+      const dy = Math.abs(clientY - touchState.current.startY);
+      
+      // Give a small threshold (5px) before deciding
+      if (dx > 5 || dy > 5) {
+        touchState.current.isHorizontal = dx > dy;
+      }
     }
     
-    if (clientX !== undefined) {
+    // Only move slider if it's a horizontal swipe
+    if (touchState.current.isHorizontal) {
       const rect = sliderRef.current.getBoundingClientRect();
       const x = clientX - rect.left;
       const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
       setSliderPosition(percentage);
+      // Optional: Prevent default to stop scrolling if definitely swiping horizontally
+      if (e.cancelable) e.preventDefault();
     }
   };
 
-  const handleInteraction = (e) => {
+  const handleMouseMove = (e) => {
     // If it's a mouse event, ensure the primary button is pressed
     if (e.type.includes('mouse') && e.buttons !== 1) return;
-    handleMove(e);
+    
+    if (!sliderRef.current || e.clientX === undefined) return;
+    const rect = sliderRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    setSliderPosition(percentage);
   };
 
   if (!beforeImage || !afterImage) {
@@ -54,11 +76,11 @@ export default function ImageSlider({ beforeImage, afterImage, priority = false 
       ref={sliderRef}
       className={styles.container} 
       dir="ltr"
-      onMouseMove={handleInteraction}
-      onMouseDown={handleInteraction}
-      onTouchMove={handleMove}
-      onTouchStart={handleMove}
-      style={{ touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none', cursor: 'ew-resize' }}
+      onMouseMove={handleMouseMove}
+      onMouseDown={handleMouseMove}
+      onTouchMove={handleTouchMove}
+      onTouchStart={handleTouchStart}
+      style={{ touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none', cursor: 'ew-resize' }}
     >
       {/* Before Image (Clipped to the left) */}
       <div 
