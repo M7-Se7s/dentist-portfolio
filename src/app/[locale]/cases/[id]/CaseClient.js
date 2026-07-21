@@ -140,13 +140,13 @@ export default function CaseClient({ caseData, id, initialError }) {
               <div className={styles.contentCard}>
                 <div className={styles.comparisonBox} style={{ border: 'none', boxShadow: 'none', padding: 0 }}>
                   {caseData.caseType === 'light' || (!caseData.beforeImage && !caseData.beforeImageUrl && caseData.coverImage) ? (
-                    <div style={{ position: 'relative', width: '100%', paddingTop: '66.66%' }}>
+                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                       <Image 
                         src={caseData.coverImage || '/images/placeholder.jpg'} 
                         alt={title} 
                         fill
                         sizes="(max-width: 768px) 100vw, 50vw"
-                        style={{ objectFit: 'cover', borderRadius: '12px' }}
+                        style={{ objectFit: 'cover' }}
                         priority={true}
                       />
                     </div>

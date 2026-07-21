@@ -5,8 +5,7 @@ import { Link } from '@/i18n/routing';
 import dynamic from 'next/dynamic';
 import { useTranslations, useLocale } from 'next-intl';
 import styles from './page.module.css';
-
-const ImageSlider = dynamic(() => import('@/components/ImageSlider'), { ssr: false });
+import ImageSlider from '@/components/ImageSlider';
 
 export default function CasesClient({ initialCases, dbCategories }) {
   const [activeFilters, setActiveFilters] = useState([]);

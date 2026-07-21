@@ -1,43 +1,33 @@
-"use client";
-
-import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { useLocale, useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export default function CVPage() {
-  const [cvData, setCvData] = useState(null);
-  const [settingsData, setSettingsData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const locale = useLocale();
+export const revalidate = 0; // Ensure fresh data on request
+
+export default async function CVPage({ params }) {
+  const resolvedParams = await params;
+  const { locale } = resolvedParams;
   const isAr = locale === 'ar';
-  const t = useTranslations('CV');
+  const t = await getTranslations({ locale, namespace: 'CV' });
 
-  useEffect(() => {
-    async function fetchCV() {
-      try {
-        const cvRef = doc(db, "content", "cv");
-        const cvSnap = await getDoc(cvRef);
-        if (cvSnap.exists()) {
-          setCvData(cvSnap.data());
-        }
+  let cvData = null;
+  let settingsData = null;
 
-        const settingsRef = doc(db, "settings", "global");
-        const settingsSnap = await getDoc(settingsRef);
-        if (settingsSnap.exists()) {
-          setSettingsData(settingsSnap.data());
-        }
-      } catch (error) {
-        console.error("Error fetching CV:", error);
-      } finally {
-        setLoading(false);
-      }
+  try {
+    const cvRef = doc(db, "content", "cv");
+    const cvSnap = await getDoc(cvRef);
+    if (cvSnap.exists()) {
+      cvData = cvSnap.data();
     }
 
-    fetchCV();
-  }, []);
-
-  // Loading state removed to allow immediate layout rendering
+    const settingsRef = doc(db, "settings", "global");
+    const settingsSnap = await getDoc(settingsRef);
+    if (settingsSnap.exists()) {
+      settingsData = settingsSnap.data();
+    }
+  } catch (error) {
+    console.error("Error fetching CV on server:", error);
+  }
 
   const {
     basicInfo = {},
