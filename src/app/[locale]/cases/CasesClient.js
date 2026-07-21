@@ -164,25 +164,25 @@ export default function CasesClient({ initialCases, dbCategories }) {
                         />
                       )}
                     </div>
-                    <div className={styles.caseInfo}>
+                    <Link href={`/cases/${caseItem.id}`} className={styles.caseInfo} style={{textDecoration: 'none', display: 'block', cursor: 'pointer'}}>
                       <div className={styles.categoriesWrapper}>
-                        {allCategories.map(cat => (
-                          <span key={cat} className={styles.caseCategory}>
-                            {cat}
-                          </span>
-                        ))}
+                        {allCategories.map(cat => {
+                          const catObj = dbCategories.find(c => c.nameEn === cat);
+                          const displayName = locale === 'ar' && catObj?.nameAr ? catObj.nameAr : cat;
+                          return (
+                            <span key={cat} className={styles.caseCategory}>
+                              {displayName}
+                            </span>
+                          );
+                        })}
                       </div>
-                      <Link href={`/cases/${caseItem.id}`} style={{textDecoration: 'none', display: 'inline-block'}}>
-                        <h3 className={styles.caseTitle}>{title}</h3>
-                      </Link>
+                      <h3 className={styles.caseTitle}>{title}</h3>
                       <p className={styles.caseDesc}>
                         {description?.substring(0, 80)}
                         {description?.length > 80 ? '...' : ''}
                       </p>
-                      <Link href={`/cases/${caseItem.id}`} style={{textDecoration: 'none'}}>
-                        <span className={styles.viewBtn}>{t('viewCase')}</span>
-                      </Link>
-                    </div>
+                      <span className={styles.viewBtn}>{t('viewCase')}</span>
+                    </Link>
                   </div>
                   );
                 })}
