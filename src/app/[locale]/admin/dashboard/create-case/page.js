@@ -34,7 +34,7 @@ function CreateCaseForm() {
   const [formData, setFormData] = useState({
     title: '',
     titleAr: '',
-    categories: [],
+    categories: caseType === 'detailed' ? ['Full Mouth Rehabilitation'] : [],
     patientAge: '',
     patientGender: '',
     description: '',
@@ -71,12 +71,6 @@ function CreateCaseForm() {
 
   const [activeTab, setActiveTab] = useState('basic');
   const [isTranslatingAll, setIsTranslatingAll] = useState(false);
-
-  useEffect(() => {
-    if (caseType === 'detailed') {
-      setFormData(prev => ({ ...prev, categories: ['Full Mouth Rehabilitation'] }));
-    }
-  }, [caseType]);
 
   const handleAutoTranslateAll = async () => {
     setIsTranslatingAll(true);

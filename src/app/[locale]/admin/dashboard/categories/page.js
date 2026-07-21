@@ -27,10 +27,6 @@ export default function CategoryManager() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
   const fetchCategories = async () => {
     try {
       const q = query(collection(db, "categories"), orderBy("nameEn", "asc"));
@@ -46,6 +42,10 @@ export default function CategoryManager() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleTranslate = async () => {
     if (!nameEn) return;
