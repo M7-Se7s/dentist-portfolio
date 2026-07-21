@@ -1,97 +1,46 @@
-"use client";
-
-import { useEffect, useState } from 'react';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { db, auth } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { Link } from '@/i18n/routing';
-import Image from 'next/image';
 import styles from '../admin.module.css';
+import CloudinaryTracker from './CloudinaryTracker';
 
-export default function DashboardPage() {
-  const [cases, setCases] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [profileViews, setProfileViews] = useState(0);
-  const [cloudinaryUsage, setCloudinaryUsage] = useState(null);
-  
+export const dynamic = 'force-dynamic';
 
+export default async function DashboardPage() {
+  let cases = [];
+  let profileViews = 0;
 
-  useEffect(() => {
-    let isMounted = true;
-    async function fetchCases() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "cases"));
-        if (!isMounted) return;
-        const casesList = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        // Sort by latest first
-        casesList.sort((a, b) => {
-          let dateA = 0;
-          let dateB = 0;
-          if (a.createdAt) {
-            const dateStrA = typeof a.createdAt === 'string' ? a.createdAt.replace(' ', 'T') : a.createdAt;
-            dateA = typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(dateStrA).getTime();
-          }
-          if (b.createdAt) {
-            const dateStrB = typeof b.createdAt === 'string' ? b.createdAt.replace(' ', 'T') : b.createdAt;
-            dateB = typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(dateStrB).getTime();
-          }
-          return (dateB || 0) - (dateA || 0);
-        });
-        setCases(casesList);
-
-        // Fetch Profile Views
-        const viewsRef = doc(db, "analytics", "visits");
-        const viewsSnap = await getDoc(viewsRef);
-        if (!isMounted) return;
-        if (viewsSnap.exists()) {
-          setProfileViews(viewsSnap.data().count || 0);
-        }
-      } catch (error) {
-        if (!isMounted) return;
-        console.error("Error fetching dashboard stats: ", error);
-      } finally {
-        if (isMounted) setLoading(false);
+  try {
+    const querySnapshot = await getDocs(collection(db, "cases"));
+    cases = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    // Sort by latest first
+    cases.sort((a, b) => {
+      let dateA = 0;
+      let dateB = 0;
+      if (a.createdAt) {
+        const dateStrA = typeof a.createdAt === 'string' ? a.createdAt.replace(' ', 'T') : a.createdAt;
+        dateA = typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(dateStrA).getTime();
       }
-    }
-    fetchCases();
-    return () => { isMounted = false; };
-  }, []);
-
-  useEffect(() => {
-    async function fetchCloudinaryUsage() {
-      try {
-        const idToken = await auth.currentUser?.getIdToken();
-        if (!idToken) return;
-
-        const res = await fetch('/api/cloudinary/usage', {
-          headers: { 'Authorization': `Bearer ${idToken}` }
-        });
-        const data = await res.json();
-        if (data && data.storage) {
-          setCloudinaryUsage({
-            used: data.storage.usage,
-            limit: data.storage.limit || 26843545600 // Default 25GB if not specified
-          });
-        }
-      } catch (e) {
-        console.error("Error fetching Cloudinary usage:", e);
+      if (b.createdAt) {
+        const dateStrB = typeof b.createdAt === 'string' ? b.createdAt.replace(' ', 'T') : b.createdAt;
+        dateB = typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(dateStrB).getTime();
       }
-    }
-
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (user) {
-        fetchCloudinaryUsage();
-      }
+      return (dateB || 0) - (dateA || 0);
     });
 
-    return () => unsubscribe();
-  }, []);
-
-
-
-  const publishedCases = cases.filter(c => !c.isDraft).length; // Assuming no draft logic yet, but this is a placeholder
+    // Fetch Profile Views
+    const viewsRef = doc(db, "analytics", "visits");
+    const viewsSnap = await getDoc(viewsRef);
+    if (viewsSnap.exists()) {
+      profileViews = viewsSnap.data().count || 0;
+    }
+  } catch (error) {
+    console.error("Error fetching dashboard stats: ", error);
+  }
 
   return (
     <>
@@ -111,7 +60,7 @@ export default function DashboardPage() {
               <span className={styles.statCardTitle}>TOTAL CASES</span>
               <span className={styles.statCardTrend}>+12% this month</span>
             </div>
-            <div className={styles.statCardValue}>{loading ? '-' : cases.length}</div>
+            <div className={styles.statCardValue}>{cases.length}</div>
           </div>
 
           <div className={styles.statCard}>
@@ -122,7 +71,7 @@ export default function DashboardPage() {
               <span className={styles.statCardTitle}>PUBLISHED CASES</span>
               <span className={styles.statCardTrend}>+5 this week</span>
             </div>
-            <div className={styles.statCardValue}>{loading ? '-' : cases.length}</div>
+            <div className={styles.statCardValue}>{cases.length}</div>
           </div>
 
           <div className={styles.statCard}>
@@ -133,40 +82,14 @@ export default function DashboardPage() {
               <span className={styles.statCardTitle}>PROFILE VIEWS</span>
               <span className={styles.statCardTrend}>Top 5% in Region</span>
             </div>
-            <div className={styles.statCardValue}>{loading ? '-' : profileViews.toLocaleString()}</div>
+            <div className={styles.statCardValue}>{profileViews.toLocaleString()}</div>
           </div>
         </div>
 
         {/* Analytics & Media Storage Row */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem', marginTop: '2rem' }}>
           
-          {/* Cloudinary Storage Tracker */}
-          <div className={styles.formSection} style={{ marginBottom: 0 }}>
-            <div className={styles.formSectionTitle}>Cloudinary Media Storage</div>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-              Track how much image and video storage you are using out of your monthly quota.
-            </p>
-            {cloudinaryUsage ? (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600 }}>
-                  <span>{(cloudinaryUsage.used / (1024 * 1024 * 1024)).toFixed(2)} GB Used</span>
-                  <span>{(cloudinaryUsage.limit / (1024 * 1024 * 1024)).toFixed(0)} GB Quota</span>
-                </div>
-                <div style={{ width: '100%', background: '#E2E8F0', borderRadius: '999px', height: '12px', overflow: 'hidden' }}>
-                  <div 
-                    style={{ 
-                      height: '100%', 
-                      background: (cloudinaryUsage.used / cloudinaryUsage.limit) > 0.85 ? '#EF4444' : '#10B981',
-                      width: `${Math.min((cloudinaryUsage.used / cloudinaryUsage.limit) * 100, 100)}%`,
-                      transition: 'width 1s ease-out'
-                    }}
-                  ></div>
-                </div>
-              </div>
-            ) : (
-              <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Loading storage stats...</div>
-            )}
-          </div>
+          <CloudinaryTracker />
 
           {/* Top Performing Cases */}
           <div className={styles.formSection} style={{ marginBottom: 0 }}>
@@ -206,10 +129,6 @@ export default function DashboardPage() {
         </div>
 
       </div>
-
-
-
-
     </>
   );
 }
