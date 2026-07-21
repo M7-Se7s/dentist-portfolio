@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect } from 'react';
-import { doc, setDoc, increment } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 
 export default function ViewTracker() {
   useEffect(() => {
@@ -11,6 +9,11 @@ export default function ViewTracker() {
       sessionStorage.setItem('hasVisitedProfile', 'true');
       const trackVisit = async () => {
         try {
+          // Lazy-load Firebase to avoid blocking the main thread during hydration
+          const [{ doc, setDoc, increment }, { db }] = await Promise.all([
+            import('firebase/firestore'),
+            import('@/lib/firebase')
+          ]);
           const analyticsRef = doc(db, "analytics", "visits");
           await setDoc(analyticsRef, { count: increment(1) }, { merge: true });
         } catch (analyticsError) {

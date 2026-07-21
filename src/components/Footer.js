@@ -2,8 +2,6 @@
 
 import { usePathname } from '../i18n/routing';
 import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
 import { useTranslations } from 'next-intl';
 import styles from './Footer.module.css';
 
@@ -22,6 +20,11 @@ export default function Footer() {
   useEffect(() => {
     async function fetchContactInfo() {
       try {
+        // Lazy-load Firebase to avoid blocking the main thread during hydration
+        const [{ doc, getDoc }, { db }] = await Promise.all([
+          import('firebase/firestore'),
+          import('@/lib/firebase')
+        ]);
         const docRef = doc(db, "settings", "global");
         const snap = await getDoc(docRef);
         if (snap.exists()) {

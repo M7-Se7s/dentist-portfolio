@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useTransition } from 'react';
 import { Link } from '@/i18n/routing';
 import dynamic from 'next/dynamic';
 import { useTranslations, useLocale } from 'next-intl';
@@ -13,6 +13,7 @@ export default function CasesClient({ initialCases, dbCategories }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(9);
   const dropdownRef = useRef(null);
+  const [isPending, startTransition] = useTransition();
 
   const t = useTranslations('Cases');
   const locale = useLocale();
@@ -43,7 +44,9 @@ export default function CasesClient({ initialCases, dbCategories }) {
   const hasMore = visibleCount < filteredCases.length;
 
   const handleLoadMore = () => {
-    setVisibleCount(prev => prev + 9);
+    startTransition(() => {
+      setVisibleCount(prev => prev + 9);
+    });
   };
 
   return (
@@ -72,7 +75,9 @@ export default function CasesClient({ initialCases, dbCategories }) {
                         <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                              onClick={(e) => {
                                e.stopPropagation();
-                               setActiveFilters(prev => prev.filter(c => c !== filter));
+                               startTransition(() => {
+                                 setActiveFilters(prev => prev.filter(c => c !== filter));
+                               });
                              }}
                              style={{cursor: 'pointer', marginLeft: '4px'}}
                         >
@@ -102,16 +107,18 @@ export default function CasesClient({ initialCases, dbCategories }) {
                       key={cat.nameEn} 
                       className={`${styles.dropdownItem} ${isSelected ? styles.dropdownItemActive : ''}`}
                       onClick={() => {
-                        if (cat.nameEn === "All") {
-                          setActiveFilters([]);
-                        } else {
-                          setActiveFilters(prev => 
-                            prev.includes(cat.nameEn) 
-                              ? prev.filter(c => c !== cat.nameEn)
-                              : [...prev, cat.nameEn]
-                          );
-                        }
-                        setVisibleCount(9);
+                        startTransition(() => {
+                          if (cat.nameEn === "All") {
+                            setActiveFilters([]);
+                          } else {
+                            setActiveFilters(prev => 
+                              prev.includes(cat.nameEn) 
+                                ? prev.filter(c => c !== cat.nameEn)
+                                : [...prev, cat.nameEn]
+                            );
+                          }
+                          setVisibleCount(9);
+                        });
                       }}
                     >
                       <div className={styles.checkbox}>
@@ -134,7 +141,7 @@ export default function CasesClient({ initialCases, dbCategories }) {
             <div className={styles.loading}>{t('noCases')}</div>
           ) : (
             <>
-              <div className={styles.grid}>
+              <div className={styles.grid} style={{ opacity: isPending ? 0.7 : 1, transition: 'opacity 0.15s ease' }}>
                 {visibleCases.map((caseItem) => {
                   const title = locale === 'ar' ? (caseItem.titleAr || caseItem.title) : caseItem.title;
                   const description = locale === 'ar' ? (caseItem.descriptionAr || caseItem.description) : caseItem.description;
