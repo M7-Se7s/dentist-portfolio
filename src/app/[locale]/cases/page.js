@@ -5,7 +5,6 @@ import styles from './page.module.css';
 import CasesClient from './CasesClient';
 
 export const dynamicParams = true;
-export const revalidate = 0; // force dynamic so data updates instantly
 
 // Helper to serialize Firestore data to safe JSON
 function serializeFirestoreData(data) {

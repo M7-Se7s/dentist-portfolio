@@ -7,6 +7,7 @@ import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import Spinner from '@/components/Spinner';
 import styles from '../../admin.module.css';
+import { triggerRevalidation } from '@/lib/actions/revalidate';
 
 import BasicInfoEditor from './components/BasicInfoEditor';
 import ExperienceEditor from './components/ExperienceEditor';
@@ -326,6 +327,9 @@ export default function CVEditorPage() {
         pdfUrl: pdfUrl,
         pdfUrlAr: pdfUrlAr
       }, { merge: true });
+      
+      // Trigger On-Demand Revalidation
+      triggerRevalidation(['/[locale]/cv'], 'page');
       
       setMessage('CV updated successfully!');
       setTimeout(() => setMessage(''), 3000);

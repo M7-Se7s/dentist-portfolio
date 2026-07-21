@@ -2,8 +2,6 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getTranslations } from 'next-intl/server';
 
-export const revalidate = 0; // Ensure fresh data on request
-
 export default async function CVPage({ params }) {
   const resolvedParams = await params;
   const { locale } = resolvedParams;

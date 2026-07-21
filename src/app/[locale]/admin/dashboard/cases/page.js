@@ -5,6 +5,7 @@ import { Link } from '@/i18n/routing';
 import styles from '../../admin.module.css';
 import { casesService } from '@/lib/services/casesService';
 import { useUploads } from '@/lib/contexts/UploadContext';
+import { triggerRevalidation } from '@/lib/actions/revalidate';
 
 export default function CaseManagementPage() {
   const [cases, setCases] = useState([]);
@@ -73,6 +74,12 @@ export default function CaseManagementPage() {
     try {
       await casesService.deleteCase(caseToDelete.id);
       setCases(cases.filter(c => c.id !== caseToDelete.id));
+      
+      // Trigger On-Demand Revalidation
+      triggerRevalidation([
+        '/[locale]/cases',
+        `/[locale]/cases/[id]`
+      ], 'page');
     } catch (error) {
       console.error("Failed to delete case", error);
     } finally {

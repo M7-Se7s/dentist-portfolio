@@ -2,6 +2,8 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import CaseClient from './CaseClient';
 
+export const dynamicParams = true;
+
 // Helper to serialize Firestore data to safe JSON for passing to Client Components
 function serializeFirestoreData(data) {
   if (!data) return data;

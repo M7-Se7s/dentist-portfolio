@@ -65,6 +65,10 @@ export const viewport = {
   maximumScale: 1,
 };
 
+export function generateStaticParams() {
+  return [{ locale: 'en' }, { locale: 'ar' }];
+}
+
 export default async function RootLayout({ children, params }) {
   const { locale } = await params;
 

@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useCallback } from 'react';
 import imageCompression from 'browser-image-compression';
 import { casesService } from '../services/casesService';
 import { auth } from '../firebase';
+import { triggerRevalidation } from '../actions/revalidate';
 
 export const UploadContext = createContext();
 
@@ -205,11 +206,18 @@ export function UploadProvider({ children }) {
       };
 
       // 3. Save to Firestore
+      let finalCaseId = caseId;
       if (mode === 'create') {
-        await casesService.createCase(caseDoc);
+        finalCaseId = await casesService.createCase(caseDoc);
       } else if (mode === 'edit') {
         await casesService.updateCase(caseId, caseDoc);
       }
+
+      // Trigger On-Demand Revalidation
+      triggerRevalidation([
+        '/[locale]/cases',
+        `/[locale]/cases/[id]`
+      ], 'page');
 
       // 4. Mark as done and clear after a few seconds
       updateJob(job.id, { status: 'done', progress: 100 });
