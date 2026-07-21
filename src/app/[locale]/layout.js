@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from "@vercel/analytics/react";
 import './polyfill';
 
 const inter = Inter({
@@ -76,8 +77,8 @@ export default async function RootLayout({ children, params }) {
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
   // Apply the arabic font class only if locale is Arabic, else apply Inter & Outfit.
-  const fontClasses = locale === 'ar' 
-    ? cairo.variable 
+  const fontClasses = locale === 'ar'
+    ? cairo.variable
     : `${inter.variable} ${outfit.variable}`;
 
   return (
@@ -91,6 +92,7 @@ export default async function RootLayout({ children, params }) {
           <Footer />
         </NextIntlClientProvider>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
