@@ -61,8 +61,8 @@ export default function ImageSlider({ beforeImage, afterImage, priority = false 
       <div className={styles.fallback} style={{ position: 'relative', overflow: 'hidden' }}>
         {afterImage || beforeImage ? (
           <>
-            <Image src={afterImage || beforeImage} alt="" className={styles.imageBackground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} />
-            <Image src={afterImage || beforeImage} alt="Case image" className={styles.imageForeground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} />
+            <Image src={afterImage || beforeImage} alt="" className={styles.imageBackground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} unoptimized={true} />
+            <Image src={afterImage || beforeImage} alt="Case image" className={styles.imageForeground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} unoptimized={true} />
           </>
         ) : (
           <div className={styles.noImage}>No images available</div>
@@ -87,8 +87,8 @@ export default function ImageSlider({ beforeImage, afterImage, priority = false 
         className={styles.imageWrapper}
         style={{ clipPath: `polygon(0 0, ${sliderPosition}% 0, ${sliderPosition}% 100%, 0 100%)` }}
       >
-        <Image src={beforeImage} alt="" className={styles.imageBackground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} />
-        <Image src={beforeImage} alt="Before treatment" className={styles.imageForeground} fill sizes="(max-width: 768px) 100vw, 50vw" draggable="false" priority={priority} />
+        <Image src={beforeImage} alt="" className={styles.imageBackground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} unoptimized={true} />
+        <Image src={beforeImage} alt="Before treatment" className={styles.imageForeground} fill sizes="(max-width: 768px) 100vw, 50vw" draggable="false" priority={priority} unoptimized={true} />
         <span className={styles.labelBefore} style={{ zIndex: 20 }}>Before</span>
       </div>
 
@@ -97,8 +97,8 @@ export default function ImageSlider({ beforeImage, afterImage, priority = false 
         className={`${styles.imageWrapper} ${styles.afterImage}`}
         style={{ clipPath: `polygon(${sliderPosition}% 0, 100% 0, 100% 100%, ${sliderPosition}% 100%)` }}
       >
-        <Image src={afterImage} alt="" className={styles.imageBackground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} />
-        <Image src={afterImage} alt="After treatment" className={styles.imageForeground} fill sizes="(max-width: 768px) 100vw, 50vw" draggable="false" priority={priority} />
+        <Image src={afterImage} alt="" className={styles.imageBackground} fill sizes="(max-width: 768px) 100vw, 50vw" priority={priority} unoptimized={true} />
+        <Image src={afterImage} alt="After treatment" className={styles.imageForeground} fill sizes="(max-width: 768px) 100vw, 50vw" draggable="false" priority={priority} unoptimized={true} />
         <span className={styles.labelAfter} style={{ zIndex: 20 }}>After</span>
       </div>
 

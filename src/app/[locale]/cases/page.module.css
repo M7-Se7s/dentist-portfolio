@@ -143,6 +143,37 @@
   flex-direction: column;
 }
 
+/* Simple Card Modifiers */
+.simpleCard {
+  cursor: default;
+  transition: none;
+}
+
+.simpleCard:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border);
+}
+
+.simpleCard .imageWrapper img {
+  transition: none;
+}
+.simpleCard:hover .imageWrapper img {
+  transform: none;
+}
+
+.simpleCardInfo {
+  cursor: default;
+}
+
+.simpleCardDesc {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+  flex-grow: 1;
+}
+
 .categoriesWrapper {
   display: flex;
   flex-wrap: wrap;

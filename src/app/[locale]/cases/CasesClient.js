@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { useTranslations, useLocale } from 'next-intl';
 import styles from './page.module.css';
 import ImageSlider from '@/components/ImageSlider';
+import ImageCarousel from '@/components/ImageCarousel';
 
 export default function CasesClient({ initialCases, dbCategories }) {
   const [activeCategory, setActiveCategory] = useState("Full Mouth Rehabilitation Cases");
@@ -93,23 +94,60 @@ export default function CasesClient({ initialCases, dbCategories }) {
                     ? caseItem.categories 
                     : (caseItem.category ? [caseItem.category] : ["All"]);
 
+                  const isDetailed = (() => {
+                    const normalize = (str) => (str || "").trim().toLowerCase();
+                    if (caseItem.categories && Array.isArray(caseItem.categories)) {
+                      return caseItem.categories.some(cat => normalize(cat) === "full mouth rehabilitation cases");
+                    }
+                    return normalize(caseItem.category) === "full mouth rehabilitation cases";
+                  })();
+
+                  // For simple cases, collect all available images for the carousel
+                  let simpleImages = [];
+                  if (!isDetailed) {
+                    if (caseItem.coverImage) simpleImages.push(caseItem.coverImage);
+                    if (caseItem.images && Array.isArray(caseItem.images)) {
+                      // Some older data might have objects with .url, some might be raw strings
+                      const urls = caseItem.images.map(img => typeof img === 'string' ? img : (img.url || '')).filter(Boolean);
+                      simpleImages = [...simpleImages, ...urls];
+                    }
+                    simpleImages = [...new Set(simpleImages)]; // deduplicate
+                  }
+
+                  const CardWrapper = isDetailed ? Link : 'div';
+                  const cardWrapperProps = isDetailed 
+                    ? { href: `/cases/${caseItem.id}`, className: styles.caseInfo, style: {textDecoration: 'none', display: 'block', cursor: 'pointer'} }
+                    : { className: `${styles.caseInfo} ${styles.simpleCardInfo}`, style: { display: 'block' } };
+
                   return (
-                  <div key={caseItem.id} className={styles.caseCard}>
+                  <div key={caseItem.id} className={`${styles.caseCard} ${!isDetailed ? styles.simpleCard : ''}`}>
                     <div className={styles.imageWrapper}>
-                      {caseItem.caseType === 'light' || (!caseItem.beforeImage && !caseItem.beforeImageUrl && caseItem.coverImage) ? (
-                        <img 
-                          src={caseItem.coverImage || '/images/placeholder.jpg'} 
-                          alt={title} 
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                        />
+                      {isDetailed ? (
+                        caseItem.caseType === 'light' || (!caseItem.beforeImage && !caseItem.beforeImageUrl && caseItem.coverImage) ? (
+                          <img 
+                            src={caseItem.coverImage || '/images/placeholder.jpg'} 
+                            alt={title} 
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                          />
+                        ) : (
+                          <ImageSlider 
+                            beforeImage={caseItem.beforeImage || caseItem.beforeImageUrl} 
+                            afterImage={caseItem.afterImage || caseItem.afterImageUrl} 
+                          />
+                        )
                       ) : (
-                        <ImageSlider 
-                          beforeImage={caseItem.beforeImage || caseItem.beforeImageUrl} 
-                          afterImage={caseItem.afterImage || caseItem.afterImageUrl} 
-                        />
+                        simpleImages.length > 1 ? (
+                          <ImageCarousel images={simpleImages} alt={title} />
+                        ) : (
+                          <img 
+                            src={simpleImages[0] || '/images/placeholder.jpg'} 
+                            alt={title} 
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                          />
+                        )
                       )}
                     </div>
-                    <Link href={`/cases/${caseItem.id}`} className={styles.caseInfo} style={{textDecoration: 'none', display: 'block', cursor: 'pointer'}}>
+                    <CardWrapper {...cardWrapperProps}>
                       <div className={styles.categoriesWrapper}>
                         {allCategories.map(cat => {
                           const catObj = dbCategories.find(c => c.nameEn === cat);
@@ -122,12 +160,20 @@ export default function CasesClient({ initialCases, dbCategories }) {
                         })}
                       </div>
                       <h3 className={styles.caseTitle}>{title}</h3>
-                      <p className={styles.caseDesc}>
-                        {description?.substring(0, 80)}
-                        {description?.length > 80 ? '...' : ''}
+                      <p className={isDetailed ? styles.caseDesc : styles.simpleCardDesc}>
+                        {isDetailed ? (
+                          <>
+                            {description?.substring(0, 80)}
+                            {description?.length > 80 ? '...' : ''}
+                          </>
+                        ) : (
+                          description
+                        )}
                       </p>
-                      <span className={styles.viewBtn}>{t('viewCase')}</span>
-                    </Link>
+                      {isDetailed && (
+                        <span className={styles.viewBtn}>{t('viewCase')}</span>
+                      )}
+                    </CardWrapper>
                   </div>
                   );
                 })}

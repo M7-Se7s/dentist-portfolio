@@ -1,0 +1,101 @@
+.carouselWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #F8FAFC;
+}
+
+.carouselTrack {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease-out;
+  touch-action: pan-y pinch-zoom;
+}
+
+.carouselSlide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.slideImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Arrows */
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  color: var(--text-dark);
+}
+
+.carouselWrapper:hover .navButton {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .navButton {
+    display: none;
+  }
+}
+
+.navButton:hover {
+  background-color: #fff;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.navButton.prevButton {
+  left: 8px;
+}
+
+.navButton.nextButton {
+  right: 8px;
+}
+
+/* Pagination */
+.pagination {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  z-index: 10;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.dotActive {
+  background-color: #fff;
+  transform: scale(1.3);
+}
