@@ -6,6 +6,8 @@ const ImageAlignmentEditor = dynamic(() => import('@/components/ImageAlignmentEd
 
 export default function ImageUploadSection({
   caseType = 'detailed',
+  imageMode = 'beforeAfter',
+  onImageModeChange,
   coverPreview, setCoverPreview, setCoverImage,
   beforePreview, setBeforePreview, setBeforeImage,
   afterPreview, setAfterPreview, setAfterImage,
@@ -129,69 +131,125 @@ export default function ImageUploadSection({
 
       {caseType === 'detailed' ? (
         <div className={styles.formSection}>
-          <div className={styles.formSectionTitle}>Before / After Comparison *</div>
-          <p className={styles.sectionHint}>These images are used for the interactive slider.</p>
-          <div className={styles.splitImages}>
-            
-            <div className={styles.formGroup}>
-              <label>Before Image *</label>
-              <div className={styles.imageDropzoneSplit}>
-                <input type="file" accept="image/*" onChange={handleBeforeChange} className={styles.hiddenFileInput} required />
-                {beforePreview ? (
-                  <img src={beforePreview} alt="Preview" className={styles.imageDropzonePreview} />
-                ) : (
-                  <div className={styles.uploadPlaceholder}>
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <p className={styles.uploadPlaceholderText}>Upload</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>After Image *</label>
-              <div className={styles.imageDropzoneSplit} style={{ position: 'relative' }}>
-                <input type="file" accept="image/*" onChange={handleAfterChange} className={styles.hiddenFileInput} required />
-                {afterPreview ? (
-                  <>
-                    <img src={afterPreview} alt="Preview" className={styles.imageDropzonePreview} />
-                    {afterPreview && beforePreview && (
-                      <button 
-                        type="button" 
-                        onClick={handleRealign}
-                        style={{
-                          position: 'absolute',
-                          bottom: '8px',
-                          right: '8px',
-                          padding: '6px 12px',
-                          background: 'rgba(0, 0, 0, 0.6)',
-                          color: '#fff',
-                          border: '1px solid rgba(255, 255, 255, 0.2)',
-                          borderRadius: '6px',
-                          fontSize: '0.8rem',
-                          cursor: 'pointer',
-                          zIndex: 5,
-                          backdropFilter: 'blur(4px)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px'
-                        }}
-                      >
-                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-                        Align
-                      </button>
-                    )}
-                  </>
-                ) : (
-                  <div className={styles.uploadPlaceholder}>
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <p className={styles.uploadPlaceholderText}>Upload</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
+          <div className={styles.formSectionTitle}>Case Images *</div>
+          
+          {/* Image Mode Toggle */}
+          <div style={{ display: 'flex', gap: '0', marginBottom: '1.5rem', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)', width: 'fit-content' }}>
+            <button
+              type="button"
+              onClick={() => onImageModeChange?.('beforeAfter')}
+              style={{
+                padding: '0.6rem 1.25rem',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                backgroundColor: imageMode === 'beforeAfter' ? 'var(--primary-color)' : 'var(--bg-secondary)',
+                color: imageMode === 'beforeAfter' ? '#fff' : 'var(--text-muted)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Before / After
+            </button>
+            <button
+              type="button"
+              onClick={() => onImageModeChange?.('coverOnly')}
+              style={{
+                padding: '0.6rem 1.25rem',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                backgroundColor: imageMode === 'coverOnly' ? 'var(--primary-color)' : 'var(--bg-secondary)',
+                color: imageMode === 'coverOnly' ? '#fff' : 'var(--text-muted)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Cover Image Only
+            </button>
           </div>
+
+          {imageMode === 'beforeAfter' ? (
+            <>
+              <p className={styles.sectionHint}>These images are used for the interactive slider.</p>
+              <div className={styles.splitImages}>
+                <div className={styles.formGroup}>
+                  <label>Before Image *</label>
+                  <div className={styles.imageDropzoneSplit}>
+                    <input type="file" accept="image/*" onChange={handleBeforeChange} className={styles.hiddenFileInput} required />
+                    {beforePreview ? (
+                      <img src={beforePreview} alt="Preview" className={styles.imageDropzonePreview} />
+                    ) : (
+                      <div className={styles.uploadPlaceholder}>
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <p className={styles.uploadPlaceholderText}>Upload</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>After Image *</label>
+                  <div className={styles.imageDropzoneSplit} style={{ position: 'relative' }}>
+                    <input type="file" accept="image/*" onChange={handleAfterChange} className={styles.hiddenFileInput} required />
+                    {afterPreview ? (
+                      <>
+                        <img src={afterPreview} alt="Preview" className={styles.imageDropzonePreview} />
+                        {afterPreview && beforePreview && (
+                          <button 
+                            type="button" 
+                            onClick={handleRealign}
+                            style={{
+                              position: 'absolute',
+                              bottom: '8px',
+                              right: '8px',
+                              padding: '6px 12px',
+                              background: 'rgba(0, 0, 0, 0.6)',
+                              color: '#fff',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              borderRadius: '6px',
+                              fontSize: '0.8rem',
+                              cursor: 'pointer',
+                              zIndex: 5,
+                              backdropFilter: 'blur(4px)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                            Align
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <div className={styles.uploadPlaceholder}>
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <p className={styles.uploadPlaceholderText}>Upload</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className={styles.sectionHint}>This image will be used as the primary display for the case.</p>
+              <div className={styles.formGroup} style={{ maxWidth: '400px' }}>
+                <div className={styles.imageDropzoneSplit} style={{ height: '300px' }}>
+                  <input type="file" accept="image/*" onChange={handleCoverChange} className={styles.hiddenFileInput} required />
+                  {coverPreview ? (
+                    <img src={coverPreview} alt="Cover Preview" className={styles.imageDropzonePreview} />
+                  ) : (
+                    <div className={styles.uploadPlaceholder}>
+                      <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={styles.uploadPlaceholderIcon}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                      <p className={styles.uploadPlaceholderText}>Upload Cover Image</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       ) : (
         <div className={styles.formSection}>

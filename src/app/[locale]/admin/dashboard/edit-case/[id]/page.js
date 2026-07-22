@@ -32,6 +32,7 @@ export default function EditCasePage({ params }) {
   const [coverPreview, setCoverPreview] = useState(null);
   
   const [caseType, setCaseType] = useState('detailed');
+  const [imageMode, setImageMode] = useState('beforeAfter');
   
   // Form State
   const [formData, setFormData] = useState({
@@ -72,6 +73,12 @@ export default function EditCasePage({ params }) {
           // Infer caseType if missing. Assuming existing cases are detailed.
           const loadedCaseType = caseData.caseType || 'detailed';
           setCaseType(loadedCaseType);
+          
+          // Auto-detect image mode from existing data
+          const hasBeforeAfter = caseData.beforeImage || caseData.beforeImageUrl;
+          if (!hasBeforeAfter && caseData.coverImage) {
+            setImageMode('coverOnly');
+          }
           
           // Normalize existing arrays and fields for the form
           setFormData({ 
@@ -403,6 +410,8 @@ export default function EditCasePage({ params }) {
         <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
           <ImageUploadSection 
             caseType={caseType}
+            imageMode={imageMode}
+            onImageModeChange={setImageMode}
             coverPreview={coverPreview || formData.coverImage}
             setCoverPreview={setCoverPreview}
             setCoverImage={setCoverImage}

@@ -22,6 +22,7 @@ function CreateCaseForm() {
   
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [imageMode, setImageMode] = useState('beforeAfter');
   
   const [beforeImage, setBeforeImage] = useState(null);
   const [beforePreview, setBeforePreview] = useState(null);
@@ -32,7 +33,7 @@ function CreateCaseForm() {
   
   // Form State
   const [formData, setFormData] = useState({
-    categories: caseType === 'detailed' ? ['Full Mouth Rehabilitation'] : [],
+    categories: [],
     patientAge: '',
     patientGender: '',
     description: '',
@@ -143,13 +144,16 @@ function CreateCaseForm() {
   const handleSave = async (e, asDraft = false) => {
     e?.preventDefault();
     if (!asDraft) {
-      if (!formData.title || formData.categories.length === 0) {
-        alert("Please fill all required fields (Title, Categories)");
+      if (formData.categories.length === 0) {
+        alert("Please select a Category.");
         return;
       }
       if (caseType === 'detailed') {
-        if (!beforeImage || !afterImage) {
+        if (imageMode === 'beforeAfter' && (!beforeImage || !afterImage)) {
           alert("Please upload both before and after images.");
+          return;
+        } else if (imageMode === 'coverOnly' && !coverImage) {
+          alert("Please upload a cover image.");
           return;
         }
       } else {
@@ -364,6 +368,8 @@ function CreateCaseForm() {
         <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
           <ImageUploadSection 
             caseType={caseType}
+            imageMode={imageMode}
+            onImageModeChange={setImageMode}
             coverPreview={coverPreview}
             setCoverPreview={setCoverPreview}
             setCoverImage={setCoverImage}
