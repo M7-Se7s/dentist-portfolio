@@ -226,7 +226,7 @@ export default function CaseClient({ caseData, id, initialError }) {
           {/* Clinical Story (Narrative) */}
           {(diagnosis || treatmentPerformed || chiefComplaint || techniques || challenges || result || keyTakeaways || treatmentPlan) && (
             <div className={styles.clinicalStory}>
-              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('clinicalNarrative')}</h3>}>
+              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('clinicalNarrative')}</h3>} collapseOnMobile={true}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 {chiefComplaint && (
                   <div className={styles.storyBlock}>

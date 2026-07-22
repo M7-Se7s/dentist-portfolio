@@ -145,34 +145,45 @@ export default function CasesClient({ initialCases, dbCategories }) {
                         )
                       )}
                     </div>
-                    <div className={`${styles.caseInfo} ${!isDetailed ? styles.simpleCardInfo : ''}`}>
-                      <div className={styles.categoriesWrapper}>
-                        {allCategories.map(cat => {
-                          const catObj = dbCategories.find(c => c.nameEn === cat);
-                          const displayName = locale === 'ar' && catObj?.nameAr ? catObj.nameAr : cat;
-                          return (
-                            <span key={cat} className={styles.caseCategory}>
-                              {displayName}
-                            </span>
-                          );
-                        })}
-                      </div>
-                      <p className={isDetailed ? styles.caseDesc : styles.simpleCardDesc}>
-                        {isDetailed ? (
-                          <>
-                            {description?.substring(0, 80)}
-                            {description?.length > 80 ? '...' : ''}
-                          </>
-                        ) : (
-                          description
-                        )}
-                      </p>
-                      {isDetailed && (
-                        <Link href={`/cases/${caseItem.id}`} className={styles.viewDetailsBtn}>
+                    {isDetailed ? (
+                      <Link href={`/cases/${caseItem.id}`} className={styles.caseInfo} style={{ textDecoration: 'none' }}>
+                        <div className={styles.categoriesWrapper}>
+                          {allCategories.map(cat => {
+                            const catObj = dbCategories.find(c => c.nameEn === cat);
+                            const displayName = locale === 'ar' && catObj?.nameAr ? catObj.nameAr : cat;
+                            return (
+                              <span key={cat} className={styles.caseCategory}>
+                                {displayName}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        <p className={styles.caseDesc}>
+                          {description?.substring(0, 80)}
+                          {description?.length > 80 ? '...' : ''}
+                        </p>
+                        <span className={styles.viewDetailsBtn}>
                           {t('viewCase')}
-                        </Link>
-                      )}
-                    </div>
+                        </span>
+                      </Link>
+                    ) : (
+                      <div className={`${styles.caseInfo} ${styles.simpleCardInfo}`}>
+                        <div className={styles.categoriesWrapper}>
+                          {allCategories.map(cat => {
+                            const catObj = dbCategories.find(c => c.nameEn === cat);
+                            const displayName = locale === 'ar' && catObj?.nameAr ? catObj.nameAr : cat;
+                            return (
+                              <span key={cat} className={styles.caseCategory}>
+                                {displayName}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        <p className={styles.simpleCardDesc}>
+                          {description}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   );
                 })}
