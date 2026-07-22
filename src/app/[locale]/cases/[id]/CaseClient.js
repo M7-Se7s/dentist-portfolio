@@ -224,7 +224,7 @@ export default function CaseClient({ caseData, id, initialError }) {
           </div>
 
           {/* Clinical Story (Narrative) */}
-          {(diagnosis || treatmentPerformed || chiefComplaint || techniques || challenges || result || keyTakeaways) && (
+          {(diagnosis || treatmentPerformed || chiefComplaint || techniques || challenges || result || keyTakeaways || treatmentPlan) && (
             <div className={styles.clinicalStory}>
               <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('clinicalNarrative')}</h3>}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -276,28 +276,31 @@ export default function CaseClient({ caseData, id, initialError }) {
                     <p style={{marginTop: '1rem'}}>{keyTakeaways}</p>
                   </div>
                 )}
+
+                {treatmentPlan && (
+                  <div className={styles.storyBlock}>
+                    <h4 style={{margin: 0}}>{t('treatmentProcessSteps')}</h4>
+                    <div 
+                      className="rich-text-content" 
+                      style={{marginTop: '1rem'}}
+                      dangerouslySetInnerHTML={{ __html: treatmentPlan }} 
+                    />
+                  </div>
+                )}
               </div>
               </Collapsible>
             </div>
           )}
 
-          {/* Legacy Treatment Plan (Fallback) */}
-          {treatmentPlan && !caseData.treatmentPerformed && (
-            <div className={`${styles.infoBlock} ${styles.treatmentPlanBlock}`} style={{ marginTop: '3rem' }}>
-              <h3 className={styles.sectionHeading}>{t('fullCaseReport')}</h3>
-              <div 
-                className="rich-text-content" 
-                dangerouslySetInnerHTML={{ __html: treatmentPlan }} 
-              />
-            </div>
-          )}
+
 
           {/* Treatment Process Steps */}
-          {caseData.steps && caseData.steps.length > 0 && (
+          {((caseData.steps && caseData.steps.length > 0) || (caseData.treatmentSteps && caseData.treatmentSteps.length > 0)) && (
             <div className={styles.processStepsSection}>
-              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('treatmentProcessSteps')}</h3>}>
+              <Collapsible titleElement={<h3 className={styles.sectionHeading} style={{margin: 0}}>{t('treatmentProcessSteps')}</h3>} defaultOpen={true}>
               <div className={styles.stepsList}>
-                {caseData.steps.map((step, index) => {
+                {(caseData.steps || caseData.treatmentSteps).map((step, index) => {
+                  if (!step) return null;
                   const stepTitle = locale === 'ar' ? (step.titleAr || step.title) : step.title;
                   const stepDesc = locale === 'ar' ? (step.descriptionAr || step.description) : step.description;
                   return (

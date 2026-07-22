@@ -167,8 +167,10 @@ export function UploadProvider({ children }) {
         const stepImages = [...(step.existingImages || [])];
         
         finalSteps.push({
-          title: step.title,
-          description: step.description,
+          title: step.title || '',
+          titleAr: step.titleAr || '',
+          description: step.description || '',
+          descriptionAr: step.descriptionAr || '',
           images: stepImages
         });
         
