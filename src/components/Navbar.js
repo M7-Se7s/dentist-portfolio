@@ -55,7 +55,7 @@ export default function Navbar() {
       <div className={styles.navbarSpacer}></div>
       <nav className={`${styles.navbar} glass animate-fadeIn`}>
         <div className={styles.navContainer}>
-          <Link href="/" className={styles.brand} onClick={() => setMenuOpen(false)}>
+          <Link href="/" className={styles.brand}>
             <Image 
               src="/logo.png" 
               alt={tHero('title')} 

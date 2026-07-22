@@ -28,11 +28,14 @@ export default function EditCasePage({ params }) {
   const [beforePreview, setBeforePreview] = useState(null);
   const [afterImage, setAfterImage] = useState(null);
   const [afterPreview, setAfterPreview] = useState(null);
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
+  
+  const [caseType, setCaseType] = useState('detailed');
+  const [imageMode, setImageMode] = useState('beforeAfter');
   
   // Form State
   const [formData, setFormData] = useState({
-    title: '',
-    titleAr: '',
     categories: [],
     patientAge: '',
     patientGender: '',
@@ -67,6 +70,16 @@ export default function EditCasePage({ params }) {
       try {
         const caseData = await casesService.getCaseById(caseId);
         if (caseData && isMounted) {
+          // Infer caseType if missing. Assuming existing cases are detailed.
+          const loadedCaseType = caseData.caseType || 'detailed';
+          setCaseType(loadedCaseType);
+          
+          // Auto-detect image mode from existing data
+          const hasBeforeAfter = caseData.beforeImage || caseData.beforeImageUrl;
+          if (!hasBeforeAfter && caseData.coverImage) {
+            setImageMode('coverOnly');
+          }
+          
           // Normalize existing arrays and fields for the form
           setFormData({ 
             ...caseData,
@@ -84,7 +97,7 @@ export default function EditCasePage({ params }) {
           });
         } else if (isMounted) {
           // Fallback if not found
-          setFormData(prev => ({ ...prev, title: `New Case ${caseId}`, isDraft: true }));
+          setFormData(prev => ({ ...prev, isDraft: true }));
         }
       } catch (error) {
         console.error("Failed to fetch case", error);
@@ -108,7 +121,6 @@ export default function EditCasePage({ params }) {
   const handleAutoTranslateAll = async () => {
     setIsTranslatingAll(true);
     const fieldsToTranslate = [
-      { en: formData.title, setKey: 'titleAr' },
       { en: formData.description, setKey: 'descriptionAr' },
       { en: formData.treatmentPlan, setKey: 'treatmentPlanAr' },
       { en: formData.chiefComplaint, setKey: 'chiefComplaintAr' },
@@ -178,6 +190,13 @@ export default function EditCasePage({ params }) {
 
   const handleSave = async (e, asDraft = false) => {
     e?.preventDefault();
+    if (!asDraft) {
+      if (formData.categories.length === 0) {
+        alert("Please fill all required fields (Categories)");
+        return;
+      }
+    }
+    
     setIsSaving(true);
     const payload = {
       mode: 'edit',
@@ -186,6 +205,8 @@ export default function EditCasePage({ params }) {
         ...formData,
         isDraft: asDraft
       },
+      caseType,
+      coverImageFile: coverImage,
       beforeImageFile: beforeImage,
       afterImageFile: afterImage,
       treatmentSteps: formData.steps,
@@ -211,8 +232,6 @@ export default function EditCasePage({ params }) {
   }
 
   // Adapter setters
-  const setTitle = (val) => setFormData(p => ({ ...p, title: val }));
-  const setTitleAr = (val) => setFormData(p => ({ ...p, titleAr: val }));
   const setCategories = (val) => setFormData(p => ({ ...p, categories: val }));
   const setDescription = (val) => setFormData(p => ({ ...p, description: val }));
   const setDescriptionAr = (val) => setFormData(p => ({ ...p, descriptionAr: val }));
@@ -323,16 +342,19 @@ export default function EditCasePage({ params }) {
       <form onSubmit={(e) => handleSave(e, false)}>
         <div className={styles.tabsContainer}>
           <button type="button" onClick={() => setActiveTab('basic')} className={activeTab === 'basic' ? styles.tabActive : styles.tabInactive}>Basic Info</button>
-          <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
-          <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
-          <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+          {caseType === 'detailed' && (
+            <>
+              <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
+              <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
+              <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+            </>
+          )}
           <button type="button" onClick={() => setActiveTab('media')} className={activeTab === 'media' ? styles.tabActive : styles.tabInactive}>Media & Images</button>
         </div>
 
         <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
           <BasicInfoSection 
-            title={formData.title} setTitle={setTitle}
-            titleAr={formData.titleAr} setTitleAr={setTitleAr}
+            caseType={caseType}
             categories={formData.categories} setCategories={setCategories}
             description={formData.description} setDescription={setDescription}
             descriptionAr={formData.descriptionAr} setDescriptionAr={setDescriptionAr}
@@ -387,6 +409,12 @@ export default function EditCasePage({ params }) {
 
         <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
           <ImageUploadSection 
+            caseType={caseType}
+            imageMode={imageMode}
+            onImageModeChange={setImageMode}
+            coverPreview={coverPreview || formData.coverImage}
+            setCoverPreview={setCoverPreview}
+            setCoverImage={setCoverImage}
             beforePreview={beforePreview || formData.beforeImageUrl || formData.beforeImage} 
             setBeforePreview={setBeforePreview} 
             setBeforeImage={setBeforeImage}

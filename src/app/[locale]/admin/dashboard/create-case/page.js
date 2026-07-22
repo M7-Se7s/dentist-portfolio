@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from '@/i18n/routing';
+import { useSearchParams } from 'next/navigation';
 import { Link } from '@/i18n/routing';
 import styles from '../../admin.module.css';
 import { useUploads } from '@/lib/contexts/UploadContext';
@@ -14,21 +15,24 @@ import ClinicalAssessmentSection from '../cases/components/ClinicalAssessmentSec
 import CaseDetailsSection from '../cases/components/CaseDetailsSection';
 import OutcomeSection from '../cases/components/OutcomeSection';
 
-export default function CreateCasePage() {
+function CreateCaseForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const caseType = searchParams.get('type') || 'detailed';
   
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [imageMode, setImageMode] = useState('beforeAfter');
   
   const [beforeImage, setBeforeImage] = useState(null);
   const [beforePreview, setBeforePreview] = useState(null);
   const [afterImage, setAfterImage] = useState(null);
   const [afterPreview, setAfterPreview] = useState(null);
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
   
   // Form State
   const [formData, setFormData] = useState({
-    title: '',
-    titleAr: '',
     categories: [],
     patientAge: '',
     patientGender: '',
@@ -70,7 +74,6 @@ export default function CreateCasePage() {
   const handleAutoTranslateAll = async () => {
     setIsTranslatingAll(true);
     const fieldsToTranslate = [
-      { en: formData.title, setKey: 'titleAr' },
       { en: formData.description, setKey: 'descriptionAr' },
       { en: formData.treatmentPlan, setKey: 'treatmentPlanAr' },
       { en: formData.chiefComplaint, setKey: 'chiefComplaintAr' },
@@ -140,13 +143,25 @@ export default function CreateCasePage() {
 
   const handleSave = async (e, asDraft = false) => {
     e?.preventDefault();
-    if (!formData.title || formData.categories.length === 0) {
-      alert("Please fill all required fields (Title, Categories)");
-      return;
-    }
-    if (!beforeImage || !afterImage) {
-      alert("Please upload both before and after images.");
-      return;
+    if (!asDraft) {
+      if (formData.categories.length === 0) {
+        alert("Please select a Category.");
+        return;
+      }
+      if (caseType === 'detailed') {
+        if (imageMode === 'beforeAfter' && (!beforeImage || !afterImage)) {
+          alert("Please upload both before and after images.");
+          return;
+        } else if (imageMode === 'coverOnly' && !coverImage) {
+          alert("Please upload a cover image.");
+          return;
+        }
+      } else {
+        if (!coverImage) {
+          alert("Please upload a cover image.");
+          return;
+        }
+      }
     }
 
     setIsSaving(true);
@@ -158,6 +173,8 @@ export default function CreateCasePage() {
         isDraft: asDraft,
         createdAt: new Date().toISOString()
       },
+      caseType,
+      coverImageFile: coverImage,
       beforeImageFile: beforeImage,
       afterImageFile: afterImage,
       treatmentSteps: formData.steps,
@@ -173,8 +190,6 @@ export default function CreateCasePage() {
   };
 
   // Adapter setters
-  const setTitle = (val) => setFormData(p => ({ ...p, title: val }));
-  const setTitleAr = (val) => setFormData(p => ({ ...p, titleAr: val }));
   const setCategories = (val) => setFormData(p => ({ ...p, categories: val }));
   const setDescription = (val) => setFormData(p => ({ ...p, description: val }));
   const setDescriptionAr = (val) => setFormData(p => ({ ...p, descriptionAr: val }));
@@ -285,16 +300,19 @@ export default function CreateCasePage() {
       <form onSubmit={(e) => handleSave(e, false)}>
         <div className={styles.tabsContainer}>
           <button type="button" onClick={() => setActiveTab('basic')} className={activeTab === 'basic' ? styles.tabActive : styles.tabInactive}>Basic Info</button>
-          <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
-          <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
-          <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+          {caseType === 'detailed' && (
+            <>
+              <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
+              <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
+              <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+            </>
+          )}
           <button type="button" onClick={() => setActiveTab('media')} className={activeTab === 'media' ? styles.tabActive : styles.tabInactive}>Media & Images</button>
         </div>
 
         <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
           <BasicInfoSection 
-            title={formData.title} setTitle={setTitle}
-            titleAr={formData.titleAr} setTitleAr={setTitleAr}
+            caseType={caseType}
             categories={formData.categories} setCategories={setCategories}
             description={formData.description} setDescription={setDescription}
             descriptionAr={formData.descriptionAr} setDescriptionAr={setDescriptionAr}
@@ -349,6 +367,12 @@ export default function CreateCasePage() {
 
         <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
           <ImageUploadSection 
+            caseType={caseType}
+            imageMode={imageMode}
+            onImageModeChange={setImageMode}
+            coverPreview={coverPreview}
+            setCoverPreview={setCoverPreview}
+            setCoverImage={setCoverImage}
             beforePreview={beforePreview} 
             setBeforePreview={setBeforePreview} 
             setBeforeImage={setBeforeImage}
@@ -363,8 +387,15 @@ export default function CreateCasePage() {
           />
         </div>
 
-
       </form>
     </div>
+  );
+}
+
+export default function CreateCasePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CreateCaseForm />
+    </Suspense>
   );
 }

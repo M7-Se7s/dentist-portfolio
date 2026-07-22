@@ -178,12 +178,8 @@ import AccordionSection from './AccordionSection';
 export default function SkillsTextEditor({ 
   coreCompetencies, setCoreCompetencies,
   coreCompetenciesAr, setCoreCompetenciesAr,
-  licensure, setLicensure,
-  licensureAr, setLicensureAr,
   clinicalSkills, setClinicalSkills,
   clinicalSkillsAr, setClinicalSkillsAr,
-  courses, setCourses,
-  coursesAr, setCoursesAr,
   languages, setLanguages,
   languagesAr, setLanguagesAr,
   references, setReferences,
@@ -192,11 +188,11 @@ export default function SkillsTextEditor({
 }) {
   return (
     <>
-      {/* Competencies & Licensure */}
+      {/* Core Competencies */}
       <AccordionSection 
-        title="Competencies & Licensure" 
-        icon={<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>}
-        defaultOpen={false} 
+        title="Core Competencies" 
+        icon={<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>} 
+        defaultOpen={true} 
         styles={styles}
       >
         <DynamicList 
@@ -205,15 +201,6 @@ export default function SkillsTextEditor({
           itemsEN={coreCompetencies} setItemsEN={setCoreCompetencies}
           itemsAR={coreCompetenciesAr} setItemsAR={setCoreCompetenciesAr}
           placeholderEN="e.g. Comprehensive Treatment Planning"
-          styles={styles}
-        />
-
-        <DynamicList 
-          titleEN="Professional Licensure (EN)" 
-          titleAR="Professional Licensure (AR)" 
-          itemsEN={licensure} setItemsEN={setLicensure}
-          itemsAR={licensureAr} setItemsAR={setLicensureAr}
-          placeholderEN="e.g. Saudi Prometric Examination — Passed"
           styles={styles}
         />
       </AccordionSection>
@@ -232,22 +219,13 @@ export default function SkillsTextEditor({
         />
       </AccordionSection>
 
-      {/* Courses, Languages, References */}
+      {/* Languages & References */}
       <AccordionSection 
-        title="Courses & Languages" 
+        title="Languages & References" 
         icon={<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>}
         defaultOpen={false} 
         styles={styles}
       >
-        <DynamicList 
-          titleEN="Professional Courses (EN)" 
-          titleAR="Professional Courses (AR)" 
-          itemsEN={courses} setItemsEN={setCourses}
-          itemsAR={coursesAr} setItemsAR={setCoursesAr}
-          placeholderEN="e.g. Online Endodontic Courses"
-          styles={styles}
-        />
-
         <DynamicList 
           titleEN="Languages (EN)" 
           titleAR="Languages (AR)" 

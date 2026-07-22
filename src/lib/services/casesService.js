@@ -14,7 +14,7 @@ export const casesService = {
   // Fetch all cases
   getCases: async () => {
     try {
-      const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
+      const q = query(collection(db, COLLECTION_NAME), orderBy('updatedAt', 'desc'));
       const querySnapshot = await getDocs(q);
       const cases = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -73,6 +73,15 @@ export const casesService = {
   updateCase: async (id, updateData) => {
     try {
       const docRef = doc(db, COLLECTION_NAME, id);
+      
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const existingData = docSnap.data();
+        if (existingData.isDraft === true && updateData.isDraft === false) {
+          updateData.createdAt = serverTimestamp();
+        }
+      }
+
       await updateDoc(docRef, {
         ...updateData,
         updatedAt: serverTimestamp()

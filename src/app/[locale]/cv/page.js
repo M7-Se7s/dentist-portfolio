@@ -1,43 +1,31 @@
-"use client";
-
-import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { useLocale, useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export default function CVPage() {
-  const [cvData, setCvData] = useState(null);
-  const [settingsData, setSettingsData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const locale = useLocale();
+export default async function CVPage({ params }) {
+  const resolvedParams = await params;
+  const { locale } = resolvedParams;
   const isAr = locale === 'ar';
-  const t = useTranslations('CV');
+  const t = await getTranslations({ locale, namespace: 'CV' });
 
-  useEffect(() => {
-    async function fetchCV() {
-      try {
-        const cvRef = doc(db, "content", "cv");
-        const cvSnap = await getDoc(cvRef);
-        if (cvSnap.exists()) {
-          setCvData(cvSnap.data());
-        }
+  let cvData = null;
+  let settingsData = null;
 
-        const settingsRef = doc(db, "settings", "global");
-        const settingsSnap = await getDoc(settingsRef);
-        if (settingsSnap.exists()) {
-          setSettingsData(settingsSnap.data());
-        }
-      } catch (error) {
-        console.error("Error fetching CV:", error);
-      } finally {
-        setLoading(false);
-      }
+  try {
+    const cvRef = doc(db, "content", "cv");
+    const cvSnap = await getDoc(cvRef);
+    if (cvSnap.exists()) {
+      cvData = cvSnap.data();
     }
 
-    fetchCV();
-  }, []);
-
-  // Loading state removed to allow immediate layout rendering
+    const settingsRef = doc(db, "settings", "global");
+    const settingsSnap = await getDoc(settingsRef);
+    if (settingsSnap.exists()) {
+      settingsData = settingsSnap.data();
+    }
+  } catch (error) {
+    console.error("Error fetching CV on server:", error);
+  }
 
   const {
     basicInfo = {},
@@ -131,7 +119,7 @@ export default function CVPage() {
           <header className="cv-header">
             <div>
               <h1 style={{ color: 'var(--primary-color)', fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', fontFamily: 'var(--font-heading)', marginBottom: '0.25rem', lineHeight: '1.2', letterSpacing: '-0.5px' }}>
-                {nameToUse || "Dr. Mohamed Shaaban"}
+                {nameToUse || "Dr. Mohamed Shabaan"}
               </h1>
               <p style={{ color: 'var(--secondary-color)', fontSize: 'clamp(1rem, 2.5vw, 1.15rem)', fontWeight: '500', marginBottom: '1.5rem' }}>
                 {titleToUse || "General Dentist"}
@@ -231,17 +219,32 @@ export default function CVPage() {
                 <section>
                   <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>{t('professionalLicensure')}</h2>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {licensureToUse.map((item, idx) => (
-                      <li key={idx} className="licensure-item">
-                        <div className="licensure-icon-wrapper">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                          </svg>
-                        </div>
-                        <span style={{ lineHeight: '1.5' }}>{item}</span>
-                      </li>
-                    ))}
+                    {licensureToUse.map((item, idx) => {
+                      const isObject = typeof item === 'object' && item !== null;
+                      const name = isObject ? (isAr && item.nameAr ? item.nameAr : item.name) : item;
+                      const details = isObject ? (isAr && item.detailsAr ? item.detailsAr : item.details) : '';
+
+                      return (
+                        <li key={idx} className="licensure-item">
+                          <div className="licensure-icon-wrapper" style={{ marginTop: details ? '0.2rem' : '0' }}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                            <span style={{ lineHeight: '1.5', fontWeight: '700', color: 'var(--primary-color)', fontSize: 'clamp(0.95rem, 2vw, 1.05rem)' }}>{name}</span>
+                            {details && (
+                              <div style={{ fontSize: 'clamp(0.85rem, 1.5vw, 0.95rem)', color: 'var(--text-muted)', lineHeight: '1.4', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                                {details.split(/[|\n]/).map((line, lIdx) => (
+                                  <span key={lIdx}>{line.trim()}</span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </section>
               )}
@@ -376,16 +379,31 @@ export default function CVPage() {
                       <section>
                         <h2 style={{ color: 'var(--primary-color)', fontSize: '1.5rem', textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>{t('professionalCourses')}</h2>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                          {flatCourses.map((item, idx) => (
-                            <li key={idx} className="licensure-item">
-                              <div className="licensure-icon-wrapper">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-                                </svg>
-                              </div>
-                              <span style={{ lineHeight: '1.5' }}>{item}</span>
-                            </li>
-                          ))}
+                          {flatCourses.map((item, idx) => {
+                            const isObject = typeof item === 'object' && item !== null;
+                            const name = isObject ? (isAr && item.nameAr ? item.nameAr : item.name) : item;
+                            const details = isObject ? (isAr && item.detailsAr ? item.detailsAr : item.details) : '';
+                            
+                            return (
+                              <li key={idx} className="licensure-item">
+                                <div className="licensure-icon-wrapper" style={{ marginTop: details ? '0.2rem' : '0' }}>
+                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                                  </svg>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                  <span style={{ lineHeight: '1.5', fontWeight: '700', color: 'var(--primary-color)', fontSize: 'clamp(0.95rem, 2vw, 1.05rem)' }}>{name}</span>
+                                  {details && (
+                                    <div style={{ fontSize: 'clamp(0.85rem, 1.5vw, 0.95rem)', color: 'var(--text-muted)', lineHeight: '1.4', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                                      {details.split(/[|\n]/).map((line, lIdx) => (
+                                        <span key={lIdx}>{line.trim()}</span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </li>
+                            );
+                          })}
                         </ul>
                       </section>
                     )}

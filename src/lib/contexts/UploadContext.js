@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useCallback } from 'react';
 import imageCompression from 'browser-image-compression';
 import { casesService } from '../services/casesService';
 import { auth } from '../firebase';
+import { triggerRevalidation } from '../actions/revalidate';
 
 export const UploadContext = createContext();
 
@@ -97,6 +98,8 @@ export function UploadProvider({ children }) {
         mode, // 'create' or 'edit'
         caseId, // if edit
         formData, 
+        caseType,
+        coverImageFile,
         beforeImageFile, 
         afterImageFile, 
         galleryItems,
@@ -121,6 +124,14 @@ export function UploadProvider({ children }) {
         totalFiles++;
         uploadTasks.push(async () => {
           finalAfterUrl = await uploadFile(afterImageFile);
+        });
+      }
+
+      let finalCoverUrl = formData.coverImage || '';
+      if (coverImageFile) {
+        totalFiles++;
+        uploadTasks.push(async () => {
+          finalCoverUrl = await uploadFile(coverImageFile);
         });
       }
 
@@ -156,8 +167,10 @@ export function UploadProvider({ children }) {
         const stepImages = [...(step.existingImages || [])];
         
         finalSteps.push({
-          title: step.title,
-          description: step.description,
+          title: step.title || '',
+          titleAr: step.titleAr || '',
+          description: step.description || '',
+          descriptionAr: step.descriptionAr || '',
           images: stepImages
         });
         
@@ -185,6 +198,8 @@ export function UploadProvider({ children }) {
       // 2. All uploads succeeded, construct final document
       const caseDoc = {
         ...formData,
+        caseType: caseType || 'detailed',
+        coverImage: finalCoverUrl,
         beforeImage: finalBeforeUrl,
         afterImage: finalAfterUrl,
         images: finalGalleryItems,
@@ -193,11 +208,18 @@ export function UploadProvider({ children }) {
       };
 
       // 3. Save to Firestore
+      let finalCaseId = caseId;
       if (mode === 'create') {
-        await casesService.createCase(caseDoc);
+        finalCaseId = await casesService.createCase(caseDoc);
       } else if (mode === 'edit') {
         await casesService.updateCase(caseId, caseDoc);
       }
+
+      // Trigger On-Demand Revalidation
+      triggerRevalidation([
+        '/[locale]/cases',
+        `/[locale]/cases/[id]`
+      ], 'page');
 
       // 4. Mark as done and clear after a few seconds
       updateJob(job.id, { status: 'done', progress: 100 });

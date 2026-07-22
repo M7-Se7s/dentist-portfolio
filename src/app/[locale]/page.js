@@ -1,95 +1,81 @@
-"use client";
-
-import { useEffect, useState } from 'react';
 import { Link } from '../../i18n/routing';
 import Image from 'next/image';
-import { doc, getDoc, collection, getDocs, setDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import dynamic from 'next/dynamic';
 import styles from './page.module.css';
-import { useTranslations, useLocale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import ViewTracker from './ViewTracker';
+import DownloadCvButton from '@/components/DownloadCvButton';
 
-const ImageSlider = dynamic(() => import('@/components/ImageSlider'), { ssr: false });
-const DownloadCvButton = dynamic(() => import('@/components/DownloadCvButton'), { ssr: false });
+import ClientImageSlider from '@/components/ClientImageSlider';
 
-export default function Home() {
-  const [profile, setProfile] = useState(null);
-  const [cvData, setCvData] = useState(null);
-  const [settings, setSettings] = useState(null);
-  const [recentCases, setRecentCases] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const locale = useLocale();
+export const dynamicParams = true;
+export const revalidate = 0; // force dynamic so data updates instantly
 
-  const tHero = useTranslations('Hero');
-  const tProfile = useTranslations('Profile');
-  const tCases = useTranslations('Cases');
-  const tContact = useTranslations('Contact');
+export default async function Home({ params }) {
+  const resolvedParams = await params;
+  const { locale } = resolvedParams;
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        // Fetch Profile for the Hero Image
-        const profileRef = doc(db, "content", "profile");
-        const profileSnap = await getDoc(profileRef);
-        if (profileSnap.exists()) {
-          setProfile(profileSnap.data());
-        }
+  const tHero = await getTranslations({ locale, namespace: 'Hero' });
+  const tProfile = await getTranslations({ locale, namespace: 'Profile' });
+  const tCases = await getTranslations({ locale, namespace: 'Cases' });
+  const tContact = await getTranslations({ locale, namespace: 'Contact' });
 
-        // Fetch CV for the PDF URLs
-        const cvRef = doc(db, "content", "cv");
-        const cvSnap = await getDoc(cvRef);
-        if (cvSnap.exists()) {
-          setCvData(cvSnap.data());
-        }
+  let profile = null;
+  let cvData = null;
+  let settings = null;
+  let recentCases = [];
 
-        // Fetch Settings for Contact Info
-        const settingsRef = doc(db, "settings", "global");
-        const settingsSnap = await getDoc(settingsRef);
-        if (settingsSnap.exists()) {
-          setSettings(settingsSnap.data());
-        }
-
-        // Fetch Featured Cases (limit to 3 for homepage)
-        const casesSnapshot = await getDocs(collection(db, "cases"));
-        let casesList = casesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                                          .filter(c => c.isDraft !== true && c.featured === true);
-        casesList.sort((a, b) => {
-          let dateA = 0;
-          let dateB = 0;
-          if (a.createdAt) {
-            dateA = typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(a.createdAt).getTime();
-          }
-          if (b.createdAt) {
-            dateB = typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(b.createdAt).getTime();
-          }
-          return dateB - dateA;
-        });
-
-        setRecentCases(casesList.slice(0, 3));
-
-        // Track profile visit (only once per session)
-        if (typeof window !== 'undefined' && !sessionStorage.getItem('hasVisitedProfile')) {
-          sessionStorage.setItem('hasVisitedProfile', 'true');
-          try {
-            const analyticsRef = doc(db, "analytics", "visits");
-            await setDoc(analyticsRef, { count: increment(1) }, { merge: true });
-          } catch (analyticsError) {
-            console.error("Error tracking visit:", analyticsError);
-          }
-        }
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
+  try {
+    // Fetch Profile for the Hero Image
+    const profileRef = doc(db, "content", "profile");
+    const profileSnap = await getDoc(profileRef);
+    if (profileSnap.exists()) {
+      profile = profileSnap.data();
     }
-    
-    fetchData();
-  }, []);
+
+    // Fetch CV for the PDF URLs
+    const cvRef = doc(db, "content", "cv");
+    const cvSnap = await getDoc(cvRef);
+    if (cvSnap.exists()) {
+      cvData = cvSnap.data();
+    }
+
+    // Fetch Settings for Contact Info
+    const settingsRef = doc(db, "settings", "global");
+    const settingsSnap = await getDoc(settingsRef);
+    if (settingsSnap.exists()) {
+      settings = settingsSnap.data();
+    }
+
+    // Fetch Featured Cases (limit to 3 for homepage)
+    const casesSnapshot = await getDocs(collection(db, "cases"));
+    let casesList = casesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                                      .filter(c => c.isDraft !== true && c.featured === true);
+    casesList.sort((a, b) => {
+      let dateA = 0;
+      let dateB = 0;
+      if (a.createdAt) {
+        const dateStrA = typeof a.createdAt === 'string' ? a.createdAt.replace(' ', 'T') : a.createdAt;
+        dateA = typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(dateStrA).getTime();
+      }
+      if (b.createdAt) {
+        const dateStrB = typeof b.createdAt === 'string' ? b.createdAt.replace(' ', 'T') : b.createdAt;
+        dateB = typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(dateStrB).getTime();
+      }
+      return (dateB || 0) - (dateA || 0);
+    });
+
+    recentCases = casesList.slice(0, 3);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
 
   return (
     <main>
+      <ViewTracker />
+      
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={`container ${styles.heroContainer}`}>
@@ -112,6 +98,7 @@ export default function Home() {
               <DownloadCvButton 
                 pdfUrl={cvData?.pdfUrl} 
                 pdfUrlAr={cvData?.pdfUrlAr} 
+                isLoading={false}
                 className="btn-secondary" 
                 label={tHero('downloadCV')} 
               />
@@ -165,8 +152,8 @@ export default function Home() {
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem' }}>
               {recentCases.map(caseItem => (
                 <div key={caseItem.id} className="card" style={{padding: '0', overflow: 'hidden', width: '100%', maxWidth: '300px'}}>
-                  <div style={{position: 'relative', height: '200px', backgroundColor: '#E2E8F0'}} onClick={(e) => e.preventDefault()}>
-                    <ImageSlider 
+                  <div style={{position: 'relative', height: '200px', backgroundColor: '#E2E8F0'}}>
+                    <ClientImageSlider 
                       beforeImage={caseItem.beforeImage || caseItem.beforeImageUrl} 
                       afterImage={caseItem.afterImage || caseItem.afterImageUrl} 
                     />
