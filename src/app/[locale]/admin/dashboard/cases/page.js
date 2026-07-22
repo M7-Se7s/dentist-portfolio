@@ -214,7 +214,7 @@ export default function CaseManagementPage() {
           <div key={upload.id} className={styles.caseCardItem} style={{ border: '2px dashed var(--primary-color)' }}>
             <div className={styles.caseCardHeader}>
               <div className={styles.caseAvatar} style={{ background: 'var(--bg-secondary)', color: 'var(--primary-color)' }}>
-                {upload.title.substring(0, 2).toUpperCase()}
+                {(upload.formData?.categories?.[0] || 'CA').substring(0, 2).toUpperCase()}
               </div>
               <div className={styles.caseAdminActions}>
                 {upload.status === 'error' ? (
@@ -230,7 +230,7 @@ export default function CaseManagementPage() {
               </div>
             </div>
             
-            <h3 className={styles.caseCardTitle}>{upload.title}</h3>
+            <h3 className={styles.caseCardTitle}>{upload.formData?.categories?.[0] || 'Uploading Case...'}</h3>
             
             <div className={styles.caseCardDetails} style={{ marginTop: '1rem' }}>
               <div style={{ width: '100%', backgroundColor: 'var(--border-color)', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
@@ -264,7 +264,7 @@ export default function CaseManagementPage() {
               <div key={caseItem.id} className={styles.caseCardItem}>
                 <div className={styles.caseCardHeader}>
                   <div className={styles.caseAvatar}>
-                    {caseItem.title.substring(0, 2).toUpperCase()}
+                    {(caseItem.category || caseItem.categories?.[0] || 'CA').substring(0, 2).toUpperCase()}
                   </div>
                   <div className={styles.caseAdminActions}>
                     <Link href={`/admin/dashboard/edit-case/${caseItem.id}`} className={`${styles.actionBtn} ${styles.edit}`}>
@@ -276,7 +276,7 @@ export default function CaseManagementPage() {
                   </div>
                 </div>
                 
-                <h3 className={styles.caseCardTitle}>{caseItem.title}</h3>
+                <h3 className={styles.caseCardTitle}>{caseItem.category || caseItem.categories?.[0] || 'General'}</h3>
                 
                 <div className={styles.caseCardDetails}>
                   <div className={styles.caseCardDetailItem}>

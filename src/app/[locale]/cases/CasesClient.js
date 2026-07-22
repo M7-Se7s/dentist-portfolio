@@ -88,8 +88,10 @@ export default function CasesClient({ initialCases, dbCategories }) {
             <>
               <div className={styles.grid} style={{ opacity: isPending ? 0.7 : 1, transition: 'opacity 0.15s ease' }}>
                 {visibleCases.map((caseItem) => {
-                  const title = locale === 'ar' ? (caseItem.titleAr || caseItem.title) : caseItem.title;
                   const description = locale === 'ar' ? (caseItem.descriptionAr || caseItem.description) : caseItem.description;
+                  
+                  // Use category as alt text since title is removed
+                  const altText = caseItem.category || caseItem.categories?.[0] || 'Case Image';
                   const allCategories = caseItem.categories && caseItem.categories.length > 0 
                     ? caseItem.categories 
                     : (caseItem.category ? [caseItem.category] : ["All"]);
@@ -126,7 +128,7 @@ export default function CasesClient({ initialCases, dbCategories }) {
                         caseItem.caseType === 'light' || (!caseItem.beforeImage && !caseItem.beforeImageUrl && caseItem.coverImage) ? (
                           <img 
                             src={caseItem.coverImage || '/images/placeholder.jpg'} 
-                            alt={title} 
+                            alt={altText} 
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                           />
                         ) : (
@@ -137,11 +139,11 @@ export default function CasesClient({ initialCases, dbCategories }) {
                         )
                       ) : (
                         simpleImages.length > 1 ? (
-                          <ImageCarousel images={simpleImages} alt={title} />
+                          <ImageCarousel images={simpleImages} alt={altText} />
                         ) : (
                           <img 
                             src={simpleImages[0] || '/images/placeholder.jpg'} 
-                            alt={title} 
+                            alt={altText} 
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                           />
                         )
@@ -159,7 +161,6 @@ export default function CasesClient({ initialCases, dbCategories }) {
                           );
                         })}
                       </div>
-                      <h3 className={styles.caseTitle}>{title}</h3>
                       <p className={isDetailed ? styles.caseDesc : styles.simpleCardDesc}>
                         {isDetailed ? (
                           <>

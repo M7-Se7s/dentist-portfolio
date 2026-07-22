@@ -35,8 +35,6 @@ export default function EditCasePage({ params }) {
   
   // Form State
   const [formData, setFormData] = useState({
-    title: '',
-    titleAr: '',
     categories: [],
     patientAge: '',
     patientGender: '',
@@ -92,7 +90,7 @@ export default function EditCasePage({ params }) {
           });
         } else if (isMounted) {
           // Fallback if not found
-          setFormData(prev => ({ ...prev, title: `New Case ${caseId}`, isDraft: true }));
+          setFormData(prev => ({ ...prev, isDraft: true }));
         }
       } catch (error) {
         console.error("Failed to fetch case", error);
@@ -116,7 +114,6 @@ export default function EditCasePage({ params }) {
   const handleAutoTranslateAll = async () => {
     setIsTranslatingAll(true);
     const fieldsToTranslate = [
-      { en: formData.title, setKey: 'titleAr' },
       { en: formData.description, setKey: 'descriptionAr' },
       { en: formData.treatmentPlan, setKey: 'treatmentPlanAr' },
       { en: formData.chiefComplaint, setKey: 'chiefComplaintAr' },
@@ -187,8 +184,8 @@ export default function EditCasePage({ params }) {
   const handleSave = async (e, asDraft = false) => {
     e?.preventDefault();
     if (!asDraft) {
-      if (!formData.title || formData.categories.length === 0) {
-        alert("Please fill all required fields (Title, Categories)");
+      if (formData.categories.length === 0) {
+        alert("Please fill all required fields (Categories)");
         return;
       }
     }
@@ -228,8 +225,6 @@ export default function EditCasePage({ params }) {
   }
 
   // Adapter setters
-  const setTitle = (val) => setFormData(p => ({ ...p, title: val }));
-  const setTitleAr = (val) => setFormData(p => ({ ...p, titleAr: val }));
   const setCategories = (val) => setFormData(p => ({ ...p, categories: val }));
   const setDescription = (val) => setFormData(p => ({ ...p, description: val }));
   const setDescriptionAr = (val) => setFormData(p => ({ ...p, descriptionAr: val }));
@@ -353,8 +348,6 @@ export default function EditCasePage({ params }) {
         <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
           <BasicInfoSection 
             caseType={caseType}
-            title={formData.title} setTitle={setTitle}
-            titleAr={formData.titleAr} setTitleAr={setTitleAr}
             categories={formData.categories} setCategories={setCategories}
             description={formData.description} setDescription={setDescription}
             descriptionAr={formData.descriptionAr} setDescriptionAr={setDescriptionAr}

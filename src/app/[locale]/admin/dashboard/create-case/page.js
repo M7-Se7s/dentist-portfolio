@@ -32,8 +32,6 @@ function CreateCaseForm() {
   
   // Form State
   const [formData, setFormData] = useState({
-    title: '',
-    titleAr: '',
     categories: caseType === 'detailed' ? ['Full Mouth Rehabilitation'] : [],
     patientAge: '',
     patientGender: '',
@@ -75,7 +73,6 @@ function CreateCaseForm() {
   const handleAutoTranslateAll = async () => {
     setIsTranslatingAll(true);
     const fieldsToTranslate = [
-      { en: formData.title, setKey: 'titleAr' },
       { en: formData.description, setKey: 'descriptionAr' },
       { en: formData.treatmentPlan, setKey: 'treatmentPlanAr' },
       { en: formData.chiefComplaint, setKey: 'chiefComplaintAr' },
@@ -189,8 +186,6 @@ function CreateCaseForm() {
   };
 
   // Adapter setters
-  const setTitle = (val) => setFormData(p => ({ ...p, title: val }));
-  const setTitleAr = (val) => setFormData(p => ({ ...p, titleAr: val }));
   const setCategories = (val) => setFormData(p => ({ ...p, categories: val }));
   const setDescription = (val) => setFormData(p => ({ ...p, description: val }));
   const setDescriptionAr = (val) => setFormData(p => ({ ...p, descriptionAr: val }));
@@ -314,8 +309,6 @@ function CreateCaseForm() {
         <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
           <BasicInfoSection 
             caseType={caseType}
-            title={formData.title} setTitle={setTitle}
-            titleAr={formData.titleAr} setTitleAr={setTitleAr}
             categories={formData.categories} setCategories={setCategories}
             description={formData.description} setDescription={setDescription}
             descriptionAr={formData.descriptionAr} setDescriptionAr={setDescriptionAr}
