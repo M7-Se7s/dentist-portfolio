@@ -96,8 +96,15 @@ export default function CasesClient({ initialCases, dbCategories }) {
                     ? caseItem.categories 
                     : (caseItem.category ? [caseItem.category] : ["All"]);
 
-                  // Use caseType to determine behavior, not category name
-                  const isDetailed = caseItem.caseType === 'detailed';
+                  // Use caseType to determine behavior, with backwards compatibility for old cases
+                  const isDetailed = caseItem.caseType === 'detailed' || 
+                    (!caseItem.caseType && (() => {
+                      const normalize = (str) => (str || "").trim().toLowerCase();
+                      if (caseItem.categories && Array.isArray(caseItem.categories)) {
+                        return caseItem.categories.some(cat => normalize(cat) === "full mouth rehabilitation cases");
+                      }
+                      return normalize(caseItem.category) === "full mouth rehabilitation cases";
+                    })());
 
                   // For simple cases, collect all available images for the carousel
                   let simpleImages = [];
