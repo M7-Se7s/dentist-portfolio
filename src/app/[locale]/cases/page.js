@@ -32,7 +32,7 @@ export default async function CasesGallery({ params }) {
   const t = await getTranslations({ locale, namespace: 'Cases' });
 
   let dbCategories = [
-    { nameEn: "All", nameAr: "الكل" },
+    { nameEn: "Full Mouth Rehabilitation Cases", nameAr: "حالات إعادة تأهيل الفم بالكامل" },
     { nameEn: "Composite", nameAr: "كومبوزيت" },
     { nameEn: "Endodontics", nameAr: "علاج الجذور" },
     { nameEn: "Prosthodontics", nameAr: "تركيبات أسنان" },
@@ -46,7 +46,14 @@ export default async function CasesGallery({ params }) {
     const snapCats = await getDocs(qCats);
     if (!snapCats.empty) {
       const fetched = snapCats.docs.map(d => d.data());
-      dbCategories = [{ nameEn: "All", nameAr: "الكل" }, ...fetched];
+      // Remove it if it exists in DB so we don't have duplicates (case-insensitive and trimmed), then force it to be first
+      const filteredFetched = fetched.filter(cat => 
+        (cat.nameEn || "").trim().toLowerCase() !== "full mouth rehabilitation cases"
+      );
+      dbCategories = [
+        { nameEn: "Full Mouth Rehabilitation Cases", nameAr: "حالات إعادة تأهيل الفم بالكامل" },
+        ...filteredFetched
+      ];
     }
   } catch (e) {
     console.error("Failed to fetch categories on server:", e);
