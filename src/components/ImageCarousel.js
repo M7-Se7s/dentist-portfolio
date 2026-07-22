@@ -8,7 +8,9 @@ export default function ImageCarousel({ images = [], alt = "Case image", priorit
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
   const [currentTranslate, setCurrentTranslate] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   if (!images || images.length === 0) {
     return (
@@ -61,14 +63,31 @@ export default function ImageCarousel({ images = [], alt = "Case image", priorit
 
   const handleTouchStart = (e) => {
     setIsDragging(true);
+    setIsScrolling(false);
     setStartX(e.touches ? e.touches[0].clientX : e.clientX);
+    setStartY(e.touches ? e.touches[0].clientY : e.clientY);
   };
 
   const handleTouchMove = (e) => {
     if (!isDragging) return;
+    
     const currentX = e.touches ? e.touches[0].clientX : e.clientX;
-    const diff = currentX - startX;
-    setCurrentTranslate(diff);
+    const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    const diffX = currentX - startX;
+    const diffY = currentY - startY;
+
+    if (!isScrolling) {
+      if (Math.abs(diffY) > Math.abs(diffX)) {
+        setIsScrolling(true);
+        setIsDragging(false);
+        return;
+      }
+    }
+
+    if (!isScrolling) {
+      setCurrentTranslate(diffX);
+    }
   };
 
   const handleTouchEnd = () => {
