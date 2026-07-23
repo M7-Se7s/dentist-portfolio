@@ -32,12 +32,14 @@ export default async function CasesGallery({ params }) {
   const t = await getTranslations({ locale, namespace: 'Cases' });
 
   let dbCategories = [
+    { nameEn: "All", nameAr: "الكل" },
     { nameEn: "Full Mouth Rehabilitation Cases", nameAr: "حالات إعادة تأهيل الفم بالكامل" },
-    { nameEn: "Composite", nameAr: "كومبوزيت" },
+    { nameEn: "Surgery", nameAr: "جراحة" },
+    { nameEn: "Crown", nameAr: "تيجان" },
     { nameEn: "Endodontics", nameAr: "علاج الجذور" },
+    { nameEn: "Composite", nameAr: "كومبوزيت" },
     { nameEn: "Prosthodontics", nameAr: "تركيبات أسنان" },
-    { nameEn: "Esthetic", nameAr: "تجميل الأسنان" },
-    { nameEn: "Posterior Restorations", nameAr: "حشوات خلفية" }
+    { nameEn: "General", nameAr: "عام" }
   ];
   let cases = [];
 
@@ -46,12 +48,14 @@ export default async function CasesGallery({ params }) {
     const snapCats = await getDocs(qCats);
     if (!snapCats.empty) {
       const fetched = snapCats.docs.map(d => d.data());
-      // Remove it if it exists in DB so we don't have duplicates (case-insensitive and trimmed), then force it to be first
-      const filteredFetched = fetched.filter(cat => 
-        (cat.nameEn || "").trim().toLowerCase() !== "full mouth rehabilitation cases"
-      );
+      const standardNames = dbCategories.map(c => c.nameEn.toLowerCase());
+      
+      const filteredFetched = fetched.filter(cat => {
+        const catName = (cat.nameEn || "").trim().toLowerCase();
+        return catName !== "pediatric" && !standardNames.includes(catName);
+      });
       dbCategories = [
-        { nameEn: "Full Mouth Rehabilitation Cases", nameAr: "حالات إعادة تأهيل الفم بالكامل" },
+        ...dbCategories,
         ...filteredFetched
       ];
     }

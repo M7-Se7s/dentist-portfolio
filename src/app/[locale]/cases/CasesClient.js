@@ -9,7 +9,7 @@ import ImageSlider from '@/components/ImageSlider';
 import ImageCarousel from '@/components/ImageCarousel';
 
 export default function CasesClient({ initialCases, dbCategories }) {
-  const [activeCategory, setActiveCategory] = useState("Full Mouth Rehabilitation Cases");
+  const [activeCategory, setActiveCategory] = useState("All");
   const [visibleCount, setVisibleCount] = useState(9);
   const [isPending, startTransition] = useTransition();
 
@@ -19,6 +19,8 @@ export default function CasesClient({ initialCases, dbCategories }) {
   const filteredCases = initialCases.filter(caseItem => {
     const normalize = (str) => (str || "").trim().toLowerCase();
     const activeNormalized = normalize(activeCategory);
+
+    if (activeNormalized === "all") return true;
 
     if (caseItem.categories && Array.isArray(caseItem.categories)) {
       return caseItem.categories.some(cat => normalize(cat) === activeNormalized);

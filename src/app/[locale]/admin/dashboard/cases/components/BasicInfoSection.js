@@ -38,7 +38,6 @@ export default function BasicInfoSection({
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (caseType === 'detailed') return;
       if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
         setIsCategoryOpen(false);
       }
@@ -63,10 +62,10 @@ export default function BasicInfoSection({
         <div ref={categoryDropdownRef} className={styles.categoryDropdownWrapper}>
           <div 
             onClick={() => {
-              if (caseType !== 'detailed') setIsCategoryOpen(!isCategoryOpen);
+              setIsCategoryOpen(!isCategoryOpen);
             }}
             className={`${styles.categorySelectBox} ${isCategoryOpen ? styles.categorySelectBoxOpen : styles.categorySelectBoxClosed}`}
-            style={{ cursor: caseType === 'detailed' ? 'not-allowed' : 'pointer', backgroundColor: caseType === 'detailed' ? 'var(--bg-secondary)' : 'transparent' }}
+            style={{ cursor: 'pointer', backgroundColor: 'transparent' }}
           >
             <div className={styles.categoryChips}>
               {categories.length === 0 ? (
@@ -75,30 +74,26 @@ export default function BasicInfoSection({
                 categories.map(cat => (
                   <span key={cat} className={styles.categoryChip}>
                     {cat}
-                    {caseType !== 'detailed' && (
-                      <svg 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCategories(categories.filter(c => c !== cat));
-                        }}
-                        width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" 
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                      </svg>
-                    )}
+                    <svg 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCategories(categories.filter(c => c !== cat));
+                      }}
+                      width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" 
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                   </span>
                 ))
               )}
             </div>
-            {caseType !== 'detailed' && (
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={`${styles.categoryIcon} ${isCategoryOpen ? styles.categoryIconOpen : ''}`}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            )}
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" className={`${styles.categoryIcon} ${isCategoryOpen ? styles.categoryIconOpen : ''}`}>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
           </div>
           
-          {isCategoryOpen && caseType !== 'detailed' && (
+          {isCategoryOpen && (
             <div className={styles.categoryMenu}>
               {availableCategories.map((cat, index) => {
                 const isSelected = categories.includes(cat);
