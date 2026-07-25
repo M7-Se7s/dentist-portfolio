@@ -7,7 +7,6 @@ export async function triggerRevalidation(paths, type = 'page') {
     const pathsArray = Array.isArray(paths) ? paths : [paths];
     for (const path of pathsArray) {
       revalidatePath(path, type);
-      console.log(`Revalidated path: ${path} (type: ${type})`);
     }
     return { success: true };
   } catch (error) {

@@ -97,7 +97,7 @@ const DynamicResponsibilitiesList = ({ exp, updateExperienceFields, styles }) =>
       </div>
       
       {safeEN.length === 0 && (
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '1rem' }}>No responsibilities added yet. Click "+ Add Responsibility" below.</p>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '1rem' }}>No responsibilities added yet. Click &quot;+ Add Responsibility&quot; below.</p>
       )}
 
       {safeEN.map((_, index) => (

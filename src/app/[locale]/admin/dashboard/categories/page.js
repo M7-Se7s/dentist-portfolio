@@ -18,6 +18,15 @@ const DEFAULT_CATEGORIES = [
   { nameEn: "Pediatric", nameAr: "طب أسنان الأطفال" }
 ];
 
+const loadCategories = async () => {
+  const q = query(collection(db, "categories"), orderBy("nameEn", "asc"));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+};
+
 export default function CategoryManager() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,13 +38,7 @@ export default function CategoryManager() {
 
   const fetchCategories = async () => {
     try {
-      const q = query(collection(db, "categories"), orderBy("nameEn", "asc"));
-      const querySnapshot = await getDocs(q);
-      const fetched = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setCategories(fetched);
+      setCategories(await loadCategories());
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
@@ -44,7 +47,28 @@ export default function CategoryManager() {
   };
 
   useEffect(() => {
-    fetchCategories();
+    let isActive = true;
+
+    const loadInitialCategories = async () => {
+      try {
+        const fetched = await loadCategories();
+        if (isActive) {
+          setCategories(fetched);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadInitialCategories();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   const handleTranslate = async () => {

@@ -45,7 +45,6 @@ export const casesService = {
           updatedAt: convertTimestamp(data.updatedAt),
         };
       } else {
-        console.log("No such document!");
         return null;
       }
     } catch (error) {

@@ -33,7 +33,7 @@ const DynamicList = ({ titleEN, titleAR, itemsEN = [], setItemsEN, itemsAR = [],
       </div>
       
       {itemsEN.length === 0 && (
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No items added yet. Click "+ Add Item" below.</p>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No items added yet. Click &quot;+ Add Item&quot; below.</p>
       )}
 
       {itemsEN.map((_, index) => (
@@ -122,7 +122,7 @@ const ClinicalSkillsEditor = ({ clinicalSkills = [], setClinicalSkills, clinical
   return (
     <div style={{ marginBottom: '1.5rem' }}>
       {clinicalSkills.length === 0 && (
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '1rem' }}>No categories added yet. Click "+ Add Category".</p>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '1rem' }}>No categories added yet. Click &quot;+ Add Category&quot;.</p>
       )}
 
       {clinicalSkills.map((cat, catIndex) => (

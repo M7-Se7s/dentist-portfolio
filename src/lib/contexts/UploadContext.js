@@ -30,7 +30,7 @@ export function UploadProvider({ children }) {
       const options = { maxSizeMB: 8, maxWidthOrHeight: 2048, useWebWorker: true };
       fileToUpload = await imageCompression(file, options);
     } catch (error) {
-      console.warn('Compression failed, using original', error);
+      fileToUpload = file;
     }
 
     const formData = new FormData();

@@ -191,8 +191,6 @@ export default function CVEditorPage() {
     fetchCV();
   }, []);
 
-  // Cloudinary PDF upload logic removed in favor of Google Drive links
-
   const handleAutoTranslate = async () => {
     if (!confirm('This will auto-translate all English fields into Arabic. Existing Arabic text may be overwritten. Continue?')) return;
     

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -66,6 +65,13 @@ export default function CaseClient({ caseData, id, initialError }) {
     }
   }, [caseData, id]);
 
+  const closeLightbox = React.useCallback(() => {
+    setLightboxOpen(false);
+    if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+    }
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!lightboxOpen) return;
@@ -75,14 +81,7 @@ export default function CaseClient({ caseData, id, initialError }) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxOpen, lightboxImages]);
-
-  const closeLightbox = () => {
-    setLightboxOpen(false);
-    if (previousFocusRef.current) {
-      previousFocusRef.current.focus();
-    }
-  };
+  }, [closeLightbox, lightboxOpen, lightboxImages]);
 
   const openLightbox = (imagesList, startIndex) => {
     previousFocusRef.current = document.activeElement;

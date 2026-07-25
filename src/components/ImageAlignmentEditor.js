@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './ImageAlignmentEditor.module.css';
 
@@ -22,11 +22,6 @@ export default function ImageAlignmentEditor({ beforeSrc, afterFile, onConfirm, 
   const [translate, setTranslate] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [overlayOpacity, setOverlayOpacity] = useState(0.5);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   // Refs
   const canvasAreaRef = useRef(null);
   const hiddenCanvasRef = useRef(null);
@@ -39,20 +34,16 @@ export default function ImageAlignmentEditor({ beforeSrc, afterFile, onConfirm, 
   // Pinch state
   const pinchState = useRef({ isPinching: false, initialDistance: 0, initialScale: 1 });
   
-  // After image as blob URL
-  const [afterSrc, setAfterSrc] = useState(null);
-  
-  useEffect(() => {
-    if (afterFile) {
-      if (typeof afterFile === 'string') {
-        setAfterSrc(afterFile);
-      } else {
-        const url = URL.createObjectURL(afterFile);
-        setAfterSrc(url);
-        return () => URL.revokeObjectURL(url);
-      }
-    }
+  const afterSrc = useMemo(() => {
+    if (!afterFile) return null;
+    if (typeof afterFile === 'string') return afterFile;
+    return URL.createObjectURL(afterFile);
   }, [afterFile]);
+
+  useEffect(() => {
+    if (!afterSrc || typeof afterFile === 'string') return;
+    return () => URL.revokeObjectURL(afterSrc);
+  }, [afterFile, afterSrc]);
 
   // Prevent body scrolling while the editor is open
   useEffect(() => {
@@ -231,7 +222,7 @@ export default function ImageAlignmentEditor({ beforeSrc, afterFile, onConfirm, 
 
   if (!afterSrc) return null;
 
-  if (!mounted) return null;
+  if (typeof document === 'undefined') return null;
 
   return createPortal(
     <div className={styles.overlay}>
