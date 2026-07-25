@@ -131,8 +131,10 @@ export default async function Home({ params }) {
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className={styles.heroImage}
-                priority                loading="eager"
-                fetchPriority="high"              />
+                priority
+                loading="eager"
+                fetchPriority="high"
+              />
             ) : (
               <div className={styles.heroPlaceholder}>
                 <span>{tHero("professionalPhoto")}</span>
