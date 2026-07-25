@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { Link } from '@/i18n/routing';
-import styles from '../../admin.module.css';
-import { casesService } from '@/lib/services/casesService';
-import { useUploads } from '@/lib/contexts/UploadContext';
-import { triggerRevalidation } from '@/lib/actions/revalidate';
+import { useState, useEffect, useRef } from "react";
+import { Link } from "@/i18n/routing";
+import styles from "../../admin.module.css";
+import { casesService } from "@/lib/services/casesService";
+import { useUploads } from "@/lib/contexts/UploadContext";
+import { triggerRevalidation } from "@/lib/actions/revalidate";
 
 export default function CaseManagementPage() {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('All');
-  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [categoryFilter, setCategoryFilter] = useState("All");
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
   const filterDropdownRef = useRef(null);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
@@ -40,21 +40,27 @@ export default function CaseManagementPage() {
 
     // Listen for custom event from UploadContext to refresh list when an upload succeeds
     const handleCaseUploaded = () => loadCases();
-    window.addEventListener('case_uploaded', handleCaseUploaded);
+    window.addEventListener("case_uploaded", handleCaseUploaded);
 
     // Click outside listener for filter dropdown
     const handleClickOutside = (event) => {
-      if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target)) {
+      if (
+        filterDropdownRef.current &&
+        !filterDropdownRef.current.contains(event.target)
+      ) {
         setFilterDropdownOpen(false);
       }
-      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
+      if (
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(event.target)
+      ) {
         setCategoryDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      window.removeEventListener('case_uploaded', handleCaseUploaded);
+      window.removeEventListener("case_uploaded", handleCaseUploaded);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
@@ -73,13 +79,13 @@ export default function CaseManagementPage() {
     if (!caseToDelete) return;
     try {
       await casesService.deleteCase(caseToDelete.id);
-      setCases(cases.filter(c => c.id !== caseToDelete.id));
-      
+      setCases(cases.filter((c) => c.id !== caseToDelete.id));
+
       // Trigger On-Demand Revalidation
-      triggerRevalidation([
-        '/[locale]/cases',
-        `/[locale]/cases/[id]`
-      ], 'page');
+      await triggerRevalidation(
+        ["/[locale]/cases", `/[locale]/cases/${caseToDelete.id}`, "/[locale]"],
+        "page",
+      );
     } catch (error) {
       console.error("Failed to delete case", error);
     } finally {
@@ -88,117 +94,271 @@ export default function CaseManagementPage() {
     }
   };
 
-  const allCategories = Array.from(new Set(cases.reduce((acc, c) => {
-    const cats = c.categories && c.categories.length > 0 ? c.categories : (c.category ? [c.category] : []);
-    return [...acc, ...cats];
-  }, [])));
-  
-  const filteredCases = cases.filter(c => {
-    if (statusFilter === 'Published') return !c.isDraft;
-    if (statusFilter === 'Draft') return c.isDraft;
-    return true;
-  }).filter(c => {
-    if (categoryFilter === 'All') return true;
-    const cats = c.categories && c.categories.length > 0 ? c.categories : (c.category ? [c.category] : []);
-    return cats.includes(categoryFilter);
-  });
+  const allCategories = Array.from(
+    new Set(
+      cases.reduce((acc, c) => {
+        const cats =
+          c.categories && c.categories.length > 0
+            ? c.categories
+            : c.category
+              ? [c.category]
+              : [];
+        return [...acc, ...cats];
+      }, []),
+    ),
+  );
+
+  const filteredCases = cases
+    .filter((c) => {
+      if (statusFilter === "Published") return !c.isDraft;
+      if (statusFilter === "Draft") return c.isDraft;
+      return true;
+    })
+    .filter((c) => {
+      if (categoryFilter === "All") return true;
+      const cats =
+        c.categories && c.categories.length > 0
+          ? c.categories
+          : c.category
+            ? [c.category]
+            : [];
+      return cats.includes(categoryFilter);
+    });
 
   return (
     <>
       <div className="animate-slideUp stagger-1">
-        <div className={styles.caseManagementHeader} style={{ marginBottom: '2rem' }}>
+        <div
+          className={styles.caseManagementHeader}
+          style={{ marginBottom: "2rem" }}
+        >
           <div>
             <h1 className={styles.pageTitle}>Clinical Case Management</h1>
-            <p className={styles.pageSubtitle}>Manage, edit, and organize all your clinical procedures.</p>
+            <p className={styles.pageSubtitle}>
+              Manage, edit, and organize all your clinical procedures.
+            </p>
           </div>
-          
+
           {/* Desktop Buttons - Hidden on Mobile */}
-          <div className={styles.desktopBtn} style={{ display: 'flex', gap: '1rem' }}>
-            <Link href="/admin/dashboard/create-case?type=detailed" className={styles.newCaseBtn} style={{border: 'none', cursor: 'pointer', textDecoration: 'none'}}>
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+          <div
+            className={styles.desktopBtn}
+            style={{ display: "flex", gap: "1rem" }}
+          >
+            <Link
+              href="/admin/dashboard/create-case?type=detailed"
+              className={styles.newCaseBtn}
+              style={{
+                border: "none",
+                cursor: "pointer",
+                textDecoration: "none",
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 4v16m8-8H4"
+                ></path>
+              </svg>
               <span className={styles.newCaseBtnText}>Add Detailed Case</span>
             </Link>
-            <Link href="/admin/dashboard/create-case?type=light" className={styles.newCaseBtn} style={{border: 'none', cursor: 'pointer', textDecoration: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--primary-color)'}}>
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+            <Link
+              href="/admin/dashboard/create-case?type=light"
+              className={styles.newCaseBtn}
+              style={{
+                border: "none",
+                cursor: "pointer",
+                textDecoration: "none",
+                backgroundColor: "var(--bg-secondary)",
+                color: "var(--primary-color)",
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 4v16m8-8H4"
+                ></path>
+              </svg>
               <span className={styles.newCaseBtnText}>Add Simple Case</span>
             </Link>
           </div>
         </div>
 
         {/* Filters Wrapper */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
-          
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "1rem",
+            marginBottom: "2rem",
+          }}
+        >
           {/* Status Filter */}
-          <div className={styles.statusFilterContainer} style={{ marginBottom: 0 }}>
-          <label className={styles.statusFilterLabel}>Filter Status:</label>
-          <div className={styles.customStatusDropdownWrapper} ref={filterDropdownRef}>
-            <button 
-              type="button"
-              className={styles.statusFilterSelect}
-              onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
+          <div
+            className={styles.statusFilterContainer}
+            style={{ marginBottom: 0 }}
+          >
+            <label className={styles.statusFilterLabel}>Filter Status:</label>
+            <div
+              className={styles.customStatusDropdownWrapper}
+              ref={filterDropdownRef}
             >
-              <span className={styles.statusSelectedText}>
-                {statusFilter === 'All' ? 'All Cases' : statusFilter === 'Published' ? 'Published' : 'Drafts'}
-              </span>
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ transform: filterDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease', position: 'absolute', right: '1rem', top: '50%', marginTop: '-8px' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </button>
+              <button
+                type="button"
+                className={styles.statusFilterSelect}
+                onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
+              >
+                <span className={styles.statusSelectedText}>
+                  {statusFilter === "All"
+                    ? "All Cases"
+                    : statusFilter === "Published"
+                      ? "Published"
+                      : "Drafts"}
+                </span>
+                <svg
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  style={{
+                    transform: filterDropdownOpen
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                    transition: "transform 0.2s ease",
+                    position: "absolute",
+                    right: "1rem",
+                    top: "50%",
+                    marginTop: "-8px",
+                  }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
+                </svg>
+              </button>
 
-            {filterDropdownOpen && (
-              <div className={styles.statusDropdownMenu}>
-                {['All', 'Published', 'Draft'].map(option => (
-                  <div 
-                    key={option}
-                    className={`${styles.statusDropdownItem} ${statusFilter === option ? styles.statusDropdownItemActive : ''}`}
-                    onClick={() => {
-                      setStatusFilter(option);
-                      setFilterDropdownOpen(false);
-                    }}
-                  >
-                    <div className={styles.statusRadioBtn}>
-                      {statusFilter === option && <div className={styles.statusRadioInner}></div>}
+              {filterDropdownOpen && (
+                <div className={styles.statusDropdownMenu}>
+                  {["All", "Published", "Draft"].map((option) => (
+                    <div
+                      key={option}
+                      className={`${styles.statusDropdownItem} ${statusFilter === option ? styles.statusDropdownItemActive : ""}`}
+                      onClick={() => {
+                        setStatusFilter(option);
+                        setFilterDropdownOpen(false);
+                      }}
+                    >
+                      <div className={styles.statusRadioBtn}>
+                        {statusFilter === option && (
+                          <div className={styles.statusRadioInner}></div>
+                        )}
+                      </div>
+                      <span>
+                        {option === "All"
+                          ? "All Cases"
+                          : option === "Published"
+                            ? "Published"
+                            : "Drafts"}
+                      </span>
                     </div>
-                    <span>{option === 'All' ? 'All Cases' : option === 'Published' ? 'Published' : 'Drafts'}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
           {/* Category Filter */}
-          <div className={styles.statusFilterContainer} style={{ marginBottom: 0 }}>
+          <div
+            className={styles.statusFilterContainer}
+            style={{ marginBottom: 0 }}
+          >
             <label className={styles.statusFilterLabel}>Category:</label>
-            <div className={styles.customStatusDropdownWrapper} ref={categoryDropdownRef}>
-              <button 
+            <div
+              className={styles.customStatusDropdownWrapper}
+              ref={categoryDropdownRef}
+            >
+              <button
                 type="button"
                 className={styles.statusFilterSelect}
                 onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
               >
                 <span className={styles.statusSelectedText}>
-                  {categoryFilter === 'All' ? 'All Categories' : categoryFilter}
+                  {categoryFilter === "All" ? "All Categories" : categoryFilter}
                 </span>
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ transform: categoryDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease', position: 'absolute', right: '1rem', top: '50%', marginTop: '-8px' }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                <svg
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  style={{
+                    transform: categoryDropdownOpen
+                      ? "rotate(180deg)"
+                      : "rotate(0deg)",
+                    transition: "transform 0.2s ease",
+                    position: "absolute",
+                    right: "1rem",
+                    top: "50%",
+                    marginTop: "-8px",
+                  }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
                 </svg>
               </button>
 
               {categoryDropdownOpen && (
-                <div className={styles.statusDropdownMenu} style={{ right: 0, left: 'auto', maxHeight: '300px', overflowY: 'auto' }}>
-                  {['All', ...allCategories].map(option => (
-                    <div 
+                <div
+                  className={styles.statusDropdownMenu}
+                  style={{
+                    right: 0,
+                    left: "auto",
+                    maxHeight: "300px",
+                    overflowY: "auto",
+                  }}
+                >
+                  {["All", ...allCategories].map((option) => (
+                    <div
                       key={option}
-                      className={`${styles.statusDropdownItem} ${categoryFilter === option ? styles.statusDropdownItemActive : ''}`}
+                      className={`${styles.statusDropdownItem} ${categoryFilter === option ? styles.statusDropdownItemActive : ""}`}
                       onClick={() => {
                         setCategoryFilter(option);
                         setCategoryDropdownOpen(false);
                       }}
                     >
                       <div className={styles.statusRadioBtn}>
-                        {categoryFilter === option && <div className={styles.statusRadioInner}></div>}
+                        {categoryFilter === option && (
+                          <div className={styles.statusRadioInner}></div>
+                        )}
                       </div>
-                      <span>{option === 'All' ? 'All Categories' : option}</span>
+                      <span>
+                        {option === "All" ? "All Categories" : option}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -207,123 +367,292 @@ export default function CaseManagementPage() {
           </div>
         </div>
 
-      <div className={styles.caseCardGrid}>
-        
-        {/* Render Active Uploads */}
-        {activeUploads && activeUploads.map(upload => (
-          <div key={upload.id} className={styles.caseCardItem} style={{ border: '2px dashed var(--primary-color)' }}>
-            <div className={styles.caseCardHeader}>
-              <div className={styles.caseAvatar} style={{ background: 'var(--bg-secondary)', color: 'var(--primary-color)' }}>
-                {(upload.formData?.categories?.[0] || 'CA').substring(0, 2).toUpperCase()}
-              </div>
-              <div className={styles.caseAdminActions}>
-                {upload.status === 'error' ? (
-                  <>
-                    <button onClick={() => retryJob(upload.id)} className="btn-primary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>Retry</button>
-                    <button onClick={() => clearJob(upload.id)} className="btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>Cancel</button>
-                  </>
-                ) : upload.status === 'done' ? (
-                  <span style={{ fontSize: '0.85rem', color: '#10B981', fontWeight: 600 }}>Complete!</span>
-                ) : (
-                  <span style={{ fontSize: '0.85rem', color: 'var(--primary-color)', fontWeight: 600 }}>{upload.progress}%</span>
-                )}
-              </div>
-            </div>
-            
-            <h3 className={styles.caseCardTitle}>{upload.formData?.categories?.[0] || 'Uploading Case...'}</h3>
-            
-            <div className={styles.caseCardDetails} style={{ marginTop: '1rem' }}>
-              <div style={{ width: '100%', backgroundColor: 'var(--border-color)', height: '6px', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ 
-                  height: '100%', 
-                  backgroundColor: upload.status === 'error' ? '#EF4444' : upload.status === 'done' ? '#10B981' : 'var(--primary-color)', 
-                  width: `${upload.progress}%`,
-                  transition: 'width 0.3s ease'
-                }} />
-              </div>
-              {upload.status === 'error' && (
-                <p style={{ color: '#EF4444', fontSize: '0.8rem', marginTop: '0.5rem' }}>{upload.error}</p>
-              )}
-            </div>
-          </div>
-        ))}
-
-        {loading ? (
-          <div style={{gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--text-muted)'}}>
-            Loading cases...
-          </div>
-        ) : filteredCases.length === 0 && activeUploads.length === 0 ? (
-          <div style={{gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--text-muted)'}}>
-            No cases found matching your criteria.
-          </div>
-        ) : (
-          filteredCases.map(caseItem => {
-            const dateStr = typeof caseItem.updatedAt === 'string' ? caseItem.updatedAt.replace(' ', 'T') : caseItem.updatedAt;
-            const date = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            return (
-              <div key={caseItem.id} className={styles.caseCardItem}>
+        <div className={styles.caseCardGrid}>
+          {/* Render Active Uploads */}
+          {activeUploads &&
+            activeUploads.map((upload) => (
+              <div
+                key={upload.id}
+                className={styles.caseCardItem}
+                style={{ border: "2px dashed var(--primary-color)" }}
+              >
                 <div className={styles.caseCardHeader}>
-                  <div className={styles.caseAvatar}>
-                    {(caseItem.category || caseItem.categories?.[0] || 'CA').substring(0, 2).toUpperCase()}
+                  <div
+                    className={styles.caseAvatar}
+                    style={{
+                      background: "var(--bg-secondary)",
+                      color: "var(--primary-color)",
+                    }}
+                  >
+                    {(upload.formData?.categories?.[0] || "CA")
+                      .substring(0, 2)
+                      .toUpperCase()}
                   </div>
                   <div className={styles.caseAdminActions}>
-                    <Link href={`/admin/dashboard/edit-case/${caseItem.id}`} className={`${styles.actionBtn} ${styles.edit}`}>
-                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                    </Link>
-                    <button onClick={() => promptDelete(caseItem)} className={`${styles.actionBtn} ${styles.delete}`}>
-                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
-                  </div>
-                </div>
-                
-                <h3 className={styles.caseCardTitle}>{caseItem.category || caseItem.categories?.[0] || 'General'}</h3>
-                
-                <div className={styles.caseCardDetails}>
-                  <div className={styles.caseCardDetailItem}>
-                    <span className={styles.caseCardDetailLabel}>Category:</span>
-                    <span className={styles.caseCardDetailValue}>{caseItem.category || 'General'}</span>
-                  </div>
-                  <div className={styles.caseCardDetailItem}>
-                    <span className={styles.caseCardDetailLabel}>Last Modified:</span>
-                    <span className={styles.caseCardDetailValue}>{date}</span>
-                  </div>
-                  <div className={styles.caseCardDetailItem} style={{marginTop: '0.5rem'}}>
-                    {caseItem.isDraft ? (
-                      <span className={styles.statusBadge} style={{backgroundColor: '#FEF3C7', color: '#B45309', borderColor: '#FDE68A'}}>Draft</span>
+                    {upload.status === "error" ? (
+                      <>
+                        <button
+                          onClick={() => retryJob(upload.id)}
+                          className="btn-primary"
+                          style={{
+                            padding: "0.25rem 0.5rem",
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          Retry
+                        </button>
+                        <button
+                          onClick={() => clearJob(upload.id)}
+                          className="btn-secondary"
+                          style={{
+                            padding: "0.25rem 0.5rem",
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : upload.status === "done" ? (
+                      <span
+                        style={{
+                          fontSize: "0.85rem",
+                          color: "#10B981",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Complete!
+                      </span>
                     ) : (
-                      <span className={styles.statusBadge}>Published</span>
+                      <span
+                        style={{
+                          fontSize: "0.85rem",
+                          color: "var(--primary-color)",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {upload.progress}%
+                      </span>
                     )}
                   </div>
                 </div>
-              </div>
-            );
-          })
-        )}
-      </div>
 
+                <h3 className={styles.caseCardTitle}>
+                  {upload.formData?.categories?.[0] || "Uploading Case..."}
+                </h3>
+
+                <div
+                  className={styles.caseCardDetails}
+                  style={{ marginTop: "1rem" }}
+                >
+                  <div
+                    style={{
+                      width: "100%",
+                      backgroundColor: "var(--border-color)",
+                      height: "6px",
+                      borderRadius: "3px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        backgroundColor:
+                          upload.status === "error"
+                            ? "#EF4444"
+                            : upload.status === "done"
+                              ? "#10B981"
+                              : "var(--primary-color)",
+                        width: `${upload.progress}%`,
+                        transition: "width 0.3s ease",
+                      }}
+                    />
+                  </div>
+                  {upload.status === "error" && (
+                    <p
+                      style={{
+                        color: "#EF4444",
+                        fontSize: "0.8rem",
+                        marginTop: "0.5rem",
+                      }}
+                    >
+                      {upload.error}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+
+          {loading ? (
+            <div
+              style={{
+                gridColumn: "1 / -1",
+                textAlign: "center",
+                padding: "3rem",
+                color: "var(--text-muted)",
+              }}
+            >
+              Loading cases...
+            </div>
+          ) : filteredCases.length === 0 && activeUploads.length === 0 ? (
+            <div
+              style={{
+                gridColumn: "1 / -1",
+                textAlign: "center",
+                padding: "3rem",
+                color: "var(--text-muted)",
+              }}
+            >
+              No cases found matching your criteria.
+            </div>
+          ) : (
+            filteredCases.map((caseItem) => {
+              const dateStr =
+                typeof caseItem.updatedAt === "string"
+                  ? caseItem.updatedAt.replace(" ", "T")
+                  : caseItem.updatedAt;
+              const date = new Date(dateStr).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              });
+              return (
+                <div key={caseItem.id} className={styles.caseCardItem}>
+                  <div className={styles.caseCardHeader}>
+                    <div className={styles.caseAvatar}>
+                      {(caseItem.category || caseItem.categories?.[0] || "CA")
+                        .substring(0, 2)
+                        .toUpperCase()}
+                    </div>
+                    <div className={styles.caseAdminActions}>
+                      <Link
+                        href={`/admin/dashboard/edit-case/${caseItem.id}`}
+                        className={`${styles.actionBtn} ${styles.edit}`}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                          ></path>
+                        </svg>
+                      </Link>
+                      <button
+                        onClick={() => promptDelete(caseItem)}
+                        className={`${styles.actionBtn} ${styles.delete}`}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <h3 className={styles.caseCardTitle}>
+                    {caseItem.category || caseItem.categories?.[0] || "General"}
+                  </h3>
+
+                  <div className={styles.caseCardDetails}>
+                    <div className={styles.caseCardDetailItem}>
+                      <span className={styles.caseCardDetailLabel}>
+                        Category:
+                      </span>
+                      <span className={styles.caseCardDetailValue}>
+                        {caseItem.category || "General"}
+                      </span>
+                    </div>
+                    <div className={styles.caseCardDetailItem}>
+                      <span className={styles.caseCardDetailLabel}>
+                        Last Modified:
+                      </span>
+                      <span className={styles.caseCardDetailValue}>{date}</span>
+                    </div>
+                    <div
+                      className={styles.caseCardDetailItem}
+                      style={{ marginTop: "0.5rem" }}
+                    >
+                      {caseItem.isDraft ? (
+                        <span
+                          className={styles.statusBadge}
+                          style={{
+                            backgroundColor: "#FEF3C7",
+                            color: "#B45309",
+                            borderColor: "#FDE68A",
+                          }}
+                        >
+                          Draft
+                        </span>
+                      ) : (
+                        <span className={styles.statusBadge}>Published</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
       {/* Custom Delete Modal (Mock) */}
       {modalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
-            <div style={{color: '#EF4444', marginBottom: '1rem'}}>
-              <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{margin: '0 auto'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <div style={{ color: "#EF4444", marginBottom: "1rem" }}>
+              <svg
+                width="48"
+                height="48"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                style={{ margin: "0 auto" }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                ></path>
+              </svg>
             </div>
             <h3 className={styles.modalTitle}>Delete Case</h3>
             <p className={styles.modalText}>
-              Are you sure you want to delete <strong>{caseToDelete?.title}</strong>? <br/>This action cannot be undone.
+              Are you sure you want to delete{" "}
+              <strong>{caseToDelete?.title}</strong>? <br />
+              This action cannot be undone.
             </p>
             <div className={styles.modalActions}>
-              <button onClick={cancelDelete} className="btn-secondary">Cancel</button>
-              <button onClick={confirmDelete} className="btn-primary" style={{backgroundColor: '#EF4444', borderColor: '#EF4444'}}>
+              <button onClick={cancelDelete} className="btn-secondary">
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="btn-primary"
+                style={{ backgroundColor: "#EF4444", borderColor: "#EF4444" }}
+              >
                 Yes, Delete
               </button>
             </div>
           </div>
         </div>
       )}
-
     </>
   );
 }

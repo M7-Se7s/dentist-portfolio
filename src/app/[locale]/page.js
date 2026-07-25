@@ -18,7 +18,7 @@ const ClientImageSlider = dynamic(
 );
 
 export const dynamicParams = true;
-export const revalidate = 0; // force dynamic so data updates instantly
+export const revalidate = 60;
 
 export default async function Home({ params }) {
   const resolvedParams = await params;

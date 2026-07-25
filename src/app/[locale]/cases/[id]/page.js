@@ -1,19 +1,20 @@
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import CaseClient from './CaseClient';
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import CaseClient from "./CaseClient";
 
 export const dynamicParams = true;
+export const revalidate = 60;
 
 // Helper to serialize Firestore data to safe JSON for passing to Client Components
 function serializeFirestoreData(data) {
   if (!data) return data;
-  if (typeof data.toDate === 'function') {
+  if (typeof data.toDate === "function") {
     return data.toDate().toISOString();
   }
   if (Array.isArray(data)) {
     return data.map(serializeFirestoreData);
   }
-  if (typeof data === 'object') {
+  if (typeof data === "object") {
     const result = {};
     for (const key in data) {
       result[key] = serializeFirestoreData(data[key]);
@@ -38,11 +39,11 @@ export default async function CaseDetailPage({ params }) {
       const rawData = { id: docSnap.id, ...docSnap.data() };
       caseData = serializeFirestoreData(rawData);
     } else {
-      error = 'notFound';
+      error = "notFound";
     }
   } catch (err) {
     console.error("Error fetching case on server: ", err);
-    error = 'notFound';
+    error = "notFound";
   }
 
   return <CaseClient caseData={caseData} id={id} initialError={error} />;

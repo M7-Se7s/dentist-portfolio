@@ -11,13 +11,21 @@ export default function ImageSlider({
 }) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const sliderRef = useRef(null);
-  const touchState = useRef({ startX: 0, startY: 0, isHorizontal: null });
+  const touchState = useRef({
+    startX: 0,
+    startY: 0,
+    isHorizontal: null,
+    sliderWidth: 0,
+    sliderLeft: 0,
+  });
 
   const handleTouchStart = (e) => {
     touchState.current = {
       startX: e.touches[0].clientX,
       startY: e.touches[0].clientY,
       isHorizontal: null,
+      sliderWidth: 0,
+      sliderLeft: 0,
     };
   };
 
@@ -44,7 +52,6 @@ export default function ImageSlider({
       const x = clientX - rect.left;
       const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
       setSliderPosition(percentage);
-      // Optional: Prevent default to stop scrolling if definitely swiping horizontally
       if (e.cancelable) e.preventDefault();
     }
   };
@@ -57,6 +64,8 @@ export default function ImageSlider({
       startX: e.clientX,
       startY: e.clientY,
       isHorizontal: null,
+      sliderWidth: 0,
+      sliderLeft: 0,
     };
     // Capture the pointer so we continue receiving moves
     try {
