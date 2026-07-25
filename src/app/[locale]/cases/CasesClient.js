@@ -1,12 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect, useTransition } from 'react';
+import { useState, useTransition } from 'react';
+import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 import dynamic from 'next/dynamic';
 import { useTranslations, useLocale } from 'next-intl';
 import styles from './page.module.css';
-import ImageSlider from '@/components/ImageSlider';
-import ImageCarousel from '@/components/ImageCarousel';
+
+const ImageSlider = dynamic(() => import('@/components/ImageSlider'), {
+  ssr: false,
+  loading: () => <div style={{ width: '100%', height: '100%', background: '#E2E8F0' }} />,
+});
+
+const ImageCarousel = dynamic(() => import('@/components/ImageCarousel'), {
+  ssr: false,
+  loading: () => <div style={{ width: '100%', height: '100%', background: '#E2E8F0' }} />,
+});
 
 export default function CasesClient({ initialCases, dbCategories }) {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -124,10 +133,13 @@ export default function CasesClient({ initialCases, dbCategories }) {
                     <div className={styles.imageWrapper}>
                       {isDetailed ? (
                         (!caseItem.beforeImage && !caseItem.beforeImageUrl && caseItem.coverImage) ? (
-                          <img 
-                            src={caseItem.coverImage || '/images/placeholder.jpg'} 
-                            alt={altText} 
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                          <Image
+                            src={caseItem.coverImage || '/images/placeholder.jpg'}
+                            alt={altText}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            style={{ objectFit: 'cover', objectPosition: 'center' }}
+                            unoptimized={true}
                           />
                         ) : (
                           <ImageSlider 
@@ -139,10 +151,13 @@ export default function CasesClient({ initialCases, dbCategories }) {
                         simpleImages.length > 1 ? (
                           <ImageCarousel images={simpleImages} alt={altText} />
                         ) : (
-                          <img 
-                            src={simpleImages[0] || '/images/placeholder.jpg'} 
-                            alt={altText} 
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                          <Image
+                            src={simpleImages[0] || '/images/placeholder.jpg'}
+                            alt={altText}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            style={{ objectFit: 'cover', objectPosition: 'center' }}
+                            unoptimized={true}
                           />
                         )
                       )}

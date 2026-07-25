@@ -8,7 +8,9 @@ import { getTranslations } from 'next-intl/server';
 import ViewTracker from './ViewTracker';
 import DownloadCvButton from '@/components/DownloadCvButton';
 
-import ClientImageSlider from '@/components/ClientImageSlider';
+const ClientImageSlider = dynamic(() => import('@/components/ClientImageSlider'), {
+  loading: () => <div style={{ width: '100%', height: '100%', background: '#E2E8F0' }} />,
+});
 
 export const dynamicParams = true;
 export const revalidate = 0; // force dynamic so data updates instantly
@@ -28,31 +30,28 @@ export default async function Home({ params }) {
   let recentCases = [];
 
   try {
-    // Fetch Profile for the Hero Image
-    const profileRef = doc(db, "content", "profile");
-    const profileSnap = await getDoc(profileRef);
+    const [profileSnap, cvSnap, settingsSnap, casesSnapshot] = await Promise.all([
+      getDoc(doc(db, "content", "profile")),
+      getDoc(doc(db, "content", "cv")),
+      getDoc(doc(db, "settings", "global")),
+      getDocs(collection(db, "cases")),
+    ]);
+
     if (profileSnap.exists()) {
       profile = profileSnap.data();
     }
 
-    // Fetch CV for the PDF URLs
-    const cvRef = doc(db, "content", "cv");
-    const cvSnap = await getDoc(cvRef);
     if (cvSnap.exists()) {
       cvData = cvSnap.data();
     }
 
-    // Fetch Settings for Contact Info
-    const settingsRef = doc(db, "settings", "global");
-    const settingsSnap = await getDoc(settingsRef);
     if (settingsSnap.exists()) {
       settings = settingsSnap.data();
     }
 
-    // Fetch Featured Cases (limit to 3 for homepage)
-    const casesSnapshot = await getDocs(collection(db, "cases"));
-    let casesList = casesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                                      .filter(c => c.isDraft !== true && c.featured === true);
+    let casesList = casesSnapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      .filter(c => c.isDraft !== true && c.featured === true);
     casesList.sort((a, b) => {
       let dateA = 0;
       let dateB = 0;
