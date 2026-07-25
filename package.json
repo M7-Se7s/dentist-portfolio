@@ -12,7 +12,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@swc/helpers": "^0.5.23",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "browser-image-compression": "^2.0.2",
     "cloudinary": "^2.10.0",
@@ -23,9 +23,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.2.9",
-    "typescript": "^6.0.3"
+    "eslint-config-next": "16.2.9"
   }
 }

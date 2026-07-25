@@ -1149,6 +1149,15 @@ input:checked+.toggleSlider:before {
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: 1.5rem;
+  position: sticky;
+  top: -1rem;
+  background-color: #F8FAFC;
+  z-index: 100;
+  margin-top: -1rem;
+  margin-left: -3rem;
+  margin-right: -3rem;
+  padding: 1rem 3rem 1rem 3rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .caseManagementHeader h2 {
@@ -1211,7 +1220,8 @@ input:checked+.toggleSlider:before {
   position: absolute;
   top: calc(100% + 0.5rem);
   left: 0;
-  width: 200px;
+  min-width: 100%;
+  width: max-content;
   background-color: var(--white);
   border: 1px solid var(--border-color);
   border-radius: 12px;
@@ -1784,6 +1794,19 @@ input:checked+.toggleSlider:before {
     align-items: center;
     text-align: center;
     gap: 1.5rem;
+    margin-top: -1.5rem;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    top: -1.5rem;
+  }
+  
+  .editCaseHeader {
+    margin-top: -1.5rem;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    top: -1.5rem;
   }
 
   .caseTableWrapper {
@@ -1808,9 +1831,7 @@ input:checked+.toggleSlider:before {
     width: 100%;
   }
 
-  .desktopBtn {
-    display: none !important;
-  }
+  /* Removed .desktopBtn { display: none !important; } so buttons remain visible on mobile inside the sticky header */
 
   .mobileFab {
     position: fixed;
@@ -1841,6 +1862,22 @@ input:checked+.toggleSlider:before {
 
   .adminContent {
     padding: 1rem;
+  }
+
+  .caseManagementHeader {
+    margin-top: -1rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding: 1rem 1rem 1rem 1rem;
+    top: -1rem;
+  }
+  
+  .editCaseHeader {
+    margin-top: -1rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding: 1rem 1rem 1rem 1rem;
+    top: -1rem;
   }
 
   .statCardValue {
@@ -1874,10 +1911,10 @@ input:checked+.toggleSlider:before {
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  padding-top: 3rem;
+  padding-top: 2rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   position: sticky;
-  top: -3rem;
+  top: -1rem;
   background-color: #F8FAFC;
   z-index: 100;
   margin-top: -3rem;

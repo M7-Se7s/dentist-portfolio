@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-export default function DownloadCvButton({ pdfUrl, pdfUrlAr, className, style, label }) {
+export default function DownloadCvButton({ pdfUrl, pdfUrlAr, className, style, label, isLoading }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -22,11 +22,25 @@ export default function DownloadCvButton({ pdfUrl, pdfUrlAr, className, style, l
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  if (isLoading) {
+    return (
+      <button disabled className={className} style={{...style, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', opacity: 0.7, cursor: 'not-allowed'}}>
+        {buttonLabel}
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ transform: 'rotate(0deg)' }}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+    );
+  }
+
   if (!singleUrl) {
     // If neither exists, link to the static fallback
     return (
-      <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className={className} style={style}>
+      <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className={className} style={{...style, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}>
         {buttonLabel}
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ transform: 'rotate(0deg)' }}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
       </a>
     );
   }
@@ -34,8 +48,11 @@ export default function DownloadCvButton({ pdfUrl, pdfUrlAr, className, style, l
   if (!hasBoth) {
     // If only one exists, just link directly to it
     return (
-      <a href={singleUrl} target="_blank" rel="noopener noreferrer" className={className} style={style}>
+      <a href={singleUrl} target="_blank" rel="noopener noreferrer" className={className} style={{...style, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}>
         {buttonLabel}
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ transform: 'rotate(0deg)' }}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
       </a>
     );
   }

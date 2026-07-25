@@ -279,7 +279,7 @@
   margin: 0;
   padding: 0 50px;
   text-align: center;
-  font-size: 1.8rem;
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
 }
 .imageColumn {
   display: flex;
@@ -440,4 +440,34 @@
   color: white;
   margin-top: 1rem;
   font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .lightboxPrevBtn,
+  .lightboxNextBtn {
+    display: none !important;
+  }
+  
+  .galleryGrid,
+  .stepImageGrid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    scrollbar-width: none;
+  }
+  
+  .galleryGrid::-webkit-scrollbar,
+  .stepImageGrid::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .gallerySquareLg,
+  .gallerySquare {
+    flex: 0 0 85%;
+    scroll-snap-align: center;
+  }
 }

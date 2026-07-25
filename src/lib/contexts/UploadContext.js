@@ -1,9 +1,10 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from 'react';
-import imageCompression from 'browser-image-compression';
-import { casesService } from '../services/casesService';
-import { auth } from '../firebase';
+import { createContext, useContext, useState, useCallback } from "react";
+import imageCompression from "browser-image-compression";
+import { casesService } from "../services/casesService";
+import { auth } from "../firebase";
+import { triggerRevalidation } from "../actions/revalidate";
 
 export const UploadContext = createContext();
 
@@ -15,26 +16,32 @@ export function UploadProvider({ children }) {
   const [activeUploads, setActiveUploads] = useState([]);
 
   const updateJob = useCallback((id, updates) => {
-    setActiveUploads(prev => prev.map(job => job.id === id ? { ...job, ...updates } : job));
+    setActiveUploads((prev) =>
+      prev.map((job) => (job.id === id ? { ...job, ...updates } : job)),
+    );
   }, []);
 
   const clearJob = useCallback((id) => {
-    setActiveUploads(prev => prev.filter(job => job.id !== id));
+    setActiveUploads((prev) => prev.filter((job) => job.id !== id));
   }, []);
 
   const uploadFile = async (file) => {
     if (!file) return null;
     let fileToUpload = file;
     try {
-      const options = { maxSizeMB: 8, maxWidthOrHeight: 2048, useWebWorker: true };
+      const options = {
+        maxSizeMB: 8,
+        maxWidthOrHeight: 2048,
+        useWebWorker: true,
+      };
       fileToUpload = await imageCompression(file, options);
     } catch (error) {
-      console.warn('Compression failed, using original', error);
+      fileToUpload = file;
     }
 
     const formData = new FormData();
-    formData.append('file', fileToUpload);
-    
+    formData.append("file", fileToUpload);
+
     let token = null;
     if (auth.currentUser) {
       token = await auth.currentUser.getIdToken();
@@ -42,13 +49,13 @@ export function UploadProvider({ children }) {
 
     const headers = {};
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const res = await fetch('/api/upload', { 
-      method: 'POST', 
+    const res = await fetch("/api/upload", {
+      method: "POST",
       headers,
-      body: formData 
+      body: formData,
     });
     if (!res.ok) {
       const errorText = await res.text();
@@ -68,13 +75,13 @@ export function UploadProvider({ children }) {
       while (index < tasks.length) {
         const currentIndex = index++;
         const task = tasks[currentIndex];
-        
+
         try {
           results[currentIndex] = await task();
         } catch (error) {
           throw error; // Fail fast if any upload fails
         }
-        
+
         completed++;
         if (onProgress) onProgress(completed, tasks.length);
       }
@@ -90,25 +97,27 @@ export function UploadProvider({ children }) {
   };
 
   const processJob = async (job) => {
-    updateJob(job.id, { status: 'uploading', error: null, progress: 0 });
-    
+    updateJob(job.id, { status: "uploading", error: null, progress: 0 });
+
     try {
-      const { 
+      const {
         mode, // 'create' or 'edit'
         caseId, // if edit
-        formData, 
-        beforeImageFile, 
-        afterImageFile, 
+        formData,
+        caseType,
+        coverImageFile,
+        beforeImageFile,
+        afterImageFile,
         galleryItems,
         xrayItems,
-        treatmentSteps 
+        treatmentSteps,
       } = job.payload;
 
       // 1. Gather all required uploads into a flat list of tasks
       const uploadTasks = [];
       let totalFiles = 0;
 
-      let finalBeforeUrl = formData.beforeImage || '';
+      let finalBeforeUrl = formData.beforeImage || "";
       if (beforeImageFile) {
         totalFiles++;
         uploadTasks.push(async () => {
@@ -116,11 +125,19 @@ export function UploadProvider({ children }) {
         });
       }
 
-      let finalAfterUrl = formData.afterImage || '';
+      let finalAfterUrl = formData.afterImage || "";
       if (afterImageFile) {
         totalFiles++;
         uploadTasks.push(async () => {
           finalAfterUrl = await uploadFile(afterImageFile);
+        });
+      }
+
+      let finalCoverUrl = formData.coverImage || "";
+      if (coverImageFile) {
+        totalFiles++;
+        uploadTasks.push(async () => {
+          finalCoverUrl = await uploadFile(coverImageFile);
         });
       }
 
@@ -130,10 +147,10 @@ export function UploadProvider({ children }) {
           totalFiles++;
           uploadTasks.push(async () => {
             const url = await uploadFile(item.file);
-            if (url) finalGalleryItems.push({ url, label: item.label || '' });
+            if (url) finalGalleryItems.push({ url, label: item.label || "" });
           });
         } else if (item.url) {
-          finalGalleryItems.push({ url: item.url, label: item.label || '' });
+          finalGalleryItems.push({ url: item.url, label: item.label || "" });
         }
       }
 
@@ -143,10 +160,10 @@ export function UploadProvider({ children }) {
           totalFiles++;
           uploadTasks.push(async () => {
             const url = await uploadFile(item.file);
-            if (url) finalXrayItems.push({ url, label: item.label || '' });
+            if (url) finalXrayItems.push({ url, label: item.label || "" });
           });
         } else if (item.url) {
-          finalXrayItems.push({ url: item.url, label: item.label || '' });
+          finalXrayItems.push({ url: item.url, label: item.label || "" });
         }
       }
 
@@ -154,13 +171,15 @@ export function UploadProvider({ children }) {
       for (let i = 0; i < (treatmentSteps || []).length; i++) {
         const step = treatmentSteps[i];
         const stepImages = [...(step.existingImages || [])];
-        
+
         finalSteps.push({
-          title: step.title,
-          description: step.description,
-          images: stepImages
+          title: step.title || "",
+          titleAr: step.titleAr || "",
+          description: step.description || "",
+          descriptionAr: step.descriptionAr || "",
+          images: stepImages,
         });
-        
+
         if (step.files && step.files.length > 0) {
           for (const file of step.files) {
             totalFiles++;
@@ -185,6 +204,8 @@ export function UploadProvider({ children }) {
       // 2. All uploads succeeded, construct final document
       const caseDoc = {
         ...formData,
+        caseType: caseType || "detailed",
+        coverImage: finalCoverUrl,
         beforeImage: finalBeforeUrl,
         afterImage: finalAfterUrl,
         images: finalGalleryItems,
@@ -193,22 +214,28 @@ export function UploadProvider({ children }) {
       };
 
       // 3. Save to Firestore
-      if (mode === 'create') {
-        await casesService.createCase(caseDoc);
-      } else if (mode === 'edit') {
+      let finalCaseId = caseId;
+      if (mode === "create") {
+        finalCaseId = await casesService.createCase(caseDoc);
+      } else if (mode === "edit") {
         await casesService.updateCase(caseId, caseDoc);
       }
 
+      // Trigger On-Demand Revalidation
+      await triggerRevalidation(
+        ["/[locale]/cases", `/[locale]/cases/${finalCaseId}`, "/[locale]"],
+        "page",
+      );
+
       // 4. Mark as done and clear after a few seconds
-      updateJob(job.id, { status: 'done', progress: 100 });
+      updateJob(job.id, { status: "done", progress: 100 });
       setTimeout(() => {
         clearJob(job.id);
-        window.dispatchEvent(new Event('case_uploaded'));
+        window.dispatchEvent(new Event("case_uploaded"));
       }, 3000);
-
     } catch (error) {
       console.error("Background Upload Job Failed:", error);
-      updateJob(job.id, { status: 'error', error: error.message });
+      updateJob(job.id, { status: "error", error: error.message });
     }
   };
 
@@ -216,26 +243,28 @@ export function UploadProvider({ children }) {
     const id = Math.random().toString(36).substring(2, 9);
     const newJob = {
       id,
-      title: payload.formData.title || 'Untitled Case',
-      status: 'uploading', // 'uploading' | 'error' | 'done'
+      title: payload.formData.title || "Untitled Case",
+      status: "uploading", // 'uploading' | 'error' | 'done'
       progress: 0,
       error: null,
-      payload
+      payload,
     };
-    
-    setActiveUploads(prev => [newJob, ...prev]);
+
+    setActiveUploads((prev) => [newJob, ...prev]);
     processJob(newJob);
   };
 
   const retryJob = (id) => {
-    const job = activeUploads.find(j => j.id === id);
+    const job = activeUploads.find((j) => j.id === id);
     if (job) {
       processJob(job);
     }
   };
 
   return (
-    <UploadContext.Provider value={{ activeUploads, startCaseUpload, retryJob, clearJob }}>
+    <UploadContext.Provider
+      value={{ activeUploads, startCaseUpload, retryJob, clearJob }}
+    >
       {children}
     </UploadContext.Provider>
   );

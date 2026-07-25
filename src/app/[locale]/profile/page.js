@@ -20,7 +20,7 @@ export default function ProfilePage() {
         const profileRef = doc(db, "content", "profile");
         const profileSnap = await getDoc(profileRef);
         let profileInfo = {
-          name: 'Dr. Mohamed Shaaban',
+          name: 'Dr. Mohamed Shabaan',
           homeImageUrl: null,
           profileImageUrl: null,
           biography: tProfile('biography'),

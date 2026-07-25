@@ -1,0 +1,364 @@
+/* ========================================
+   Image Alignment Editor — Modal Styles
+   ======================================== */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.92);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Stretch children to fill width */
+  padding: 0; /* Removed padding to let flex handle it */
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height for mobile */
+  overflow: hidden; /* Prevent body scrolling */
+}
+
+/* Header bar */
+.header {
+  position: relative; /* Not absolute anymore */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  z-index: 10;
+  flex-shrink: 0; /* Prevent shrinking */
+  background: rgba(0, 0, 0, 0.5); /* Slight background to separate it */
+}
+
+.headerTitle {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerHint {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.closeBtn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Flexible container that takes up remaining space */
+.canvasContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Ensure it never pushes layout */
+  padding: 1rem;
+}
+
+/* Canvas area — contains ghost + active image */
+.canvasArea {
+  position: relative;
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+  max-height: 100%; /* Constrain to the flex container */
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background-color: #1a1a2e;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  margin: 0 auto;
+}
+
+.canvasArea:active {
+  cursor: grabbing;
+}
+
+/* Ghost (Before) image — fixed background reference */
+.ghostImage {
+  display: block;
+  max-width: 100%;
+  max-height: 100%; /* Now bound by the canvasContainer */
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  z-index: 1;
+  filter: grayscale(0.3);
+  transition: opacity 0.2s ease;
+}
+
+/* Active (After) image — draggable & zoomable */
+.activeImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
+  transform-origin: center center;
+}
+
+/* Ghost label badge */
+.ghostLabel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  z-index: 5;
+  pointer-events: none;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Crosshair guides */
+.crosshairH,
+.crosshairV {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.crosshairH {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #fff;
+}
+
+.crosshairV {
+  left: 50%;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background: #fff;
+}
+
+/* Controls bar at the bottom */
+.controls {
+  position: relative; /* Not absolute anymore */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  z-index: 10;
+  flex-shrink: 0; /* Prevent shrinking */
+  background: rgba(0, 0, 0, 0.5); /* Background to separate */
+}
+
+/* Zoom slider row */
+.zoomRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.zoomLabel {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  min-width: 38px;
+}
+
+.zoomSlider {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+  cursor: pointer;
+}
+
+.zoomSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary-color, #0E5E7A);
+  border: 2px solid #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.zoomSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary-color, #0E5E7A);
+  border: 2px solid #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.zoomValue {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 38px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Opacity slider for ghost */
+.opacityRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Button row */
+.buttonRow {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.btn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btnConfirm {
+  background: var(--primary-color, #0E5E7A);
+  color: #fff;
+  flex: 1;
+  justify-content: center;
+}
+
+.btnConfirm:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.btnSkip {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex: 1;
+  justify-content: center;
+}
+
+.btnSkip:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.btnReset {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.7rem 1rem;
+}
+
+.btnReset:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Hidden canvas for export */
+.hiddenCanvas {
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .canvasContainer {
+    padding: 0.5rem;
+  }
+
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .headerTitle {
+    font-size: 0.95rem;
+  }
+
+  .headerHint {
+    display: none;
+  }
+
+  .controls {
+    padding: 0.75rem 1rem;
+  }
+
+  .buttonRow {
+    flex-wrap: wrap;
+  }
+
+  .btnSkip,
+  .btnConfirm {
+    flex: 1 1 45%;
+  }
+
+  .btnReset {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .canvasArea {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .zoomRow,
+  .opacityRow {
+    padding: 0.5rem 0.75rem;
+  }
+}
