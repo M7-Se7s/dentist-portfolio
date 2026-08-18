@@ -165,9 +165,9 @@ export default async function Home({ params }) {
           </h2>
           <p
             style={{
-              fontSize: "1.2rem",
+              fontSize: "1.125rem", /* 18px */
               color: "var(--text-muted)",
-              lineHeight: "1.8",
+              lineHeight: "1.75",
               marginBottom: "2rem",
             }}
           >
@@ -240,7 +240,7 @@ export default async function Home({ params }) {
                   </div>
                   <div
                     className={styles.caseCardContent}
-                    style={{ padding: "1.5rem" }}
+                    style={{ padding: "1.5rem", display: "flex", flexDirection: "column" }}
                   >
                     <h3
                       style={{
@@ -252,11 +252,8 @@ export default async function Home({ params }) {
                     </h3>
                     <Link
                       href={`/cases/${caseItem.id}`}
-                      style={{
-                        color: "var(--secondary-color)",
-                        fontWeight: "600",
-                        textDecoration: "none",
-                      }}
+                      className="btn-secondary"
+                      style={{ alignSelf: "flex-start", marginTop: "0.5rem" }}
                     >
                       {tCases("viewCase")}
                     </Link>
@@ -286,7 +283,7 @@ export default async function Home({ params }) {
         <div className="container">
           <h2
             style={{
-              fontSize: "clamp(2rem, 5vw, 3.5rem)",
+              fontSize: "clamp(2rem, 5vw, 3rem)", /* Adjusted for scale */
               marginBottom: "2rem",
               color: "var(--white)",
               fontFamily: "var(--font-heading)",

@@ -163,7 +163,7 @@ export default async function CVPage({ params }) {
               <h1
                 style={{
                   color: "var(--primary-color)",
-                  fontSize: "clamp(1.5rem, 5vw, 2.25rem)",
+                  fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
                   fontFamily: "var(--font-heading)",
                   marginBottom: "0.25rem",
                   lineHeight: "1.2",
@@ -175,7 +175,7 @@ export default async function CVPage({ params }) {
               <p
                 style={{
                   color: "var(--secondary-color)",
-                  fontSize: "clamp(1rem, 2.5vw, 1.15rem)",
+                  fontSize: "clamp(1.125rem, 2vw, 1.25rem)",
                   fontWeight: "500",
                   marginBottom: "1.5rem",
                 }}
@@ -185,7 +185,7 @@ export default async function CVPage({ params }) {
               <div
                 style={{
                   color: "var(--text-muted)",
-                  fontSize: "0.95rem",
+                  fontSize: "clamp(0.875rem, 1vw, 1rem)",
                   lineHeight: "1.6",
                   display: "flex",
                   flexDirection: "column",
@@ -274,7 +274,7 @@ export default async function CVPage({ params }) {
                 <h2
                   style={{
                     color: "var(--primary-color)",
-                    fontSize: "1.5rem",
+                    fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
                     textTransform: "uppercase",
                     letterSpacing: "1px",
                     paddingBottom: "0.5rem",
@@ -287,8 +287,8 @@ export default async function CVPage({ params }) {
                   style={{
                     color: "var(--text-dark)",
                     lineHeight: "1.8",
-                    fontSize: "1.1rem",
-                    textAlign: "justify",
+                    fontSize: "clamp(1rem, 1.5vw, 1.125rem)",
+                    textAlign: "left",
                   }}
                 >
                   {summaryToUse}
@@ -299,11 +299,11 @@ export default async function CVPage({ params }) {
             <div className="core-licensure-grid">
               {/* Core Competencies */}
               {coreCompetenciesToUse.length > 0 && (
-                <section>
+                <section style={{ minWidth: 0 }}>
                   <h2
                     style={{
                       color: "var(--primary-color)",
-                      fontSize: "1.5rem",
+                      fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
                       textTransform: "uppercase",
                       letterSpacing: "1px",
                       paddingBottom: "0.5rem",
@@ -312,72 +312,46 @@ export default async function CVPage({ params }) {
                   >
                     {t("coreCompetencies")}
                   </h2>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "0.75rem",
-                      justifyContent: "flex-start",
-                    }}
-                  >
+                  <div className="marquee-container">
                     {(() => {
-                      const estimateWidth = (str) => {
-                        let w = 0;
-                        for (let i = 0; i < str.length; i++) {
-                          const c = str[i];
-                          if (/[mwMW]/.test(c)) w += 1.5;
-                          else if (/[ijl1Iftr]/.test(c)) w += 0.5;
-                          else if (/[A-Z]/.test(c)) w += 1.2;
-                          else w += 1;
-                        }
-                        return w + 4; // Account for tag padding
-                      };
+                      const half = Math.ceil(coreCompetenciesToUse.length / 2);
+                      const row1 = coreCompetenciesToUse.slice(0, half);
+                      const row2 = coreCompetenciesToUse.slice(half);
 
-                      const sorted = [...coreCompetenciesToUse].sort(
-                        (a, b) => estimateWidth(b) - estimateWidth(a),
+                      // Duplicate arrays to create the seamless infinite loop
+                      const row1Duplicated = [...row1, ...row1];
+                      const row2Duplicated = [...row2, ...row2];
+
+                      return (
+                        <>
+                          <div className="marquee-track marquee-left">
+                            {row1Duplicated.map((item, idx) => (
+                              <span key={`r1-${idx}`} className="competency-tag">
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="marquee-track marquee-right">
+                            {row2Duplicated.map((item, idx) => (
+                              <span key={`r2-${idx}`} className="competency-tag">
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                        </>
                       );
-                      const pairs = [];
-                      let left = 0;
-                      let right = sorted.length - 1;
-                      while (left <= right) {
-                        if (left === right) {
-                          pairs.push([sorted[left]]);
-                        } else {
-                          pairs.push([sorted[left], sorted[right]]);
-                        }
-                        left++;
-                        right--;
-                      }
-
-                      pairs.sort((pairA, pairB) => {
-                        const lenA = pairA.reduce(
-                          (sum, str) => sum + estimateWidth(str),
-                          0,
-                        );
-                        const lenB = pairB.reduce(
-                          (sum, str) => sum + estimateWidth(str),
-                          0,
-                        );
-                        return lenB - lenA;
-                      });
-
-                      return pairs.flat();
-                    })().map((item, idx) => (
-                      <span key={idx} className="competency-tag">
-                        {item}
-                      </span>
-                    ))}
+                    })()}
                   </div>
                 </section>
               )}
 
               {/* Professional Licensure */}
               {licensureToUse.length > 0 && (
-                <section>
+                <section style={{ minWidth: 0 }}>
                   <h2
                     style={{
                       color: "var(--primary-color)",
-                      fontSize: "1.5rem",
+                      fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
                       textTransform: "uppercase",
                       letterSpacing: "1px",
                       paddingBottom: "0.5rem",
@@ -442,7 +416,7 @@ export default async function CVPage({ params }) {
                                 lineHeight: "1.5",
                                 fontWeight: "700",
                                 color: "var(--primary-color)",
-                                fontSize: "clamp(0.95rem, 2vw, 1.05rem)",
+                                fontSize: "clamp(1rem, 1.5vw, 1.125rem)",
                               }}
                             >
                               {name}
@@ -450,7 +424,7 @@ export default async function CVPage({ params }) {
                             {details && (
                               <div
                                 style={{
-                                  fontSize: "clamp(0.85rem, 1.5vw, 0.95rem)",
+                                  fontSize: "clamp(0.875rem, 1vw, 0.95rem)",
                                   color: "var(--text-muted)",
                                   lineHeight: "1.4",
                                   display: "flex",
@@ -514,7 +488,7 @@ export default async function CVPage({ params }) {
                         <div className="timeline-header">
                           <h3
                             style={{
-                              fontSize: "1.25rem",
+                              fontSize: "clamp(1.125rem, 2vw, 1.25rem)",
                               color: "var(--primary-color)",
                               fontWeight: "700",
                               margin: 0,
@@ -525,7 +499,7 @@ export default async function CVPage({ params }) {
                           <span
                             style={{
                               color: "var(--secondary-color)",
-                              fontSize: "0.85rem",
+                              fontSize: "clamp(0.75rem, 1vw, 0.875rem)",
                               fontWeight: "700",
                               textTransform: "uppercase",
                               letterSpacing: "0.5px",
@@ -536,7 +510,7 @@ export default async function CVPage({ params }) {
                         </div>
                         <p
                           style={{
-                            fontSize: "1rem",
+                            fontSize: "clamp(0.875rem, 1.5vw, 1rem)",
                             color: "var(--text-muted)",
                             fontWeight: "600",
                             marginBottom: "1.25rem",
@@ -567,7 +541,7 @@ export default async function CVPage({ params }) {
                                     display: "flex",
                                     alignItems: "flex-start",
                                     gap: "0.75rem",
-                                    fontSize: "0.95rem",
+                                    fontSize: "clamp(0.875rem, 1vw, 0.95rem)",
                                   }}
                                 >
                                   <svg
@@ -607,7 +581,7 @@ export default async function CVPage({ params }) {
                 <h2
                   style={{
                     color: "var(--primary-color)",
-                    fontSize: "1.5rem",
+                    fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
                     textTransform: "uppercase",
                     letterSpacing: "1px",
                     paddingBottom: "0.5rem",
@@ -711,7 +685,7 @@ export default async function CVPage({ params }) {
                 <h2
                   style={{
                     color: "var(--primary-color)",
-                    fontSize: "1.5rem",
+                    fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
                     fontWeight: "700",
                     marginBottom: "1.5rem",
                     letterSpacing: "-0.5px",
@@ -725,7 +699,7 @@ export default async function CVPage({ params }) {
                       <h3
                         style={{
                           color: "var(--primary-color)",
-                          fontSize: "1.15rem",
+                          fontSize: "clamp(1.125rem, 2vw, 1.25rem)",
                           fontWeight: "600",
                           marginBottom: "1rem",
                           borderBottom: "1px solid #F1F5F9",
@@ -805,7 +779,7 @@ export default async function CVPage({ params }) {
                         <h2
                           style={{
                             color: "var(--primary-color)",
-                            fontSize: "1.5rem",
+                            fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
                             textTransform: "uppercase",
                             letterSpacing: "1px",
                             paddingBottom: "0.5rem",
@@ -871,7 +845,7 @@ export default async function CVPage({ params }) {
                                       lineHeight: "1.5",
                                       fontWeight: "700",
                                       color: "var(--primary-color)",
-                                      fontSize: "clamp(0.95rem, 2vw, 1.05rem)",
+                                      fontSize: "clamp(1rem, 1.5vw, 1.125rem)",
                                     }}
                                   >
                                     {name}
@@ -880,7 +854,7 @@ export default async function CVPage({ params }) {
                                     <div
                                       style={{
                                         fontSize:
-                                          "clamp(0.85rem, 1.5vw, 0.95rem)",
+                                          "clamp(0.875rem, 1vw, 0.95rem)",
                                         color: "var(--text-muted)",
                                         lineHeight: "1.4",
                                         display: "flex",
@@ -909,7 +883,7 @@ export default async function CVPage({ params }) {
                         <h2
                           style={{
                             color: "var(--primary-color)",
-                            fontSize: "1.5rem",
+                            fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
                             textTransform: "uppercase",
                             letterSpacing: "1px",
                             paddingBottom: "0.5rem",
@@ -963,7 +937,7 @@ export default async function CVPage({ params }) {
                 <h2
                   style={{
                     color: "var(--primary-color)",
-                    fontSize: "1.5rem",
+                    fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
                     textTransform: "uppercase",
                     letterSpacing: "1px",
                     paddingBottom: "0.5rem",
@@ -1023,16 +997,12 @@ export default async function CVPage({ params }) {
           grid-template-columns: 1fr 1fr;
           gap: 3rem;
         }
-        @media (max-width: 1200px) {
+        @media (max-width: 992px) {
           .core-licensure-grid {
             grid-template-columns: 1fr;
           }
         }
         @media (max-width: 767px) {
-          .cv-main {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-          }
           .cv-container {
             padding: 1.5rem 0;
             background-color: transparent;
@@ -1171,7 +1141,7 @@ export default async function CVPage({ params }) {
         .skill-card {
           background-color: #FFFFFF;
           border: 1px solid #E2E8F0;
-          border-radius: 8px;
+          border-radius: 12px;
           padding: 1.5rem;
           box-shadow: 0 2px 4px rgba(0,0,0,0.02);
           transition: all 0.3s ease;
@@ -1190,16 +1160,56 @@ export default async function CVPage({ params }) {
         .skill-card:hover .skill-bullet {
           color: var(--secondary-color);
         }
+        .marquee-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          width: 100%;
+          overflow: hidden;
+          position: relative;
+          mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent);
+          -webkit-mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent);
+        }
+        
+        .marquee-track {
+          display: flex;
+          gap: 1rem;
+          width: max-content;
+        }
+
+        .marquee-left {
+          animation: marqueeLeft 30s linear infinite;
+        }
+
+        .marquee-right {
+          animation: marqueeRight 30s linear infinite;
+        }
+
+        .marquee-track:hover {
+          animation-play-state: paused;
+        }
+
+        @keyframes marqueeLeft {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+
+        @keyframes marqueeRight {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+
         .competency-tag {
           background-color: var(--primary-light);
           color: var(--primary-color);
-          padding: 0.5rem 0.5rem;
+          padding: 0.5rem 1rem;
           border-radius: 50px;
-          font-size: clamp(0.64rem, 2vw, 1rem);
+          font-size: clamp(0.875rem, 1vw, 1rem);
           font-weight: 500;
           transition: all 0.3s ease;
           display: inline-flex;
           align-items: center;
+          white-space: nowrap;
         }
         .competency-tag:hover {
           background-color: var(--primary-color);
@@ -1213,9 +1223,9 @@ export default async function CVPage({ params }) {
           align-items: flex-start;
           gap: 1rem;
           color: var(--text-dark);
-          font-size: clamp(0.75rem, 2vw, 1.15rem) !important;
-          padding: 1rem 0.6rem;
-          border-radius: 8px;
+          font-size: clamp(0.875rem, 1.5vw, 1rem) !important;
+          padding: 1rem 1.5rem;
+          border-radius: 12px;
           background-color: #FFFFFF;
           border: 1px solid #E2E8F0;
           transition: all 0.3s ease;
@@ -1241,7 +1251,7 @@ export default async function CVPage({ params }) {
           background-color: #FFFFFF;
           border: 1px solid #E2E8F0;
           padding: 1rem;
-          border-radius: 8px;
+          border-radius: 12px;
           transition: all 0.3s ease;
         }
         .education-card:hover {
@@ -1250,13 +1260,13 @@ export default async function CVPage({ params }) {
           transform: translateY(-4px);
         }
         .edu-degree {
-          font-size: 1.15rem;
+          font-size: clamp(1.125rem, 2vw, 1.25rem);
         }
         .edu-year {
-          font-size: 0.85rem;
+          font-size: clamp(0.75rem, 1vw, 0.875rem);
         }
         .edu-inst {
-          font-size: 1rem;
+          font-size: clamp(0.875rem, 1.5vw, 1rem);
         }
         .edu-icon-wrapper {
           background-color: #F8FAFC;

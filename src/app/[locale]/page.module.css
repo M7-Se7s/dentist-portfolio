@@ -1,5 +1,5 @@
 .section {
-  padding: 5rem 0;
+  padding: 4rem 0; /* 64px - Tighter proportional spacing between sections */
 }
 
 .sectionHeader {
@@ -8,14 +8,14 @@
 }
 
 .sectionHeader h2 {
-  font-size: 2.5rem;
+  font-size: 2.5rem; /* 40px */
   color: var(--primary-color);
   margin-bottom: 1rem;
   font-family: var(--font-heading);
 }
 
 .divider {
-  width: 60px;
+  width: 64px; /* 64px for 8pt grid */
   height: 4px;
   background-color: var(--secondary-color);
   margin: 0 auto 1.5rem;
@@ -24,7 +24,7 @@
 
 .sectionHeader p {
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 1.125rem; /* 18px */
   max-width: 600px;
   margin: 0 auto;
 }
@@ -80,10 +80,10 @@
 }
 
 .heroBio {
-  font-size: 1.2rem;
+  font-size: 1.125rem; /* 18px */
   color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 2.5rem;
+  line-height: 1.75;
+  margin-bottom: 2rem; /* 32px */
   max-width: 500px;
 }
 
@@ -152,7 +152,7 @@
   background: var(--white);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  padding: 2.5rem 2rem;
+  padding: 2rem; /* 32px on all sides */
   text-align: center;
   transition: all var(--transition-fast);
   box-shadow: var(--shadow-sm);
@@ -220,7 +220,7 @@
   }
 
   .heroSubtitle {
-    font-size: 1.2rem;
+    font-size: 1.25rem; /* 20px */
   }
 
   .heroBio {

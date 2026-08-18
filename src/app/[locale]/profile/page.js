@@ -47,7 +47,7 @@ export default function ProfilePage() {
   }, [locale, tProfile]);
 
   return (
-    <main style={{backgroundColor: '#F8FAFC', minHeight: 'calc(100vh - 80px)', padding: '5rem 0'}}>
+    <main style={{backgroundColor: '#F8FAFC', padding: 0}}>
       <div className="container">
         
         <section className={styles.profileSection}>

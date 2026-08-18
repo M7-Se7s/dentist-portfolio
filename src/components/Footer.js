@@ -98,7 +98,11 @@ export default function Footer() {
           </div>
           <div className={styles.footerCopyright}>
             <div>{`\u00A9 ${new Date().getFullYear()} ${t('copyright')}`}</div>
-            <div className={styles.developerCredit}><span>{t('developedBy')}</span></div>
+            <div className={styles.developerCredit}>
+              <a href="https://www.linkedin.com/in/muhammed-elwaer-a423083a5/" target="_blank" rel="noopener noreferrer" className={styles.developerLink}>
+                {t('developedBy')}
+              </a>
+            </div>
           </div>
         </div>
       </div>

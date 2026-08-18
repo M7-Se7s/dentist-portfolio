@@ -1,6 +1,6 @@
 .pageHeader {
   background: linear-gradient(180deg, var(--primary-light) 0%, var(--background) 100%);
-  padding: 6rem 0 4rem;
+  padding: 4rem 0 3rem; /* 64px top, 48px bottom (tightened) */
   text-align: center;
 }
 
@@ -14,17 +14,17 @@
 
 .pageHeader p {
   color: var(--text-light);
-  font-size: 1.15rem;
+  font-size: 1.125rem; /* 18px */
   max-width: 650px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.75;
 }
 
 /* Category Tab Bar */
 .categoryTabBarWrapper {
   width: 100%;
-  margin-top: -1rem;
-  margin-bottom: 4rem;
+  margin-top: 0; /* Removed arbitrary negative margin */
+  margin-bottom: 3rem; /* 48px instead of 64px */
   position: relative;
   z-index: 50;
   display: flex;
@@ -49,13 +49,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem 1.5rem; /* 12px 24px */
   background-color: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: 9999px;
   color: var(--text-dark);
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 1rem; /* 16px */
   white-space: nowrap;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -87,15 +87,15 @@
 }
 
 .gallerySection {
-  padding-bottom: 6rem;
+  padding-bottom: 0; /* Let the footer's top margin handle the spacing */
   background-color: var(--background);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2.5rem;
-  margin-bottom: 4rem;
+  gap: 2rem; /* 32px instead of 40px */
+  margin-bottom: 3rem; /* 48px space for the load more button */
 }
 
 .caseCard {
@@ -168,8 +168,8 @@
 
 .simpleCardDesc {
   color: var(--text-light);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 1rem; /* 16px */
+  line-height: 1.75;
   margin-bottom: 0;
   flex-grow: 1;
 }
@@ -210,42 +210,13 @@
 
 .caseDesc {
   color: var(--text-light);
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
+  font-size: 1rem; /* 16px */
+  line-height: 1.75;
+  margin-bottom: 1.5rem; /* 24px */
   flex-grow: 1;
 }
 
-.viewDetailsBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.5rem;
-  background-color: var(--primary-color);
-  color: var(--white);
-  font-weight: 600;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  align-self: flex-start;
-  margin-top: auto;
-}
-
-.viewDetailsBtn:hover {
-  background-color: var(--color-primary-hover, #1d4ed8);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
-
-@media (max-width: 576px) {
-  .viewDetailsBtn {
-    align-self: center;
-    width: 100%;
-    justify-content: center;
-  }
-}
+/* Replaced .viewDetailsBtn with global .btn-secondary */
 
 .loadMoreContainer {
   text-align: center;
@@ -277,7 +248,7 @@
 
 @media (max-width: 768px) {
   .pageHeader {
-    padding: 3rem 0 2rem;
+    padding: 2rem 0 1.5rem; /* 32px top, 24px bottom */
   }
   
   .pageHeader h1 {
