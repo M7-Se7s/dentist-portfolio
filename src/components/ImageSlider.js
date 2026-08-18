@@ -12,6 +12,7 @@ export default function ImageSlider({
   const [sliderPosition, setSliderPosition] = useState(50);
   const sliderRef = useRef(null);
   const touchState = useRef({
+    isDragging: false,
     startX: 0,
     startY: 0,
     isHorizontal: null,
@@ -21,6 +22,7 @@ export default function ImageSlider({
 
   const handleTouchStart = (e) => {
     touchState.current = {
+      isDragging: true,
       startX: e.touches[0].clientX,
       startY: e.touches[0].clientY,
       isHorizontal: null,
@@ -30,7 +32,7 @@ export default function ImageSlider({
   };
 
   const handleTouchMove = (e) => {
-    if (!sliderRef.current || e.touches.length === 0) return;
+    if (!sliderRef.current || e.touches.length === 0 || !touchState.current.isDragging) return;
 
     const clientX = e.touches[0].clientX;
     const clientY = e.touches[0].clientY;
@@ -61,6 +63,7 @@ export default function ImageSlider({
     // Only handle primary button / touch
     if (e.pointerType === "mouse" && e.button !== 0) return;
     touchState.current = {
+      isDragging: true,
       startX: e.clientX,
       startY: e.clientY,
       isHorizontal: null,
@@ -74,7 +77,7 @@ export default function ImageSlider({
   };
 
   const handlePointerMove = (e) => {
-    if (!sliderRef.current || e.clientX === undefined) return;
+    if (!sliderRef.current || e.clientX === undefined || !touchState.current.isDragging) return;
     const clientX = e.clientX;
     const clientY = e.clientY;
     if (touchState.current.isHorizontal === null) {
@@ -96,12 +99,14 @@ export default function ImageSlider({
       e.target.releasePointerCapture &&
         e.target.releasePointerCapture(e.pointerId);
     } catch (err) {}
+    touchState.current.isDragging = false;
     touchState.current.isHorizontal = null;
   };
 
   const handleMouseMove = (e) => {
     // If it's a mouse event, ensure the primary button is pressed
     if (e.type.includes("mouse") && e.buttons !== 1) return;
+    if (!touchState.current.isDragging) return;
 
     if (!sliderRef.current || e.clientX === undefined) return;
     const rect = sliderRef.current.getBoundingClientRect();
@@ -153,9 +158,11 @@ export default function ImageSlider({
       onMouseDown={handleMouseMove}
       onTouchMove={handleTouchMove}
       onTouchStart={handleTouchStart}
+      onTouchEnd={() => { touchState.current.isDragging = false; }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerUp}
       style={{
         touchAction: "pan-y",
         userSelect: "none",
