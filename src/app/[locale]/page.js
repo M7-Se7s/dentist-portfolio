@@ -1,6 +1,6 @@
 import { Link } from "../../i18n/routing";
 import Image from "next/image";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import dynamic from "next/dynamic";
 import styles from "./page.module.css";
@@ -34,13 +34,16 @@ export default async function Home({ params }) {
   let settings = null;
   let recentCases = [];
 
+  let dbCategories = [];
+
   try {
-    const [profileSnap, cvSnap, settingsSnap, casesSnapshot] =
+    const [profileSnap, cvSnap, settingsSnap, casesSnapshot, categoriesSnap] =
       await Promise.all([
         getDoc(doc(db, "content", "profile")),
         getDoc(doc(db, "content", "cv")),
         getDoc(doc(db, "settings", "global")),
         getDocs(collection(db, "cases")),
+        getDocs(query(collection(db, "categories"), orderBy("nameEn", "asc"))),
       ]);
 
     if (profileSnap.exists()) {
@@ -53,6 +56,29 @@ export default async function Home({ params }) {
 
     if (settingsSnap.exists()) {
       settings = settingsSnap.data();
+    }
+
+    const standardCategories = [
+      { nameEn: "All", nameAr: "الكل" },
+      { nameEn: "Full Mouth Rehabilitation Cases", nameAr: "حالات إعادة تأهيل الفم بالكامل" },
+      { nameEn: "Surgery", nameAr: "جراحة" },
+      { nameEn: "Crown", nameAr: "تيجان" },
+      { nameEn: "Endodontics", nameAr: "علاج الجذور" },
+      { nameEn: "Composite", nameAr: "كومبوزيت" },
+      { nameEn: "Prosthodontics", nameAr: "تركيبات أسنان" },
+      { nameEn: "General", nameAr: "عام" },
+    ];
+    
+    dbCategories = [...standardCategories];
+    if (!categoriesSnap.empty) {
+      const fetched = categoriesSnap.docs.map((d) => d.data());
+      const standardNames = standardCategories.map((c) => c.nameEn.toLowerCase());
+
+      const filteredFetched = fetched.filter((cat) => {
+        const catName = (cat.nameEn || "").trim().toLowerCase();
+        return catName !== "pediatric" && !standardNames.includes(catName);
+      });
+      dbCategories = [...dbCategories, ...filteredFetched];
     }
 
     let casesList = casesSnapshot.docs
@@ -207,10 +233,10 @@ export default async function Home({ params }) {
 
             <div
               style={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "center",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
                 gap: "2rem",
+                width: "100%",
               }}
             >
               {recentCases.map((caseItem) => (
@@ -220,8 +246,8 @@ export default async function Home({ params }) {
                   style={{
                     padding: "0",
                     overflow: "hidden",
-                    width: "100%",
-                    maxWidth: "300px",
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
                   <div
@@ -242,17 +268,34 @@ export default async function Home({ params }) {
                     className={styles.caseCardContent}
                     style={{ padding: "1.5rem", display: "flex", flexDirection: "column" }}
                   >
-                    <h3
-                      style={{
-                        marginBottom: "1rem",
-                        color: "var(--primary-color)",
-                      }}
-                    >
-                      {caseItem.title}
-                    </h3>
                     <Link
                       href={`/cases/${caseItem.id}`}
-                      className="btn-secondary"
+                      style={{ textDecoration: "none", flexGrow: 1, display: "flex", flexDirection: "column" }}
+                    >
+                      <div className="categoriesWrapper">
+                        {(caseItem.categories || []).map((cat) => {
+                          const catObj = dbCategories.find(
+                            (c) => c.nameEn === cat,
+                          );
+                          const displayName =
+                            locale === "ar" && catObj?.nameAr
+                              ? catObj.nameAr
+                              : cat;
+                          return (
+                            <span key={cat} className="caseCategory">
+                              {displayName}
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <p className="caseDesc">
+                        {caseItem.description?.substring(0, 80)}
+                        {caseItem.description?.length > 80 ? "..." : ""}
+                      </p>
+                    </Link>
+                    <Link
+                      href={`/cases/${caseItem.id}`}
+                      className="btn-card-link"
                       style={{ alignSelf: "flex-start", marginTop: "0.5rem" }}
                     >
                       {tCases("viewCase")}

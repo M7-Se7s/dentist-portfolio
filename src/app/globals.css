@@ -150,24 +150,29 @@ button {
   background-color: var(--primary-light);
 }
 
-.btn-text-success {
+.btn-card-link {
   background-color: transparent;
-  color: var(--success);
+  color: var(--primary-color);
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  /* Reduced from 0.75rem 1.5rem to minimal 0.5rem 0 for a sleeker look */
+  padding: 0.5rem 0;
+  /* text-sm scale for better typography balance */
+  font-size: 0.875rem; 
   font-weight: 500;
-  transition: all var(--transition-fast);
+  transition: transform var(--transition-fast), color var(--transition-fast);
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.5rem;
 }
 
-.btn-text-success:hover {
-  color: var(--primary-color);
-  background-color: transparent;
+.btn-card-link:hover {
+  color: var(--primary-dark, #2c3e50);
   transform: translateX(4px);
+}
+
+[dir="rtl"] .btn-card-link:hover {
+  transform: translateX(-4px);
 }
 
 .card {
@@ -183,11 +188,49 @@ button {
   transform: translateY(-4px);
 }
 
+.categoriesWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .categoriesWrapper {
+    justify-content: center;
+  }
+}
+
+.caseCategory {
+  display: inline-block;
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  align-self: flex-start;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.caseDesc {
+  color: var(--text-light);
+  font-size: 1rem; /* 16px */
+  line-height: 1.75;
+  margin-bottom: 1.5rem; /* 24px */
+  flex-grow: 1;
+}
+
 /* Rich Text Content */
 .rich-text-content {
   word-break: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
+}
+
+.marquee-scroll-track::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .rich-text-content * {
@@ -298,4 +341,15 @@ label {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Marquee Keyframes (used by AutoScrollMarquee component) */
+@keyframes marquee-scroll-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-scroll-right {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
 }

@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from "@vercel/analytics/react";
 import './polyfill';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -91,9 +92,11 @@ export default async function RootLayout({ children, params }) {
       </head>
       <body className={fontClasses}>
         <NextIntlClientProvider messages={messages}>
-          <Navbar />
-          {children}
-          <Footer />
+          <ErrorBoundary>
+            <Navbar />
+            {children}
+            <Footer />
+          </ErrorBoundary>
         </NextIntlClientProvider>
         <SpeedInsights />
         <Analytics />

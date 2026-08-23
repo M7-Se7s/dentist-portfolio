@@ -1,6 +1,7 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { getTranslations } from "next-intl/server";
+import AutoScrollMarquee from "./AutoScrollMarquee";
 
 export const revalidate = 60;
 
@@ -314,30 +315,21 @@ export default async function CVPage({ params }) {
                   </h2>
                   <div className="marquee-container">
                     {(() => {
-                      const half = Math.ceil(coreCompetenciesToUse.length / 2);
-                      const row1 = coreCompetenciesToUse.slice(0, half);
-                      const row2 = coreCompetenciesToUse.slice(half);
-
-                      // Duplicate arrays to create the seamless infinite loop
-                      const row1Duplicated = [...row1, ...row1];
-                      const row2Duplicated = [...row2, ...row2];
+                      // Balance rows by total character length, not item count
+                      const totalChars = coreCompetenciesToUse.reduce((sum, s) => sum + s.length, 0);
+                      let running = 0;
+                      let splitIdx = Math.ceil(coreCompetenciesToUse.length / 2);
+                      for (let i = 0; i < coreCompetenciesToUse.length; i++) {
+                        running += coreCompetenciesToUse[i].length;
+                        if (running >= totalChars / 2) { splitIdx = i + 1; break; }
+                      }
+                      const row1 = coreCompetenciesToUse.slice(0, splitIdx);
+                      const row2 = coreCompetenciesToUse.slice(splitIdx);
 
                       return (
                         <>
-                          <div className="marquee-track marquee-left">
-                            {row1Duplicated.map((item, idx) => (
-                              <span key={`r1-${idx}`} className="competency-tag">
-                                {item}
-                              </span>
-                            ))}
-                          </div>
-                          <div className="marquee-track marquee-right">
-                            {row2Duplicated.map((item, idx) => (
-                              <span key={`r2-${idx}`} className="competency-tag">
-                                {item}
-                              </span>
-                            ))}
-                          </div>
+                          <AutoScrollMarquee items={row1} direction="left" speed={28} />
+                          {row2.length > 0 && <AutoScrollMarquee items={row2} direction="right" speed={24} />}
                         </>
                       );
                     })()}
@@ -1171,33 +1163,7 @@ export default async function CVPage({ params }) {
           -webkit-mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent);
         }
         
-        .marquee-track {
-          display: flex;
-          gap: 1rem;
-          width: max-content;
-        }
 
-        .marquee-left {
-          animation: marqueeLeft 30s linear infinite;
-        }
-
-        .marquee-right {
-          animation: marqueeRight 30s linear infinite;
-        }
-
-        .marquee-track:hover {
-          animation-play-state: paused;
-        }
-
-        @keyframes marqueeLeft {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-
-        @keyframes marqueeRight {
-          0% { transform: translateX(-50%); }
-          100% { transform: translateX(0); }
-        }
 
         .competency-tag {
           background-color: var(--primary-light);

@@ -368,7 +368,7 @@ export default function CasesClient({ initialCases, dbCategories }) {
                             {description?.substring(0, 80)}
                             {description?.length > 80 ? "..." : ""}
                           </p>
-                          <span className="btn-text-success" style={{ alignSelf: "flex-start", marginTop: "auto" }}>
+                          <span className="btn-card-link" style={{ alignSelf: "flex-start", marginTop: "auto" }}>
                             {t("viewCase")}
                           </span>
                         </Link>
