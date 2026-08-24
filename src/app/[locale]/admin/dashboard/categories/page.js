@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import {
@@ -45,6 +45,7 @@ export default function CategoryManager() {
   const [nameAr, setNameAr] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [mobileLang, setMobileLang] = useState("en");
 
   const fetchCategories = async () => {
     try {
@@ -103,7 +104,7 @@ export default function CategoryManager() {
   };
 
   const handleAddCategory = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!nameEn || !nameAr) return;
 
     setIsAdding(true);
@@ -168,6 +169,30 @@ export default function CategoryManager() {
             Manage custom categories for your cases and gallery.
           </p>
         </div>
+        <div className={styles.headerActionButtons}>
+          <button 
+            type="button" 
+            className="btn-secondary" 
+            onClick={handleTranslate} 
+            disabled={isTranslating || !nameEn}
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+            </svg>
+            <span className={styles.fabText}>{isTranslating ? "Translating..." : "Auto-Translate"}</span>
+          </button>
+          <button 
+            type="button" 
+            className="btn-primary" 
+            onClick={handleAddCategory}
+            disabled={isAdding || !nameEn || !nameAr}
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span className={styles.fabText}>{isAdding ? "Adding..." : "Add Category"}</span>
+          </button>
+        </div>
       </div>
 
       <div className={styles.categoryLayout}>
@@ -193,7 +218,7 @@ export default function CategoryManager() {
               />
             </div>
 
-            <div className={styles.formGroup}>
+            <div className={styles.formGroup} style={{ marginBottom: 0 }}>
               <label>Category Name (AR) *</label>
               <input
                 type="text"
@@ -211,27 +236,31 @@ export default function CategoryManager() {
                 }}
               />
             </div>
-
-            <div className={styles.cvActionButtons}>
-              <button type="button" className="btn-secondary" onClick={handleTranslate} disabled={isTranslating || !nameEn}>
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
-                </svg>
-                <span className={styles.fabText}>{isTranslating ? "Translating..." : "Auto-Translate"}</span>
-              </button>
-              <button type="submit" className="btn-primary" disabled={isAdding || !nameEn || !nameAr}>
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                <span className={styles.fabText}>{isAdding ? "Adding..." : "Add Category"}</span>
-              </button>
-            </div>
           </form>
         </div>
 
         {/* Categories List */}
         <div className={styles.formSection}>
-          <div className={styles.formSectionTitle}>Existing Categories</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+            <div className={styles.formSectionTitle} style={{ marginBottom: 0 }}>Existing Categories</div>
+            
+            <div className={styles.mobileLangToggle}>
+              <button 
+                type="button" 
+                onClick={() => setMobileLang('en')} 
+                className={mobileLang === 'en' ? styles.activeLang : ''}
+              >
+                🇺🇸 English 
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setMobileLang('ar')} 
+                className={mobileLang === 'ar' ? styles.activeLang : ''}
+              >
+                🇸🇦 Arabic
+              </button>
+            </div>
+          </div>
 
           {loading ? (
             <div>Loading categories...</div>
@@ -256,8 +285,8 @@ export default function CategoryManager() {
               </button>
             </div>
           ) : (
-            <div className={styles.caseTableWrapper}>
-              <table className={styles.caseTable}>
+            <div className={`${styles.caseTableWrapper} ${mobileLang === 'en' ? styles.mobileModeEn : styles.mobileModeAr}`}>
+              <table className={`${styles.caseTable} ${styles.bilingualTable}`}>
                 <thead>
                   <tr>
                     <th>English Name</th>

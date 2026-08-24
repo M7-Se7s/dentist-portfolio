@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -459,7 +459,37 @@ export default function CVEditorPage() {
           </p>
         </div>
 
-        
+        <div className={styles.headerActionButtons}>
+          <button
+            type="button"
+            onClick={handleAutoTranslate}
+            disabled={isAutoTranslating}
+            className="btn-secondary"
+          >
+            {isAutoTranslating ? (
+              <Spinner size={20} />
+            ) : (
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+              </svg>
+            )}
+            <span className={styles.fabText}>{isAutoTranslating ? "Translating..." : "Auto-Translate"}</span>
+          </button>
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <Spinner size={20} />
+            ) : (
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            )}
+            <span className={styles.fabText}>{isSaving ? "Saving..." : "Save CV Profile"}</span>
+          </button>
+        </div>
       </div>
 
       {message && (
@@ -626,37 +656,6 @@ export default function CVEditorPage() {
             styles={styles}
           />
         )}
-      </div>
-<div className={styles.cvActionButtons}>
-        <button
-          type="button"
-          onClick={handleAutoTranslate}
-          disabled={isAutoTranslating}
-          className="btn-secondary"
-        >
-          {isAutoTranslating ? (
-            <Spinner size={20} />
-          ) : (
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
-            </svg>
-          )}
-          <span className={styles.fabText}>{isAutoTranslating ? "Translating..." : "Auto-Translate"}</span>
-        </button>
-        <button
-          type="submit"
-          className="btn-primary"
-          disabled={isSaving}
-        >
-          {isSaving ? (
-            <Spinner size={20} />
-          ) : (
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-          )}
-          <span className={styles.fabText}>{isSaving ? "Saving..." : "Save CV Profile"}</span>
-        </button>
       </div>
     </form>
   );

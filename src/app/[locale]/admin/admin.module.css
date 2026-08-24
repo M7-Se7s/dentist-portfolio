@@ -1,4 +1,4 @@
-﻿/* ---------------------------
+/* ---------------------------
    Admin Global & Layout
 --------------------------- */
 .adminLayout {
@@ -1485,7 +1485,7 @@ input:checked+.toggleSlider:before {
   background: var(--white);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 1.5rem;
+  overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   display: flex;
@@ -1497,11 +1497,53 @@ input:checked+.toggleSlider:before {
   box-shadow: var(--shadow-md);
 }
 
-.caseCardHeader {
+.caseCardImageArea {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.caseCardImageArea img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.caseCardImageArea .caseAvatarFallback {
+  width: 100%;
+  height: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  opacity: 0.3;
+}
+
+.caseCardHeader {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+}
+
+.caseAdminActions {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--white);
+  padding: 0.25rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.caseCardContentArea {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .caseCardTitle {
@@ -1661,7 +1703,7 @@ input:checked+.toggleSlider:before {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(2px);
-  z-index: 1050;
+  z-index: 1200;
 }
 
 /* ---------------------------
@@ -1731,10 +1773,13 @@ input:checked+.toggleSlider:before {
     position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;
+    bottom: 0;
+    width: 280px;
     transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1100;
+    z-index: 1250;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .sidebarOpen {
@@ -1756,7 +1801,6 @@ input:checked+.toggleSlider:before {
 
   .adminMain {
     height: auto;
-      overflow-x: clip;
   }
 }
 
@@ -1799,23 +1843,27 @@ input:checked+.toggleSlider:before {
     align-items: center;
     text-align: center;
     gap: 1.5rem;
-    margin-top: -1.5rem;
-    margin-left: -1.5rem;
-    margin-right: -1.5rem;
-    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    margin-top: -0.5rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    padding: 1.5rem 1rem 1rem 1rem;
     top: 60px;
-    }
+  }
 
-    .editCaseHeader {
-    margin-top: -1.5rem;
-    margin-left: -1.5rem;
-    margin-right: -1.5rem;
-    padding: 1.5rem 1.5rem 1rem 1.5rem;
-      top: 60px;
+  .editCaseHeader {
+    margin-top: -0.5rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    padding: 1.5rem 1rem 1rem 1rem;
+    top: 60px;
   }
 
   .caseTableWrapper {
     overflow-x: auto;
+  }
+  .caseTable th,
+  .caseTable td {
+    padding: 1rem 0.75rem !important;
   }
 
   .caseGrid {
@@ -1827,8 +1875,8 @@ input:checked+.toggleSlider:before {
   }
 
   .stickyActionBar {
-    margin: 1rem -1.5rem -1.5rem -1.5rem;
-    padding: 1rem 1.5rem;
+    margin: 1rem -0.5rem -0.5rem -0.5rem;
+    padding: 1rem;
     flex-direction: column;
   }
 
@@ -2605,14 +2653,17 @@ input:checked+.toggleSlider:before {
 
 @media (max-width: 1024px) {
   .adminContent {
-    padding-top: 6rem !important;
+    /* [uiux-adjustments] Reduce excessive top spacing (6rem -> 4.5rem) */
+    padding-top: 4.5rem !important;
   }
   .caseManagementHeader, .editCaseHeader, .cvStickyHeader {
     position: relative !important;
     top: auto !important;
     margin-top: 0 !important;
-    padding-top: 1rem !important;
-    margin-bottom: 1rem !important;
+    /* [uiux-adjustments] Standardize vertical rhythm */
+    padding-top: 0.5rem !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0.5rem !important;
     z-index: 1;
   }
 }
@@ -2744,38 +2795,110 @@ input:checked+.toggleSlider:before {
     padding-bottom: 120px !important;
   }
 }
-/* CV Action Buttons (Desktop Bar -> Mobile Dual FABs) */
-.cvActionButtons {
-  position: sticky;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 1.5rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+/* Header Action Buttons (Desktop Header -> Mobile Dual FABs) */
+.headerActionButtons {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  z-index: 1100;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
-  margin: 1rem -3rem -3rem -3rem;
 }
 
-.cvActionButtons button {
-  min-width: 200px;
+.headerActionButtons button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  min-width: fit-content;
 }
 
 .fabText {
   display: inline-block;
 }
 
+.speedDialMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  z-index: 1200;
+  pointer-events: none; /* Let clicks pass through when closed */
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  visibility: hidden;
+}
+
+.speedDialMenu.open {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.speedDialItem {
+  /* Desktop styles */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem !important;
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  color: var(--text-dark) !important;
+  border: 1px solid var(--border-color) !important;
+  font-weight: 500 !important;
+  width: max-content !important;
+  justify-content: flex-end !important;
+  transition: transform 0.15s ease !important;
+}
+
+.speedDialItem:hover {
+  background: #F8FAFC !important;
+  transform: scale(1.02) !important;
+}
+
+/* Specific main FAB icon transitions */
+.iconDefault, .iconActive {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: absolute !important;
+  left: 0;
+  top: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
 @media (max-width: 1024px) {
-  .cvActionButtons {
+  .fabIconWrapper {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}
+.fabTrigger.active .iconDefault {
+  opacity: 0;
+  transform: scale(0.5) rotate(-45deg);
+  pointer-events: none;
+}
+.fabTrigger:not(.active) .iconDefault {
+  opacity: 1;
+  transform: scale(1) rotate(0);
+}
+.fabTrigger.active .iconActive {
+  opacity: 1;
+  transform: scale(1) rotate(0);
+}
+.fabTrigger:not(.active) .iconActive {
+  opacity: 0;
+  transform: scale(0.5) rotate(45deg);
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .headerActionButtons {
     position: fixed !important;
     bottom: 2rem !important;
     left: 1.5rem !important;
@@ -2789,9 +2912,10 @@ input:checked+.toggleSlider:before {
     margin: 0 !important;
     justify-content: space-between !important;
     pointer-events: none;
+    z-index: 1100;
   }
   
-  .cvActionButtons button {
+  .headerActionButtons button {
     pointer-events: auto;
     min-width: 0 !important;
     width: 60px !important;
@@ -2801,13 +2925,46 @@ input:checked+.toggleSlider:before {
     box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
   }
   
-  .cvActionButtons .fabText {
+  .headerActionButtons .fabText {
     display: none !important;
   }
   
-  .cvActionButtons svg {
+  .headerActionButtons svg {
     width: 24px !important;
     height: 24px !important;
+    margin: 0 !important;
+  }
+  
+  .speedDialMenu {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 1rem !important;
+    transform: translateY(10px);
+    align-items: center; /* center the 60px buttons above the 60px trigger */
+  }
+
+  .speedDialItem {
+    position: relative;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+
+  /* Extract the text outside the circle on mobile */
+  .speedDialItem .speedDialLabel {
+    position: absolute;
+    right: 100%;
+    margin-right: 1rem;
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 14px;
+    white-space: nowrap;
+    color: var(--text-dark);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    opacity: 1 !important; /* Force visible */
+    display: block !important;
   }
 }
 .tabsContainer button {
@@ -2816,8 +2973,9 @@ input:checked+.toggleSlider:before {
 }
 @media (max-width: 768px) {
   .adminContent {
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
+    /* [uiux-adjustments] Sanitized arbitrary 15px to standard 1rem (16px) for mobile gutter */
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
   
   .formSection {
@@ -2830,12 +2988,16 @@ input:checked+.toggleSlider:before {
 @media (max-width: 768px) {
   /* Make the CV cards bleed to the edges of the screen to maximize input width */
   .formSection {
-    margin-left: -0.5rem !important;
-    margin-right: -0.5rem !important;
+    /* [uiux-adjustments] Mathematically balance margins to offset 1rem mobile gutter */
+    margin-left: -1rem !important;
+    margin-right: -1rem !important;
+    padding: 1.5rem 1rem !important;
     border-radius: 0 !important;
     border-left: none !important;
     border-right: none !important;
     box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important;
+    width: calc(100% + 2rem) !important;
+    max-width: none !important;
     --accordion-header-padding: 1rem 1rem !important;
     --accordion-content-padding: 1rem 1rem !important;
   }
@@ -2859,7 +3021,6 @@ input:checked+.toggleSlider:before {
 }
 .adminLayout {
   max-width: 100vw;
-  overflow-x: hidden;
 }
 /* UI/UX Adjustment: Flat Basic Info Card */
 .flatBasicInfoCard {
@@ -3024,6 +3185,7 @@ input:checked+.toggleSlider:before {
     border-radius: 12px;
     margin-bottom: 24px;
     gap: 4px;
+    width: 100%;
   }
   .mobileLangToggle button {
     flex: 1;
@@ -3049,12 +3211,16 @@ input:checked+.toggleSlider:before {
 
   /* View Switcher Hiding Logic */
   .mobileModeEn .bilingualRow > :nth-child(2),
-  .mobileModeEn .bilingualRowDynamic > :nth-child(2) {
+  .mobileModeEn .bilingualRowDynamic > :nth-child(2),
+  .mobileModeEn .bilingualTable th:nth-child(2),
+  .mobileModeEn .bilingualTable td:nth-child(2) {
     display: none !important;
   }
   
   .mobileModeAr .bilingualRow > :nth-child(1),
-  .mobileModeAr .bilingualRowDynamic > :nth-child(1) {
+  .mobileModeAr .bilingualRowDynamic > :nth-child(1),
+  .mobileModeAr .bilingualTable th:nth-child(1),
+  .mobileModeAr .bilingualTable td:nth-child(1) {
     display: none !important;
   }
   
@@ -3120,11 +3286,33 @@ input:checked+.toggleSlider:before {
   }
   
   .backBtn {
-    padding: 0.75rem !important;
+    /* [uiux-adjustments] Subtle styling for mobile icon-only button */
+    padding: 0.6rem !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    background: #F8FAFC !important;
+    border-radius: 10px !important;
+    color: var(--text-dark) !important;
   }
   
   .backBtn svg {
     margin: 0 !important;
+  }
+
+  /* Fix for header overflow breaking horizontal layout */
+  .caseManagementHeader, .editCaseHeader, .cvStickyHeader, .profilePageHeader {
+    /* [uiux-adjustments] Mathematically balance margins to offset 1rem mobile gutter */
+    margin-left: -1rem !important;
+    margin-right: -1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    width: auto !important;
+    border-radius: 0 !important;
+  }
+  
+  .topbar {
+    /* [uiux-adjustments] Sanitized arbitrary 15px to standard 1rem (16px) for mobile gutter */
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
 }
 

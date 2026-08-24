@@ -141,29 +141,31 @@ export function UploadProvider({ children }) {
         });
       }
 
-      const finalGalleryItems = [];
-      for (const item of galleryItems || []) {
+      const finalGalleryItems = new Array((galleryItems || []).length);
+      for (let i = 0; i < (galleryItems || []).length; i++) {
+        const item = galleryItems[i];
         if (item.file) {
           totalFiles++;
           uploadTasks.push(async () => {
             const url = await uploadFile(item.file);
-            if (url) finalGalleryItems.push({ url, label: item.label || "" });
+            if (url) finalGalleryItems[i] = { url, label: item.label || "" };
           });
         } else if (item.url) {
-          finalGalleryItems.push({ url: item.url, label: item.label || "" });
+          finalGalleryItems[i] = { url: item.url, label: item.label || "" };
         }
       }
 
-      const finalXrayItems = [];
-      for (const item of xrayItems || []) {
+      const finalXrayItems = new Array((xrayItems || []).length);
+      for (let i = 0; i < (xrayItems || []).length; i++) {
+        const item = xrayItems[i];
         if (item.file) {
           totalFiles++;
           uploadTasks.push(async () => {
             const url = await uploadFile(item.file);
-            if (url) finalXrayItems.push({ url, label: item.label || "" });
+            if (url) finalXrayItems[i] = { url, label: item.label || "" };
           });
         } else if (item.url) {
-          finalXrayItems.push({ url: item.url, label: item.label || "" });
+          finalXrayItems[i] = { url: item.url, label: item.label || "" };
         }
       }
 
@@ -171,21 +173,30 @@ export function UploadProvider({ children }) {
       for (let i = 0; i < (treatmentSteps || []).length; i++) {
         const step = treatmentSteps[i];
         const stepImages = [...(step.existingImages || [])];
+        const initialLength = stepImages.length;
+        const totalImagesForStep = initialLength + (step.files?.length || 0);
+        const orderedImages = new Array(totalImagesForStep);
+        
+        // Populate existing images
+        for (let j = 0; j < initialLength; j++) {
+          orderedImages[j] = stepImages[j];
+        }
 
         finalSteps.push({
           title: step.title || "",
           titleAr: step.titleAr || "",
           description: step.description || "",
           descriptionAr: step.descriptionAr || "",
-          images: stepImages,
+          images: orderedImages, // This will be cleaned up later
         });
 
         if (step.files && step.files.length > 0) {
-          for (const file of step.files) {
+          for (let j = 0; j < step.files.length; j++) {
+            const file = step.files[j];
             totalFiles++;
             uploadTasks.push(async () => {
               const url = await uploadFile(file);
-              if (url) finalSteps[i].images.push(url);
+              if (url) finalSteps[i].images[initialLength + j] = url;
             });
           }
         }
@@ -202,15 +213,23 @@ export function UploadProvider({ children }) {
       }
 
       // 2. All uploads succeeded, construct final document
+      // Clean up any undefined values from arrays (in case an upload failed)
+      const cleanGalleryItems = finalGalleryItems.filter(Boolean);
+      const cleanXrayItems = finalXrayItems.filter(Boolean);
+      const cleanSteps = finalSteps.map(step => ({
+        ...step,
+        images: step.images.filter(Boolean)
+      }));
+
       const caseDoc = {
         ...formData,
         caseType: caseType || "detailed",
         coverImage: finalCoverUrl,
         beforeImage: finalBeforeUrl,
         afterImage: finalAfterUrl,
-        images: finalGalleryItems,
-        xrays: finalXrayItems,
-        steps: finalSteps,
+        images: cleanGalleryItems,
+        xrays: cleanXrayItems,
+        steps: cleanSteps,
       };
 
       // 3. Save to Firestore

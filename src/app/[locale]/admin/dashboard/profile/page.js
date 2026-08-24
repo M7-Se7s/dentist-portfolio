@@ -166,7 +166,7 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
   };
 
   const handleSave = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setSaving(true);
     setMessage("");
     try {
@@ -229,7 +229,30 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
             Update your biography and professional philosophy quote.
           </p>
         </div>
-        
+        <div className={styles.headerActionButtons}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={handleAutoTranslate}
+            disabled={isAutoTranslating}
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+            </svg>
+            <span className={styles.fabText}>{isAutoTranslating ? "Translating..." : "Auto-Translate"}</span>
+          </button>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span className={styles.fabText}>{saving ? "Saving..." : "Save Profile"}</span>
+          </button>
+        </div>
       </div>
 
       <div className={localStyles.formCard}>
@@ -481,31 +504,6 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
                 style={{ fontFamily: "var(--font-arabic)" }}
               />
             </div>
-          </div>
-
-                    <div className={styles.cvActionButtons}>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={handleAutoTranslate}
-              disabled={isAutoTranslating}
-            >
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
-              </svg>
-              <span className={styles.fabText}>{isAutoTranslating ? "Translating..." : "Auto-Translate"}</span>
-            </button>
-
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={saving}
-            >
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              <span className={styles.fabText}>{saving ? "Saving..." : "Save Profile"}</span>
-            </button>
           </div>
         </form>
 
