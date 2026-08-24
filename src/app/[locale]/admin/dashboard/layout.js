@@ -49,14 +49,28 @@ export default function DashboardLayout({ children }) {
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isMobileDrawerOpen]);
 
-  // Prevent body scrolling when mobile drawer is open
+  // Prevent body scrolling when mobile drawer is open (bulletproof iOS fix)
   useEffect(() => {
     if (isMobileDrawerOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
     } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
       document.body.style.overflow = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
     }
     return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
       document.body.style.overflow = '';
     };
   }, [isMobileDrawerOpen]);
@@ -84,7 +98,11 @@ export default function DashboardLayout({ children }) {
       <div className={styles.adminLayout}>
         {/* Drawer Overlay */}
         {isMobileDrawerOpen && (
-          <div className={styles.drawerOverlay} onClick={toggleDrawer}></div>
+          <div 
+            className={styles.drawerOverlay} 
+            onClick={toggleDrawer}
+            style={{ touchAction: 'none' }}
+          ></div>
         )}
 
         {/* Left Sidebar */}
