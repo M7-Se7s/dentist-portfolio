@@ -49,6 +49,18 @@ export default function DashboardLayout({ children }) {
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isMobileDrawerOpen]);
 
+  // Prevent body scrolling when mobile drawer is open
+  useEffect(() => {
+    if (isMobileDrawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileDrawerOpen]);
+
   const handleLogout = async () => {
     document.cookie = "admin_session=; path=/; max-age=0";
     await signOut(auth);
