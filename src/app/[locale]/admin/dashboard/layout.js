@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from '@/i18n/routing';
@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }) {
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
   // Close drawer on route change
   useEffect(() => {
@@ -162,3 +162,4 @@ export default function DashboardLayout({ children }) {
     </UploadProvider>
   );
 }
+

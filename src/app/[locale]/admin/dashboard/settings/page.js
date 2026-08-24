@@ -118,7 +118,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className={styles.adminContent}>
+    <div className="animate-slideUp stagger-1">
       <div className={styles.dashboardHeader}>
         <div>
           <h2>Global Settings</h2>
@@ -151,14 +151,19 @@ export default function SettingsPage() {
           </p>
 
           <form onSubmit={handleSaveContact}>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-                marginBottom: "1rem",
-              }}
+            {/* Mobile FAB for saving */}
+            <button
+              type="submit"
+              className={styles.globalMobileFab}
+              disabled={isSavingContact}
+              title="Save Contact Info"
             >
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </button>
+
+            <div className={styles.formGrid2Col} style={{ marginBottom: "1rem" }}>
               <div className={styles.formGroup} style={{ marginBottom: 0 }}>
                 <label>Public Email Address</label>
                 <input
@@ -193,14 +198,7 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-                marginBottom: "1rem",
-              }}
-            >
+            <div className={styles.formGrid2Col} style={{ marginBottom: "1rem" }}>
               <div className={styles.formGroup} style={{ marginBottom: 0 }}>
                 <label>WhatsApp Number</label>
                 <input
@@ -235,14 +233,7 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-                marginBottom: "1.5rem",
-              }}
-            >
+            <div className={styles.formGrid2Col} style={{ marginBottom: "1.5rem" }}>
               <div className={styles.formGroup} style={{ marginBottom: 0 }}>
                 <label>Instagram URL</label>
                 <input

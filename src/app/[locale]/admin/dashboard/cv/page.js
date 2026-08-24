@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ import PdfUploadSection from "./components/PdfUploadSection";
 
 export default function CVEditorPage() {
   const [activeTab, setActiveTab] = useState("basic");
+  const [mobileLang, setMobileLang] = useState("en");
 
   const [basicInfo, setBasicInfo] = useState({
     name: "Dr. Mohamed El Sayed Mohamed Shabaan",
@@ -432,24 +433,10 @@ export default function CVEditorPage() {
   return (
     <form
       onSubmit={handleSave}
-      className="animate-slideUp stagger-1"
+      className="animate-fadeIn"
       id="cv-form"
     >
-      <div
-        style={{
-          position: "sticky",
-          top: "-1rem",
-          zIndex: 100,
-          backgroundColor: "#F8FAFC",
-          margin: "-1rem -3rem 2rem -3rem",
-          padding: "1.5rem 3rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          borderBottom: "1px solid #E2E8F0",
-          boxShadow: "0 4px 10px -4px rgba(0,0,0,0.05)",
-        }}
-      >
+      <div className={styles.cvStickyHeader}>
         <div>
           <h1
             style={{
@@ -472,63 +459,7 @@ export default function CVEditorPage() {
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <button
-            type="button"
-            onClick={handleAutoTranslate}
-            disabled={isAutoTranslating}
-            className="btn-secondary"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "0.75rem 1.25rem",
-            }}
-          >
-            {isAutoTranslating ? (
-              "Translating..."
-            ) : (
-              <>
-                <svg
-                  width="20"
-                  height="20"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
-                  ></path>
-                </svg>
-                Auto-Translate Arabic
-              </>
-            )}
-          </button>
-
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={isSaving}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "0.75rem 1.5rem",
-            }}
-          >
-            {isSaving ? (
-              <>
-                <Spinner size={18} />
-                Saving...
-              </>
-            ) : (
-              "Save CV Profile"
-            )}
-          </button>
-        </div>
+        
       </div>
 
       {message && (
@@ -572,120 +503,167 @@ export default function CVEditorPage() {
         </div>
       )}
 
-      <div className={styles.tabsContainer}>
+      
+
+            <div className={styles.tabsContainer}>
         <button
           type="button"
           onClick={() => setActiveTab("basic")}
-          className={
-            activeTab === "basic" ? styles.tabActive : styles.tabInactive
-          }
+          className={activeTab === "basic" ? styles.tabActive : styles.tabInactive}
         >
           Basic Info
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("experience")}
-          className={
-            activeTab === "experience" ? styles.tabActive : styles.tabInactive
-          }
+          className={activeTab === "experience" ? styles.tabActive : styles.tabInactive}
         >
           Experience & Education
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("skills")}
-          className={
-            activeTab === "skills" ? styles.tabActive : styles.tabInactive
-          }
+          className={activeTab === "skills" ? styles.tabActive : styles.tabInactive}
         >
           Skills & Languages
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("media")}
-          className={
-            activeTab === "media" ? styles.tabActive : styles.tabInactive
-          }
+          className={activeTab === "media" ? styles.tabActive : styles.tabInactive}
         >
           PDF Resume
         </button>
       </div>
 
-      <div style={{ display: activeTab === "basic" ? "block" : "none" }}>
-        <BasicInfoEditor
-          basicInfo={basicInfo}
-          setBasicInfo={setBasicInfo}
-          basicInfoAr={basicInfoAr}
-          setBasicInfoAr={setBasicInfoAr}
-          summary={summary}
-          setSummary={setSummary}
-          summaryAr={summaryAr}
-          setSummaryAr={setSummaryAr}
-          styles={styles}
-        />
+            <div className={styles.mobileLangToggle}>
+        <button 
+          type="button" 
+          onClick={() => setMobileLang('en')} 
+          className={mobileLang === 'en' ? styles.activeLang : ''}
+        >
+          🇺🇸 English 
+        </button>
+        <button 
+          type="button" 
+          onClick={() => setMobileLang('ar')} 
+          className={mobileLang === 'ar' ? styles.activeLang : ''}
+        >
+          🇸🇦 Arabic
+        </button>
       </div>
 
-      <div style={{ display: activeTab === "experience" ? "block" : "none" }}>
-        <ExperienceEditor
-          experiences={experiences}
-          setExperiences={setExperiences}
-          styles={styles}
-        />
-        <EducationEditor
-          education={education}
-          setEducation={setEducation}
-          styles={styles}
-        />
-      </div>
+      <div className={`${styles.cvTabContent} ${mobileLang === 'en' ? styles.mobileModeEn : styles.mobileModeAr}`}>
+        {activeTab === "basic" && (
+          <BasicInfoEditor
+            basicInfo={basicInfo}
+            setBasicInfo={setBasicInfo}
+            basicInfoAr={basicInfoAr}
+            setBasicInfoAr={setBasicInfoAr}
+            summary={summary}
+            setSummary={setSummary}
+            summaryAr={summaryAr}
+            setSummaryAr={setSummaryAr}
+            styles={styles}
+          />
+        )}
 
-      <div style={{ display: activeTab === "skills" ? "block" : "none" }}>
-        <SkillsTextEditor
-          coreCompetencies={coreCompetencies}
-          setCoreCompetencies={setCoreCompetencies}
-          coreCompetenciesAr={coreCompetenciesAr}
-          setCoreCompetenciesAr={setCoreCompetenciesAr}
-          licensure={licensure}
-          setLicensure={setLicensure}
-          education={education}
-          setEducation={setEducation}
-          styles={styles}
-        />
-        <LicensureEditor
-          licensure={licensure}
-          setLicensure={setLicensure}
-          styles={styles}
-        />
-        <CoursesEditor
-          courses={courses}
-          setCourses={setCourses}
-          styles={styles}
-        />
-        <SkillsTextEditor
-          clinicalSkills={clinicalSkills}
-          setClinicalSkills={setClinicalSkills}
-          clinicalSkillsAr={clinicalSkillsAr}
-          setClinicalSkillsAr={setClinicalSkillsAr}
-          languages={languages}
-          setLanguages={setLanguages}
-          languagesAr={languagesAr}
-          setLanguagesAr={setLanguagesAr}
-          references={references}
-          setReferences={setReferences}
-          referencesAr={referencesAr}
-          setReferencesAr={setReferencesAr}
-          styles={styles}
-        />
-      </div>
+        {activeTab === "experience" && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <ExperienceEditor
+              experiences={experiences}
+              setExperiences={setExperiences}
+              styles={styles}
+            />
+            <EducationEditor
+              education={education}
+              setEducation={setEducation}
+              styles={styles}
+            />
+          </div>
+        )}
 
-      <div style={{ display: activeTab === "media" ? "block" : "none" }}>
-        <PdfUploadSection
-          pdfUrl={pdfUrl}
-          setPdfUrl={setPdfUrl}
-          pdfUrlAr={pdfUrlAr}
-          setPdfUrlAr={setPdfUrlAr}
-          styles={styles}
-        />
+        {activeTab === "skills" && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <SkillsTextEditor
+              coreCompetencies={coreCompetencies}
+              setCoreCompetencies={setCoreCompetencies}
+              coreCompetenciesAr={coreCompetenciesAr}
+              setCoreCompetenciesAr={setCoreCompetenciesAr}
+              clinicalSkills={clinicalSkills}
+              setClinicalSkills={setClinicalSkills}
+              clinicalSkillsAr={clinicalSkillsAr}
+              setClinicalSkillsAr={setClinicalSkillsAr}
+              languages={languages}
+              setLanguages={setLanguages}
+              languagesAr={languagesAr}
+              setLanguagesAr={setLanguagesAr}
+              references={references}
+              setReferences={setReferences}
+              referencesAr={referencesAr}
+              setReferencesAr={setReferencesAr}
+              styles={styles}
+            />
+            <LicensureEditor
+              licensure={licensure}
+              setLicensure={setLicensure}
+              styles={styles}
+            />
+            <CoursesEditor
+              courses={courses}
+              setCourses={setCourses}
+              styles={styles}
+            />
+          </div>
+        )}
+
+        {activeTab === "media" && (
+          <PdfUploadSection
+            pdfUrl={pdfUrl}
+            setPdfUrl={setPdfUrl}
+            pdfUrlAr={pdfUrlAr}
+            setPdfUrlAr={setPdfUrlAr}
+            styles={styles}
+          />
+        )}
+      </div>
+<div className={styles.cvActionButtons}>
+        <button
+          type="button"
+          onClick={handleAutoTranslate}
+          disabled={isAutoTranslating}
+          className="btn-secondary"
+        >
+          {isAutoTranslating ? (
+            <Spinner size={20} />
+          ) : (
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+            </svg>
+          )}
+          <span className={styles.fabText}>{isAutoTranslating ? "Translating..." : "Auto-Translate"}</span>
+        </button>
+        <button
+          type="submit"
+          className="btn-primary"
+          disabled={isSaving}
+        >
+          {isSaving ? (
+            <Spinner size={20} />
+          ) : (
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          )}
+          <span className={styles.fabText}>{isSaving ? "Saving..." : "Save CV Profile"}</span>
+        </button>
       </div>
     </form>
   );
 }
+
+
+
+
+
+

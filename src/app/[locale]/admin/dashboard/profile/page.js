@@ -213,15 +213,8 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
     return <div className={styles.dashboardMainColumn}>Loading editor...</div>;
 
   return (
-    <div className={`${styles.dashboardMainColumn} animate-slideUp`}>
-      <div
-        className={styles.pageHeader}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+    <div className={`${styles.dashboardMainColumn} animate-fadeIn`}>
+      <div className={styles.profilePageHeader}>
         <div>
           <h1
             style={{
@@ -236,39 +229,14 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
             Update your biography and professional philosophy quote.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleAutoTranslate}
-          disabled={isAutoTranslating}
-          className="btn-secondary"
-          style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-        >
-          {isAutoTranslating ? (
-            "Translating..."
-          ) : (
-            <>
-              <svg
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
-                ></path>
-              </svg>
-              Auto-Translate Arabic
-            </>
-          )}
-        </button>
+        
       </div>
 
       <div className={localStyles.formCard}>
         <form onSubmit={handleSave}>
+          {/* Mobile FAB for saving */}
+          
+          
           <div className={localStyles.imageUploadLayout}>
             {/* Home Page Photo */}
             <div className={localStyles.imageUploadColumn}>
@@ -441,7 +409,7 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "2rem", marginBottom: "1.5rem" }}>
+          <div className={styles.bilingualRow} style={{ marginBottom: "1.5rem" }}>
             <div
               className={localStyles.formGroup}
               style={{ flex: 1, marginBottom: 0 }}
@@ -485,7 +453,7 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
             page.
           </small>
 
-          <div style={{ display: "flex", gap: "2rem" }}>
+          <div className={styles.bilingualRow}>
             <div className={localStyles.formGroup} style={{ flex: 1 }}>
               <label htmlFor="quote" className={localStyles.label}>
                 Philosophy Quote (EN)
@@ -515,38 +483,56 @@ I believe that successful dentistry is achieved through accurate diagnosis, evid
             </div>
           </div>
 
-          <div className={localStyles.saveActions}>
+                    <div className={styles.cvActionButtons}>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={handleAutoTranslate}
+              disabled={isAutoTranslating}
+            >
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+              </svg>
+              <span className={styles.fabText}>{isAutoTranslating ? "Translating..." : "Auto-Translate"}</span>
+            </button>
+
             <button
               type="submit"
-              className={localStyles.saveBtn}
+              className="btn-primary"
               disabled={saving}
             >
-              {saving ? (
-                <span
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Spinner size={18} />
-                  Saving...
-                </span>
-              ) : (
-                "Save Profile"
-              )}
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span className={styles.fabText}>{saving ? "Saving..." : "Save Profile"}</span>
             </button>
-            {message && (
-              <span
-                className={`${localStyles.statusMessage} ${message.includes("Error") ? localStyles.statusError : localStyles.statusSuccess}`}
-              >
-                {message}
-              </span>
-            )}
           </div>
         </form>
+
+        {message && (
+          <div
+            style={{
+              position: "fixed",
+              bottom: "2rem",
+              right: "2rem",
+              zIndex: 1000,
+              padding: "1rem 1.5rem",
+              backgroundColor: message.includes('Error') ? '#FEE2E2' : '#DCFCE7',
+              color: message.includes('Error') ? '#991B1B' : '#166534',
+              borderRadius: '8px',
+              fontWeight: '600',
+              boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)",
+              animation: "slideUp 0.3s ease-out"
+            }}
+          >
+            {message}
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+
+
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import {
@@ -157,7 +157,7 @@ export default function CategoryManager() {
   };
 
   return (
-    <div className="animate-slideUp stagger-1">
+    <div className="animate-fadeIn stagger-1">
       <div
         className={styles.caseManagementHeader}
         style={{ marginBottom: "2rem" }}
@@ -170,9 +170,7 @@ export default function CategoryManager() {
         </div>
       </div>
 
-      <div
-        style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "2rem" }}
-      >
+      <div className={styles.categoryLayout}>
         {/* Add Category Form */}
         <div className={styles.formSection}>
           <div className={styles.formSectionTitle}>Add New Category</div>
@@ -196,30 +194,7 @@ export default function CategoryManager() {
             </div>
 
             <div className={styles.formGroup}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <label>Category Name (AR) *</label>
-                <button
-                  type="button"
-                  onClick={handleTranslate}
-                  disabled={isTranslating || !nameEn}
-                  style={{
-                    fontSize: "0.8rem",
-                    background: "none",
-                    border: "none",
-                    color: "var(--primary-color)",
-                    cursor: "pointer",
-                    padding: 0,
-                  }}
-                >
-                  {isTranslating ? "Translating..." : "Auto-Translate"}
-                </button>
-              </div>
+              <label>Category Name (AR) *</label>
               <input
                 type="text"
                 value={nameAr}
@@ -237,14 +212,20 @@ export default function CategoryManager() {
               />
             </div>
 
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={isAdding || !nameEn || !nameAr}
-              style={{ width: "100%" }}
-            >
-              {isAdding ? "Adding..." : "Add Category"}
-            </button>
+            <div className={styles.cvActionButtons}>
+              <button type="button" className="btn-secondary" onClick={handleTranslate} disabled={isTranslating || !nameEn}>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+                </svg>
+                <span className={styles.fabText}>{isTranslating ? "Translating..." : "Auto-Translate"}</span>
+              </button>
+              <button type="submit" className="btn-primary" disabled={isAdding || !nameEn || !nameAr}>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span className={styles.fabText}>{isAdding ? "Adding..." : "Add Category"}</span>
+              </button>
+            </div>
           </form>
         </div>
 
@@ -320,3 +301,6 @@ export default function CategoryManager() {
     </div>
   );
 }
+
+
+

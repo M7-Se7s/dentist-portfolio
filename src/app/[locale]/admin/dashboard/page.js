@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+﻿import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Link } from '@/i18n/routing';
 import styles from '../admin.module.css';
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
     <>
       <div className={`${styles.dashboardMainColumn} animate-slideUp stagger-1`}>
         <div className={styles.pageWelcomeSection}>
-          <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-dark)', marginBottom: '0.25rem'}}>Welcome back, Dr. Shabaan 👋</h1>
+          <h1 style={{fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-dark)', marginBottom: '0.25rem'}}>Welcome back, Dr. Shabaan &#128075; </h1>
           <p style={{color: 'var(--text-muted)'}}>Here is what&apos;s happening with your clinic today.</p>
         </div>
 
@@ -98,7 +98,6 @@ export default async function DashboardPage() {
               <table className={styles.caseTable}>
                 <thead>
                   <tr>
-                    <th>Case Title</th>
                     <th>Category</th>
                     <th>Total Views</th>
                     <th>Actions</th>
@@ -106,12 +105,11 @@ export default async function DashboardPage() {
                 </thead>
                 <tbody>
                   {cases.length === 0 ? (
-                    <tr><td colSpan="4" style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No cases yet</td></tr>
+                    <tr><td colSpan="3" style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No cases yet</td></tr>
                   ) : (
                     [...cases].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5).map(c => (
                       <tr key={c.id}>
-                        <td style={{ fontWeight: 600 }}>{c.title}</td>
-                        <td>{c.categories?.length > 0 ? c.categories.join(', ') : c.category || 'Uncategorized'}</td>
+                        <td style={{ fontWeight: 600 }}>{c.categories?.length > 0 ? c.categories.join(', ') : c.category || 'Uncategorized'}</td>
                         <td style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>{c.views || 0}</td>
                         <td>
                           <Link href={`/admin/dashboard/edit-case/${c.id}`} style={{ color: 'var(--primary-color)', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>
@@ -132,3 +130,6 @@ export default async function DashboardPage() {
     </>
   );
 }
+
+
+

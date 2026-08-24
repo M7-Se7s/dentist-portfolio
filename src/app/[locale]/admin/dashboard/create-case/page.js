@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from '@/i18n/routing';
@@ -244,10 +244,9 @@ function CreateCaseForm() {
     <div className="animate-slideUp">
       {/* Header Area */}
       <div className={styles.editCaseHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <Link href="/admin/dashboard/cases" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center' }}>
+        <Link href="/admin/dashboard/cases" className={`btn-secondary ${styles.backBtn}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          Back to Cases
-        </Link>
+          <span className={styles.hideOnMobile}>Back to Cases</span></Link>
         <div className={styles.headerActions} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <button 
             type="button" 
@@ -266,26 +265,9 @@ function CreateCaseForm() {
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
             </svg>
-            {isTranslatingAll ? 'Translating...' : 'Auto-Translate All'}
+            <span className={styles.hideOnMobile}>{isTranslatingAll ? 'Translating...' : 'Auto-Translate All'}</span>
           </button>
-          <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--border-color)', margin: '0 0.25rem' }}></div>
-          <button 
-            type="button" 
-            className="btn-secondary" 
-            onClick={(e) => handleSave(e, true)}
-            disabled={isSaving}
-          >
-            {isSaving ? 'Saving...' : 'Save as Draft'}
-          </button>
-          <button 
-            type="button" 
-            className="btn-primary" 
-            onClick={(e) => handleSave(e, false)}
-            disabled={isSaving}
-          >
-            {isSaving ? 'Publishing...' : 'Publish Case'}
-          </button>
-        </div>
+          </div>
       </div>
 
       {saveSuccess && (
@@ -385,8 +367,26 @@ function CreateCaseForm() {
             styles={styles}
           />
         </div>
-
-      </form>
+          {/* Bottom Sticky Action Bar */}
+          <div className={styles.caseActionButtonsSticky}>
+            <button 
+              type="button" 
+              className="btn-secondary" 
+              onClick={(e) => handleSave(e, true)}
+              disabled={isSaving}
+            >
+              {isSaving ? 'Saving...' : 'Save as Draft'}
+            </button>
+            <button 
+              type="button" 
+              className="btn-primary" 
+              onClick={(e) => handleSave(e, false)}
+              disabled={isSaving}
+            >
+              {isSaving ? 'Saving...' : 'Publish Case'}
+            </button>
+          </div>
+        </form>
     </div>
   );
 }
@@ -398,3 +398,6 @@ export default function CreateCasePage() {
     </Suspense>
   );
 }
+
+
+

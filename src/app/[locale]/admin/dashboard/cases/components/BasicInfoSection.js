@@ -128,7 +128,7 @@ export default function BasicInfoSection({
       </div>
 
       {setPatientAge && setPatientGender && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className={styles.formGrid2Col} style={{ marginBottom: '1.5rem' }}>
           <div className={styles.formGroup} style={{ marginBottom: 0 }}>
             <label>Patient Age</label>
             <input 
@@ -155,7 +155,7 @@ export default function BasicInfoSection({
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className={styles.formGrid2Col} style={{ marginBottom: '1.5rem' }}>
         <div className={styles.formGroup} style={{ marginBottom: 0 }}>
           <label>Short Description (EN)</label>
           <textarea 
