@@ -19,7 +19,7 @@ export default function ImageCarousel({
 
   if (!images || images.length === 0) {
     return (
-      <div className={styles.carouselWrapper}>
+      <div className={styles.carouselWrapper} dir="ltr">
         <div className={styles.carouselSlide}>
           <img
             src="/images/placeholder.jpg"
@@ -34,7 +34,7 @@ export default function ImageCarousel({
   // Handle single image
   if (images.length === 1) {
     return (
-      <div className={styles.carouselWrapper}>
+      <div className={styles.carouselWrapper} dir="ltr">
         <div className={styles.carouselSlide}>
           <Image
             src={images[0]}
@@ -118,7 +118,7 @@ export default function ImageCarousel({
   };
 
   return (
-    <div className={styles.carouselWrapper}>
+    <div className={styles.carouselWrapper} dir="ltr">
       <div
         ref={trackRef}
         className={styles.carouselTrack}
