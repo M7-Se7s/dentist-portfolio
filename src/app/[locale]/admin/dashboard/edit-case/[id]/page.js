@@ -297,10 +297,6 @@ export default function EditCasePage({ params }) {
 
   return (
     <div className="animate-slideUp">
-      {/* Header Area */}
-      <div className={styles.editCaseHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <Link href="/admin/dashboard/cases" className={`btn-secondary ${styles.backBtn}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
   const actionButtonsNode = (
     <div className={styles.headerActionButtons}>
       <button 
@@ -389,7 +385,8 @@ export default function EditCasePage({ params }) {
       <div className={styles.editCaseHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <Link href="/admin/dashboard/cases" className={`btn-secondary ${styles.backBtn}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          <span className={styles.hideOnMobile}>Back to Cases</span></Link>
+          <span className={styles.hideOnMobile}>Back to Cases</span>
+        </Link>
         {mounted && isMobile && typeof document !== 'undefined' ? createPortal(actionButtonsNode, document.body) : actionButtonsNode}
       </div>
 
