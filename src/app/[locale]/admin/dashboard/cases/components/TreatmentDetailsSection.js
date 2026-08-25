@@ -68,7 +68,7 @@ export default function TreatmentDetailsSection({
     <div className={styles.formSection}>
       <div className={styles.formSectionTitle}>Treatment Details</div>
       
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className={styles.formGrid2Col} style={{ marginBottom: '1.5rem' }}>
         <div className={styles.formGroup} style={{ marginBottom: 0 }}>
           <label>Full Case Report (EN)</label>
           <div className={styles.quillWrapper}>
@@ -118,7 +118,7 @@ export default function TreatmentDetailsSection({
               </button>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className={styles.formGrid2Col}>
               <div className={styles.formGroup}>
                 <label>Step Title (EN) *</label>
                 <input 
@@ -144,7 +144,7 @@ export default function TreatmentDetailsSection({
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className={styles.formGrid2Col}>
               <div className={styles.formGroup}>
                 <label>Description (EN)</label>
                 <textarea 

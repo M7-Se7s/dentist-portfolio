@@ -20,7 +20,7 @@ export default function ProfilePage() {
         const profileRef = doc(db, "content", "profile");
         const profileSnap = await getDoc(profileRef);
         let profileInfo = {
-          name: 'Dr. Mohamed Shaaban',
+          name: 'Dr. Mohamed Shabaan',
           homeImageUrl: null,
           profileImageUrl: null,
           biography: tProfile('biography'),
@@ -47,7 +47,7 @@ export default function ProfilePage() {
   }, [locale, tProfile]);
 
   return (
-    <main style={{backgroundColor: '#F8FAFC', minHeight: 'calc(100vh - 80px)', padding: '5rem 0'}}>
+    <main style={{backgroundColor: '#F8FAFC', padding: 0}}>
       <div className="container">
         
         <section className={styles.profileSection}>

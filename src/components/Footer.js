@@ -2,8 +2,6 @@
 
 import { usePathname } from '../i18n/routing';
 import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
 import { useTranslations } from 'next-intl';
 import styles from './Footer.module.css';
 
@@ -22,6 +20,11 @@ export default function Footer() {
   useEffect(() => {
     async function fetchContactInfo() {
       try {
+        // Lazy-load Firebase to avoid blocking the main thread during hydration
+        const [{ doc, getDoc }, { db }] = await Promise.all([
+          import('firebase/firestore'),
+          import('@/lib/firebase')
+        ]);
         const docRef = doc(db, "settings", "global");
         const snap = await getDoc(docRef);
         if (snap.exists()) {
@@ -95,7 +98,11 @@ export default function Footer() {
           </div>
           <div className={styles.footerCopyright}>
             <div>{`\u00A9 ${new Date().getFullYear()} ${t('copyright')}`}</div>
-            <div className={styles.developerCredit}><span>{t('developedBy')}</span></div>
+            <div className={styles.developerCredit}>
+              <a href="https://www.linkedin.com/in/muhammed-elwaer-a423083a5/" target="_blank" rel="noopener noreferrer" className={styles.developerLink}>
+                {t('developedBy')}
+              </a>
+            </div>
           </div>
         </div>
       </div>

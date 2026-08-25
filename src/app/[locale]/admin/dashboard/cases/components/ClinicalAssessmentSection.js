@@ -34,7 +34,7 @@ export default function ClinicalAssessmentSection({
   };
 
   const renderField = (label, enValue, enSetter, arValue, arSetter, fieldKey, rows = 2, placeholder = '') => (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+    <div className={styles.formGrid2Col} style={{ marginBottom: '1.5rem' }}>
       <div className={styles.formGroup} style={{ marginBottom: 0 }}>
         <label>{label} (EN)</label>
         <textarea 

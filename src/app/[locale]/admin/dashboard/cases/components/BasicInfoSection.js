@@ -4,8 +4,7 @@ import { db } from '@/lib/firebase';
 import { Link } from '@/i18n/routing';
 
 export default function BasicInfoSection({
-  title, setTitle,
-  titleAr, setTitleAr,
+  caseType = 'detailed',
   categories, setCategories,
   description, setDescription,
   descriptionAr, setDescriptionAr,
@@ -53,34 +52,6 @@ export default function BasicInfoSection({
     <div className={styles.formSection}>
       <div className={styles.formSectionTitle}>Basic Information</div>
       
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div className={styles.formGroup} style={{ marginBottom: 0 }}>
-          <label>Case Title (EN) *</label>
-          <input 
-            autoFocus
-            type="text" 
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} 
-            placeholder="e.g. Anterior Composite Restoration"
-            required
-            style={{ width: '100%', padding: '0.85rem 1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-primary)' }}
-          />
-        </div>
-        <div className={styles.formGroup} style={{ marginBottom: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label>Case Title (AR)</label>
-          </div>
-          <input 
-            type="text" 
-            value={titleAr || ''} 
-            onChange={(e) => setTitleAr(e.target.value)} 
-            placeholder="Arabic Title"
-            dir="rtl"
-            style={{ width: '100%', padding: '0.85rem 1rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontFamily: 'var(--font-arabic)' }}
-          />
-        </div>
-      </div>
-
       <div className={styles.formGroup}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <label>Categories *</label>
@@ -90,8 +61,11 @@ export default function BasicInfoSection({
         </div>
         <div ref={categoryDropdownRef} className={styles.categoryDropdownWrapper}>
           <div 
-            onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+            onClick={() => {
+              setIsCategoryOpen(!isCategoryOpen);
+            }}
             className={`${styles.categorySelectBox} ${isCategoryOpen ? styles.categorySelectBoxOpen : styles.categorySelectBoxClosed}`}
+            style={{ cursor: 'pointer', backgroundColor: 'transparent' }}
           >
             <div className={styles.categoryChips}>
               {categories.length === 0 ? (
@@ -154,7 +128,7 @@ export default function BasicInfoSection({
       </div>
 
       {setPatientAge && setPatientGender && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className={styles.formGrid2Col} style={{ marginBottom: '1.5rem' }}>
           <div className={styles.formGroup} style={{ marginBottom: 0 }}>
             <label>Patient Age</label>
             <input 
@@ -181,7 +155,7 @@ export default function BasicInfoSection({
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+      <div className={styles.formGrid2Col} style={{ marginBottom: '1.5rem' }}>
         <div className={styles.formGroup} style={{ marginBottom: 0 }}>
           <label>Short Description (EN)</label>
           <textarea 

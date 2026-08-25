@@ -1,0 +1,671 @@
+/* ---------------------------
+   CV Page Layout
+--------------------------- */
+.cvMain {
+  background-color: var(--background);
+  min-height: 100vh;
+  padding-top: clamp(2rem, 5vw, 4rem);
+  padding-bottom: clamp(2rem, 5vw, 4rem); /* Restored padding for floating card */
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.cvContainer {
+  background-color: var(--surface);
+  padding: 3rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.cvContainer h2 {
+  font-size: clamp(1.125rem, 2vw, 1.25rem) !important;
+}
+
+/* ---------------------------
+   Header
+--------------------------- */
+.cvHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+}
+
+.cvName {
+  color: var(--primary-color);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-family: var(--font-heading);
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.cvTitle {
+  color: var(--secondary-color);
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.cvContactInfo {
+  color: var(--text-muted);
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cvContactItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cvContactIcon {
+  flex-shrink: 0;
+}
+
+.cvContactLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------------------------
+   Content Grid
+--------------------------- */
+.cvContentGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+
+/* ---------------------------
+   Section Titles (repeated pattern)
+--------------------------- */
+.cvSectionTitle {
+  color: var(--primary-color);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.cvSectionTitleSpaced {
+  composes: cvSectionTitle;
+  margin-bottom: 1.5rem; /* 24px (was 1.25rem/20px) */
+}
+
+/* ---------------------------
+   Summary
+--------------------------- */
+.cvSummaryText {
+  color: var(--text-dark);
+  line-height: 1.8;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  text-align: justify;
+}
+
+/* ---------------------------
+   Core Competencies & Licensure Grid
+--------------------------- */
+.coreLicensureGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.competencyTagsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-start;
+}
+
+.competencyTag {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  padding: 0.5rem 1rem; /* 8px 16px (Chip standard) */
+  border-radius: 50px;
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.competencyTag:hover {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-color: var(--primary-color);
+}
+
+/* ---------------------------
+   Licensure / Courses / Languages List
+--------------------------- */
+.listUnstyled {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.licensureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem; /* 16px */
+  color: var(--text-dark);
+  font-size: clamp(0.875rem, 1.5vw, 1rem) !important;
+  padding: 1rem 1.5rem; /* 16px 24px (was 1rem 0.6rem) */
+  border-radius: 12px; /* rounded-xl (was 8px) */
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  transition: all 0.3s ease;
+}
+
+.licensureItem:hover {
+  border-color: var(--secondary-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transform: translateX(4px);
+}
+
+.licensureIconWrapper {
+  color: var(--success);
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  transition: transform 0.3s ease;
+}
+
+.licensureItem:hover .licensureIconWrapper {
+  transform: scale(1.1);
+}
+
+.licensureItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.licensureItemName {
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+}
+
+.licensureItemDetails {
+  font-size: clamp(0.875rem, 1vw, 1rem); /* 14px-16px */
+  color: var(--text-muted);
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* ---------------------------
+   Experience / Timeline
+--------------------------- */
+.experienceSection {
+  margin-top: 2rem;
+}
+
+.experienceTitle {
+  color: var(--primary-color);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+.timelineContainer {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-top: 1rem;
+}
+
+.timelineContainer::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #E2E8F0;
+}
+
+.timelineItem {
+  position: relative;
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  padding: 1.5rem; /* 24px (was 1.3rem/20.8px) */
+  margin-bottom: 1.5rem; /* 24px */
+  border-radius: 12px; /* rounded-xl (was 8px) */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+
+.timelineItem:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  transform: translateY(-4px);
+  border-color: var(--primary-color);
+}
+
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: calc(-1.5rem - 9px);
+  top: 2.15rem;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  border: 3px solid #FFFFFF;
+  transition: background-color 0.3s ease;
+}
+
+.timelineItem:hover::before {
+  background-color: var(--secondary-color);
+}
+
+.timelineItem:last-child {
+  margin-bottom: 0;
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.timelineRole {
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  color: var(--primary-color);
+  font-weight: 700;
+  margin: 0;
+}
+
+.timelinePeriod {
+  color: var(--secondary-color);
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.timelineClinic {
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 1.5rem; /* 24px (was 1.25rem) */
+  margin-top: 0;
+}
+
+.responsibilitiesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.responsibilityItem {
+  color: var(--text-dark);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: clamp(0.875rem, 1vw, 1rem); /* 14px-16px */
+}
+
+.responsibilityIcon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.responsibilityText {
+  line-height: 1.6;
+}
+
+/* ---------------------------
+   Education
+--------------------------- */
+.educationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 1.5rem;
+}
+
+.educationCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  padding: 1rem;
+  border-radius: 12px; /* rounded-xl (was 8px) */
+  transition: all 0.3s ease;
+}
+
+.educationCard:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  transform: translateY(-4px);
+}
+
+.eduIconWrapper {
+  background-color: #F8FAFC;
+  color: var(--primary-color);
+  padding: 0.75rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.educationCard:hover .eduIconWrapper {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  transform: rotate(-5deg) scale(1.1);
+}
+
+.eduContent {
+  flex: 1;
+}
+
+.eduHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.eduDegree {
+  color: var(--primary-color);
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+}
+
+.eduYear {
+  color: var(--secondary-color);
+  font-weight: 700;
+  white-space: nowrap;
+  background-color: rgba(192, 154, 107, 0.1);
+  padding: 0.2rem 0.75rem;
+  border-radius: 50px;
+  font-size: clamp(0.75rem, 1vw, 0.875rem);
+}
+
+.eduInstitution {
+  color: var(--text-dark);
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.5;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+}
+
+/* ---------------------------
+   Clinical Skills
+--------------------------- */
+.clinicalSkillsSection {
+  margin-top: 2rem;
+}
+
+.clinicalSkillsTitle {
+  color: var(--primary-color);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+.skillsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 1.5rem;
+}
+
+.skillCard {
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px; /* rounded-xl (was 8px) */
+  padding: 1.5rem; /* 24px */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+
+.skillCard:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  transform: translateY(-4px);
+  border-color: var(--primary-color);
+}
+
+.skillCategoryTitle {
+  color: var(--primary-color);
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #F1F5F9;
+  padding-bottom: 0.75rem;
+}
+
+.skillsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skillItem {
+  color: var(--text-dark);
+  font-size: clamp(0.875rem, 1vw, 1rem); /* 14px-16px */
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.skillBullet {
+  color: #94A3B8;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  transition: color 0.3s ease;
+}
+
+.skillCard:hover .skillBullet {
+  color: var(--secondary-color);
+}
+
+.skillItemText {
+  line-height: 1.4;
+}
+
+/* ---------------------------
+   Two Column Grid (Courses + Languages)
+--------------------------- */
+.twoColGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+/* ---------------------------
+   Language Item Text
+--------------------------- */
+.languageItemText {
+  line-height: 1.5;
+}
+
+/* ---------------------------
+   References
+--------------------------- */
+.referencesText {
+  color: var(--text-dark);
+  font-style: italic;
+}
+
+/* ---------------------------
+   Markdown Parsed Content
+--------------------------- */
+.markdownLine {
+  margin-bottom: 0.4rem;
+  line-height: 1.5;
+  color: var(--text-dark);
+}
+
+.markdownStrong {
+  color: var(--primary-color);
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.markdownBulletItem {
+  display: inline-block;
+}
+
+.markdownBulletItemIndented {
+  composes: markdownBulletItem;
+  padding-left: 1rem;
+}
+
+.markdownBullet {
+  color: var(--secondary-color);
+  margin-right: 0.5rem;
+}
+
+/* ---------------------------
+   Responsive
+--------------------------- */
+/* Removed aggressive 1200px breakpoint since marquee fixes wrapping issues */
+
+@media (max-width: 767px) {
+  .cvMain {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .cvContainer {
+    padding: 1.5rem 0;
+    background-color: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .cvHeader {
+    flex-direction: column;
+  }
+
+  .coreLicensureGrid,
+  .twoColGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .timelineHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .timelineContainer {
+    padding-left: 1rem; /* 16px (was clamp) */
+  }
+
+  .timelineItem {
+    padding: 1rem; /* 16px (was clamp) */
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    margin-bottom: 1.5rem;
+  }
+
+  .timelineItem::before {
+    left: calc(-1rem - 9px); /* Adjusted for new padding-left */
+  }
+
+  .timelineItem:hover {
+    box-shadow: none;
+    transform: none;
+  }
+
+  .educationCard {
+    gap: 1rem; /* 16px (was clamp) */
+    padding: 1rem; /* 16px (was clamp) */
+  }
+
+  .eduDegree {
+    font-size: 1rem !important; /* 16px */
+  }
+
+  .eduYear {
+    font-size: 0.75rem !important; /* 12px (min size) */
+  }
+
+  .eduInstitution {
+    font-size: 0.875rem !important; /* 14px */
+  }
+
+  .skillsGrid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .skillsGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .skillsGrid > * {
+    min-width: 85vw;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+}
+
+/* ---------------------------
+   Print
+--------------------------- */
+@media print {
+  .noPrint {
+    display: none !important;
+  }
+
+  .cvContainer {
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .cvMain {
+    padding: 0 !important;
+    background-color: #fff !important;
+  }
+}

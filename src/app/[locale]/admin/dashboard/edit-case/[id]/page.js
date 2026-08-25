@@ -1,7 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState, useEffect, use } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from '@/i18n/routing';
 import { Link } from '@/i18n/routing';
 import { casesService } from '@/lib/services/casesService';
@@ -20,6 +20,18 @@ export default function EditCasePage({ params }) {
   const unwrappedParams = use(params);
   const caseId = unwrappedParams.id;
   
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showSaveMenu, setShowSaveMenu] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    const checkMobile = () => setIsMobile(window.matchMedia('(max-width: 1024px)').matches);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -28,11 +40,14 @@ export default function EditCasePage({ params }) {
   const [beforePreview, setBeforePreview] = useState(null);
   const [afterImage, setAfterImage] = useState(null);
   const [afterPreview, setAfterPreview] = useState(null);
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
+  
+  const [caseType, setCaseType] = useState('detailed');
+  const [imageMode, setImageMode] = useState('beforeAfter');
   
   // Form State
   const [formData, setFormData] = useState({
-    title: '',
-    titleAr: '',
     categories: [],
     patientAge: '',
     patientGender: '',
@@ -67,6 +82,16 @@ export default function EditCasePage({ params }) {
       try {
         const caseData = await casesService.getCaseById(caseId);
         if (caseData && isMounted) {
+          // Infer caseType if missing. Assuming existing cases are detailed.
+          const loadedCaseType = caseData.caseType || 'detailed';
+          setCaseType(loadedCaseType);
+          
+          // Auto-detect image mode from existing data
+          const hasBeforeAfter = caseData.beforeImage || caseData.beforeImageUrl;
+          if (!hasBeforeAfter && caseData.coverImage) {
+            setImageMode('coverOnly');
+          }
+          
           // Normalize existing arrays and fields for the form
           setFormData({ 
             ...caseData,
@@ -84,7 +109,7 @@ export default function EditCasePage({ params }) {
           });
         } else if (isMounted) {
           // Fallback if not found
-          setFormData(prev => ({ ...prev, title: `New Case ${caseId}`, isDraft: true }));
+          setFormData(prev => ({ ...prev, isDraft: true }));
         }
       } catch (error) {
         console.error("Failed to fetch case", error);
@@ -108,7 +133,6 @@ export default function EditCasePage({ params }) {
   const handleAutoTranslateAll = async () => {
     setIsTranslatingAll(true);
     const fieldsToTranslate = [
-      { en: formData.title, setKey: 'titleAr' },
       { en: formData.description, setKey: 'descriptionAr' },
       { en: formData.treatmentPlan, setKey: 'treatmentPlanAr' },
       { en: formData.chiefComplaint, setKey: 'chiefComplaintAr' },
@@ -122,45 +146,79 @@ export default function EditCasePage({ params }) {
 
     try {
       const updates = {};
-      const promises = fieldsToTranslate.map(async ({ en, setKey }) => {
-        if (!en) return;
-        const res = await fetch('/api/translate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: en, target: 'ar' })
-        });
-        const data = await res.json();
-        if (data.translatedText) {
-          updates[setKey] = data.translatedText;
+      
+      // Run sequentially to avoid Google Translate 429 Too Many Requests
+      for (const { en, setKey } of fieldsToTranslate) {
+        if (!en) continue;
+        
+        try {
+          const res = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: en, target: 'ar' })
+          });
+          
+          if (!res.ok) {
+            console.error(`Translation failed for ${setKey} with status: ${res.status}`);
+            if (res.status === 429) {
+              alert("Google Translate is temporarily blocking translation requests from your IP due to too many requests. Please wait a bit and try again later!");
+              break;
+            }
+            continue; // Skip this one but keep going
+          }
+          
+          const data = await res.json();
+          if (data.translatedText) {
+            updates[setKey] = data.translatedText;
+          }
+          
+          // Small delay to prevent rate limiting
+          await new Promise(resolve => setTimeout(resolve, 250));
+        } catch (err) {
+          console.error(`Error translating ${setKey}:`, err);
         }
-      });
+      }
 
-      await Promise.all(promises);
-
-      // Translate Steps
+      // Translate Steps sequentially
       const translatedSteps = [...(formData.steps || [])];
-      const stepPromises = translatedSteps.map(async (step, index) => {
-        if (step.title) {
-          const res = await fetch('/api/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: step.title, target: 'ar' })
-          });
-          const data = await res.json();
-          if (data.translatedText) translatedSteps[index].titleAr = data.translatedText;
+      for (let index = 0; index < translatedSteps.length; index++) {
+        const step = translatedSteps[index];
+        try {
+          if (step.title) {
+            const res = await fetch('/api/translate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: step.title, target: 'ar' })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.translatedText) translatedSteps[index].titleAr = data.translatedText;
+            } else if (res.status === 429) {
+              alert("Google Translate is temporarily blocking translation requests from your IP. Please try again later!");
+              break;
+            }
+            await new Promise(resolve => setTimeout(resolve, 250));
+          }
+          
+          if (step.description) {
+            const res = await fetch('/api/translate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: step.description, target: 'ar' })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.translatedText) translatedSteps[index].descriptionAr = data.translatedText;
+            } else if (res.status === 429) {
+              alert("Google Translate is temporarily blocking translation requests from your IP. Please try again later!");
+              break;
+            }
+            await new Promise(resolve => setTimeout(resolve, 250));
+          }
+        } catch (err) {
+          console.error(`Error translating step ${index}:`, err);
         }
-        if (step.description) {
-          const res = await fetch('/api/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: step.description, target: 'ar' })
-          });
-          const data = await res.json();
-          if (data.translatedText) translatedSteps[index].descriptionAr = data.translatedText;
-        }
-      });
-
-      await Promise.all(stepPromises);
+      }
       
       setFormData(prev => ({
         ...prev,
@@ -178,6 +236,13 @@ export default function EditCasePage({ params }) {
 
   const handleSave = async (e, asDraft = false) => {
     e?.preventDefault();
+    if (!asDraft) {
+      if (formData.categories.length === 0) {
+        alert("Please fill all required fields (Categories)");
+        return;
+      }
+    }
+    
     setIsSaving(true);
     const payload = {
       mode: 'edit',
@@ -186,6 +251,8 @@ export default function EditCasePage({ params }) {
         ...formData,
         isDraft: asDraft
       },
+      caseType,
+      coverImageFile: coverImage,
       beforeImageFile: beforeImage,
       afterImageFile: afterImage,
       treatmentSteps: formData.steps,
@@ -211,8 +278,6 @@ export default function EditCasePage({ params }) {
   }
 
   // Adapter setters
-  const setTitle = (val) => setFormData(p => ({ ...p, title: val }));
-  const setTitleAr = (val) => setFormData(p => ({ ...p, titleAr: val }));
   const setCategories = (val) => setFormData(p => ({ ...p, categories: val }));
   const setDescription = (val) => setFormData(p => ({ ...p, description: val }));
   const setDescriptionAr = (val) => setFormData(p => ({ ...p, descriptionAr: val }));
@@ -264,52 +329,97 @@ export default function EditCasePage({ params }) {
     }));
   };
 
+  const actionButtonsNode = (
+    <div className={styles.headerActionButtons}>
+      <button 
+        type="button" 
+        className="btn-secondary" 
+        onClick={handleAutoTranslateAll}
+        disabled={isTranslatingAll}
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '0.5rem',
+          backgroundColor: 'rgba(var(--primary-rgb), 0.05)',
+          borderColor: 'rgba(var(--primary-rgb), 0.2)',
+          color: 'var(--primary-color)'
+        }}
+      >
+        {isTranslatingAll ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="animate-spin">
+            <circle cx="12" cy="12" r="10" strokeWidth="4" stroke="rgba(0,0,0,0.1)"></circle>
+            <path d="M12 2a10 10 0 0110 10" strokeWidth="4" stroke="currentColor"></path>
+          </svg>
+        ) : (
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+          </svg>
+        )}
+        <span className={styles.fabText}>{isTranslatingAll ? 'Translating...' : 'Auto-Translate'}</span>
+      </button>
+      
+      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+        {/* Speed Dial Menu Items */}
+        <div className={`${styles.speedDialMenu} ${showSaveMenu ? styles.open : ''}`}>
+          <button 
+            type="button" 
+            className={`btn-secondary ${styles.speedDialItem}`}
+            onClick={(e) => { setShowSaveMenu(false); handleSave(e, true); }}
+          >
+            <span className={styles.speedDialLabel}>Save as Draft</span>
+            <span className={styles.fabIconWrapper}>
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+              </svg>
+            </span>
+          </button>
+          
+          <button 
+            type="button" 
+            className={`btn-primary ${styles.speedDialItem}`}
+            onClick={(e) => { setShowSaveMenu(false); handleSave(e, false); }}
+          >
+            <span className={styles.speedDialLabel}>Publish</span>
+            <span className={styles.fabIconWrapper}>
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+
+        {/* Speed Dial Main Trigger */}
+        <button 
+          type="button" 
+          className={`btn-primary ${styles.fabTrigger} ${showSaveMenu ? styles.active : ''}`}
+          onClick={() => setShowSaveMenu(!showSaveMenu)}
+          disabled={isSaving}
+        >
+          <div style={{ position: 'relative', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} className={styles.fabIconWrapper}>
+            {/* Checkmark icon (default) */}
+            <svg className={styles.iconDefault} width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            {/* Close (X) icon (active) */}
+            <svg className={styles.iconActive} width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+          <span className={styles.fabText}>{isSaving ? 'Saving...' : 'Save Options'}</span>
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="animate-slideUp">
       {/* Header Area */}
       <div className={styles.editCaseHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <Link href="/admin/dashboard/cases" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center' }}>
+        <Link href="/admin/dashboard/cases" className={`btn-secondary ${styles.backBtn}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          Back to Cases
+          <span className={styles.hideOnMobile}>Back to Cases</span>
         </Link>
-        <div className={styles.headerActions} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button 
-            type="button" 
-            className="btn-secondary" 
-            onClick={handleAutoTranslateAll}
-            disabled={isTranslatingAll}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0.5rem',
-              backgroundColor: 'rgba(var(--primary-rgb), 0.05)',
-              borderColor: 'rgba(var(--primary-rgb), 0.2)',
-              color: 'var(--primary-color)'
-            }}
-          >
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
-            </svg>
-            {isTranslatingAll ? 'Translating...' : 'Auto-Translate All'}
-          </button>
-          <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--border-color)', margin: '0 0.25rem' }}></div>
-          <button 
-            type="button" 
-            className="btn-secondary" 
-            onClick={(e) => handleSave(e, true)}
-            disabled={isSaving}
-          >
-            {isSaving ? 'Saving...' : 'Save as Draft'}
-          </button>
-          <button 
-            type="button" 
-            className="btn-primary" 
-            onClick={(e) => handleSave(e, false)}
-            disabled={isSaving}
-          >
-            {isSaving ? 'Publishing...' : 'Publish Case'}
-          </button>
-        </div>
+        {mounted && isMobile && typeof document !== 'undefined' ? createPortal(actionButtonsNode, document.body) : actionButtonsNode}
       </div>
 
       {saveSuccess && (
@@ -323,16 +433,19 @@ export default function EditCasePage({ params }) {
       <form onSubmit={(e) => handleSave(e, false)}>
         <div className={styles.tabsContainer}>
           <button type="button" onClick={() => setActiveTab('basic')} className={activeTab === 'basic' ? styles.tabActive : styles.tabInactive}>Basic Info</button>
-          <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
-          <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
-          <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+          {caseType === 'detailed' && (
+            <>
+              <button type="button" onClick={() => setActiveTab('clinical')} className={activeTab === 'clinical' ? styles.tabActive : styles.tabInactive}>Clinical Assessment</button>
+              <button type="button" onClick={() => setActiveTab('steps')} className={activeTab === 'steps' ? styles.tabActive : styles.tabInactive}>Treatment Steps</button>
+              <button type="button" onClick={() => setActiveTab('outcome')} className={activeTab === 'outcome' ? styles.tabActive : styles.tabInactive}>Outcome</button>
+            </>
+          )}
           <button type="button" onClick={() => setActiveTab('media')} className={activeTab === 'media' ? styles.tabActive : styles.tabInactive}>Media & Images</button>
         </div>
 
         <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
           <BasicInfoSection 
-            title={formData.title} setTitle={setTitle}
-            titleAr={formData.titleAr} setTitleAr={setTitleAr}
+            caseType={caseType}
             categories={formData.categories} setCategories={setCategories}
             description={formData.description} setDescription={setDescription}
             descriptionAr={formData.descriptionAr} setDescriptionAr={setDescriptionAr}
@@ -387,6 +500,12 @@ export default function EditCasePage({ params }) {
 
         <div style={{ display: activeTab === 'media' ? 'block' : 'none' }}>
           <ImageUploadSection 
+            caseType={caseType}
+            imageMode={imageMode}
+            onImageModeChange={setImageMode}
+            coverPreview={coverPreview || formData.coverImage}
+            setCoverPreview={setCoverPreview}
+            setCoverImage={setCoverImage}
             beforePreview={beforePreview || formData.beforeImageUrl || formData.beforeImage} 
             setBeforePreview={setBeforePreview} 
             setBeforeImage={setBeforeImage}
@@ -404,3 +523,5 @@ export default function EditCasePage({ params }) {
     </div>
   );
 }
+
+

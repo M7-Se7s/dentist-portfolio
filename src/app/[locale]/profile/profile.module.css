@@ -1,9 +1,9 @@
 .profileSection {
-  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 4rem);
+  padding: 3rem; /* 48px - Standardized desktop card padding */
   background-color: var(--surface);
   border-radius: 16px;
   box-shadow: var(--shadow-sm);
-  margin-top: 2rem;
+  margin: 2rem 0; /* 32px - Reduced spacing from navbar and footer */
 }
 
 .profileGrid {
@@ -15,7 +15,7 @@
 
 .imageContainer {
   position: sticky;
-  top: 100px;
+  top: 96px; /* 96px aligns with 8pt grid */
 }
 
 .imageWrapper {
@@ -36,7 +36,7 @@
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  border-radius: 8px;
+  border-radius: 12px; /* Match imageWrapper radius */
   border: 2px dashed #CBD5E1;
 }
 
@@ -58,34 +58,40 @@
 }
 
 .bioParagraph {
-  font-size: clamp(1rem, 2vw, 1.15rem);
-  line-height: 1.8;
+  font-size: clamp(1rem, 2vw, 1.125rem); /* Max 18px */
+  line-height: 1.75; /* Standard body line-height */
   color: var(--text-light);
 }
 
 .philosophyQuote {
-  margin-top: clamp(1rem, 3vw, 2rem);
-  padding: clamp(1rem, 3vw, 2rem);
+  margin-top: 2rem; /* 32px */
+  padding: 2rem; /* 32px */
   background-color: var(--primary-light);
-  border-inline-start: 5px solid var(--primary);
+  border-inline-start: 4px solid var(--primary); /* 4px (8pt grid) instead of 5px */
   border-start-start-radius: 0;
   border-end-start-radius: 0;
-  border-start-end-radius: 12px;
-  border-end-end-radius: 12px;
-  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  border-start-end-radius: 16px; /* 16px instead of 12px */
+  border-end-end-radius: 16px; /* 16px instead of 12px */
+  font-size: clamp(1rem, 2.5vw, 1.25rem); /* Max 20px */
   font-style: italic;
   color: var(--primary);
-  line-height: 1.6;
+  line-height: 1.75;
 }
 
 @media (max-width: 768px) {
   .profileSection {
-    padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 5vw, 4rem);
+    padding: 1.5rem; /* 24px - Mobile standardized card padding */
+    margin: 1.5rem 0; /* 24px - Mobile spacing from navbar and footer */
   }
 
   .profileGrid {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  .philosophyQuote {
+    padding: 1.5rem; /* 24px */
+    margin-top: 1.5rem; /* 24px */
   }
 
   .imageContainer {

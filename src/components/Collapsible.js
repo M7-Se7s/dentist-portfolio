@@ -1,8 +1,13 @@
 "use client";
 import { useState } from 'react';
 
-export default function Collapsible({ title, children, defaultOpen = true, customHeaderClass = "", titleElement = null }) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+export default function Collapsible({ title, children, defaultOpen = true, collapseOnMobile = false, customHeaderClass = "", titleElement = null }) {
+  const [isOpen, setIsOpen] = useState(() => {
+    if (collapseOnMobile && typeof window !== 'undefined' && window.innerWidth <= 768) {
+      return false;
+    }
+    return defaultOpen;
+  });
 
   return (
     <div style={{ width: '100%' }}>

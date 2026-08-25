@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, onIdTokenChanged } from 'firebase/auth';
@@ -15,18 +15,32 @@ export default function AdminLogin() {
 
   // Auto-redirect if already logged in (Firebase local persistence)
   useEffect(() => {
+    // Failsafe timeout in case Firebase Auth network call hangs
+    const fallbackTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
+      clearTimeout(fallbackTimeout);
       if (user && user.email === 'dr-mohammed-shabaan@dr.com') {
-        const idToken = await user.getIdToken();
-        document.cookie = `admin_session=${idToken}; path=/; max-age=86400; Secure; SameSite=Strict`;
-        router.push('/admin/dashboard');
+        try {
+          const idToken = await user.getIdToken();
+          document.cookie = `admin_session=${idToken}; path=/; max-age=86400; Secure; SameSite=Strict`;
+          router.push('/admin/dashboard');
+        } catch (err) {
+          console.error("Token fetch failed", err);
+          setLoading(false);
+        }
       } else {
         setLoading(false);
       }
     });
 
-    return () => unsubscribe();
-  }, [router]);
+    return () => {
+      clearTimeout(fallbackTimeout);
+      unsubscribe();
+    };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -54,10 +68,6 @@ export default function AdminLogin() {
       setLoading(false);
     }
   };
-
-  if (loading) {
-    return <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>Loading...</div>;
-  }
 
   return (
     <div className={styles.loginSplitContainer}>
@@ -98,3 +108,4 @@ export default function AdminLogin() {
     </div>
   );
 }
+
