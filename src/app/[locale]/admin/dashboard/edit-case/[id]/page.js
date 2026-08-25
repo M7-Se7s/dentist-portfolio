@@ -146,45 +146,69 @@ export default function EditCasePage({ params }) {
 
     try {
       const updates = {};
-      const promises = fieldsToTranslate.map(async ({ en, setKey }) => {
-        if (!en) return;
-        const res = await fetch('/api/translate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: en, target: 'ar' })
-        });
-        const data = await res.json();
-        if (data.translatedText) {
-          updates[setKey] = data.translatedText;
+      
+      // Run sequentially to avoid Google Translate 429 Too Many Requests
+      for (const { en, setKey } of fieldsToTranslate) {
+        if (!en) continue;
+        
+        try {
+          const res = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: en, target: 'ar' })
+          });
+          
+          if (!res.ok) {
+            console.error(`Translation failed for ${setKey} with status: ${res.status}`);
+            continue; // Skip this one but keep going
+          }
+          
+          const data = await res.json();
+          if (data.translatedText) {
+            updates[setKey] = data.translatedText;
+          }
+          
+          // Small delay to prevent rate limiting
+          await new Promise(resolve => setTimeout(resolve, 250));
+        } catch (err) {
+          console.error(`Error translating ${setKey}:`, err);
         }
-      });
+      }
 
-      await Promise.all(promises);
-
-      // Translate Steps
+      // Translate Steps sequentially
       const translatedSteps = [...(formData.steps || [])];
-      const stepPromises = translatedSteps.map(async (step, index) => {
-        if (step.title) {
-          const res = await fetch('/api/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: step.title, target: 'ar' })
-          });
-          const data = await res.json();
-          if (data.translatedText) translatedSteps[index].titleAr = data.translatedText;
+      for (let index = 0; index < translatedSteps.length; index++) {
+        const step = translatedSteps[index];
+        try {
+          if (step.title) {
+            const res = await fetch('/api/translate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: step.title, target: 'ar' })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.translatedText) translatedSteps[index].titleAr = data.translatedText;
+            }
+            await new Promise(resolve => setTimeout(resolve, 250));
+          }
+          
+          if (step.description) {
+            const res = await fetch('/api/translate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: step.description, target: 'ar' })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.translatedText) translatedSteps[index].descriptionAr = data.translatedText;
+            }
+            await new Promise(resolve => setTimeout(resolve, 250));
+          }
+        } catch (err) {
+          console.error(`Error translating step ${index}:`, err);
         }
-        if (step.description) {
-          const res = await fetch('/api/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: step.description, target: 'ar' })
-          });
-          const data = await res.json();
-          if (data.translatedText) translatedSteps[index].descriptionAr = data.translatedText;
-        }
-      });
-
-      await Promise.all(stepPromises);
+      }
       
       setFormData(prev => ({
         ...prev,
