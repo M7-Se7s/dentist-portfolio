@@ -13,6 +13,10 @@ export async function POST(request) {
 
     const response = await fetch(url);
     
+    if (response.status === 429) {
+      return NextResponse.json({ error: 'Google Translate rate limit exceeded. Please try again later.' }, { status: 429 });
+    }
+    
     if (!response.ok) {
       throw new Error(`Translation API responded with status: ${response.status}`);
     }

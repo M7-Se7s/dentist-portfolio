@@ -113,6 +113,10 @@ function CreateCaseForm() {
           
           if (!res.ok) {
             console.error(`Translation failed for ${setKey} with status: ${res.status}`);
+            if (res.status === 429) {
+              alert("Google Translate is temporarily blocking translation requests from your IP due to too many requests. Please wait a bit and try again later!");
+              break;
+            }
             continue;
           }
           
@@ -142,6 +146,9 @@ function CreateCaseForm() {
             if (res.ok) {
               const data = await res.json();
               if (data.translatedText) translatedSteps[index].titleAr = data.translatedText;
+            } else if (res.status === 429) {
+              alert("Google Translate is temporarily blocking translation requests from your IP. Please try again later!");
+              break;
             }
             await new Promise(resolve => setTimeout(resolve, 250));
           }
@@ -155,6 +162,9 @@ function CreateCaseForm() {
             if (res.ok) {
               const data = await res.json();
               if (data.translatedText) translatedSteps[index].descriptionAr = data.translatedText;
+            } else if (res.status === 429) {
+              alert("Google Translate is temporarily blocking translation requests from your IP. Please try again later!");
+              break;
             }
             await new Promise(resolve => setTimeout(resolve, 250));
           }
