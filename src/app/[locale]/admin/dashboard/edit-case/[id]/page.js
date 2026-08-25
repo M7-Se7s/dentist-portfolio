@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, use } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from '@/i18n/routing';
 import { Link } from '@/i18n/routing';
 import { casesService } from '@/lib/services/casesService';
@@ -18,6 +19,18 @@ export default function EditCasePage({ params }) {
   const router = useRouter();
   const unwrappedParams = use(params);
   const caseId = unwrappedParams.id;
+  
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showSaveMenu, setShowSaveMenu] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    const checkMobile = () => setIsMobile(window.matchMedia('(max-width: 1024px)').matches);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -288,35 +301,96 @@ export default function EditCasePage({ params }) {
       <div className={styles.editCaseHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <Link href="/admin/dashboard/cases" className={`btn-secondary ${styles.backBtn}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          <span className={styles.hideOnMobile}>Back to Cases</span></Link>
-        <div className={styles.headerActions} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+  const actionButtonsNode = (
+    <div className={styles.headerActionButtons}>
+      <button 
+        type="button" 
+        className="btn-secondary" 
+        onClick={handleAutoTranslateAll}
+        disabled={isTranslatingAll}
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '0.5rem',
+          backgroundColor: 'rgba(var(--primary-rgb), 0.05)',
+          borderColor: 'rgba(var(--primary-rgb), 0.2)',
+          color: 'var(--primary-color)'
+        }}
+      >
+        {isTranslatingAll ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="animate-spin">
+            <circle cx="12" cy="12" r="10" strokeWidth="4" stroke="rgba(0,0,0,0.1)"></circle>
+            <path d="M12 2a10 10 0 0110 10" strokeWidth="4" stroke="currentColor"></path>
+          </svg>
+        ) : (
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+          </svg>
+        )}
+        <span className={styles.fabText}>{isTranslatingAll ? 'Translating...' : 'Auto-Translate'}</span>
+      </button>
+      
+      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+        {/* Speed Dial Menu Items */}
+        <div className={`${styles.speedDialMenu} ${showSaveMenu ? styles.open : ''}`}>
           <button 
             type="button" 
-            className="btn-secondary" 
-            onClick={handleAutoTranslateAll}
-            disabled={isTranslatingAll}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0.5rem',
-              backgroundColor: 'rgba(var(--primary-rgb), 0.05)',
-              borderColor: 'rgba(var(--primary-rgb), 0.2)',
-              color: 'var(--primary-color)'
-            }}
+            className={`btn-secondary ${styles.speedDialItem}`}
+            onClick={(e) => { setShowSaveMenu(false); handleSave(e, true); }}
           >
-            {isTranslatingAll ? (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="animate-spin">
-                <circle cx="12" cy="12" r="10" strokeWidth="4" stroke="rgba(0,0,0,0.1)"></circle>
-                <path d="M12 2a10 10 0 0110 10" strokeWidth="4" stroke="currentColor"></path>
-              </svg>
-            ) : (
+            <span className={styles.speedDialLabel}>Save as Draft</span>
+            <span className={styles.fabIconWrapper}>
               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
               </svg>
-            )}
-            <span className={styles.hideOnMobile}>{isTranslatingAll ? 'Translating...' : 'Auto-Translate All'}</span>
+            </span>
           </button>
+          
+          <button 
+            type="button" 
+            className={`btn-primary ${styles.speedDialItem}`}
+            onClick={(e) => { setShowSaveMenu(false); handleSave(e, false); }}
+          >
+            <span className={styles.speedDialLabel}>Publish</span>
+            <span className={styles.fabIconWrapper}>
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
+
+        {/* Speed Dial Main Trigger */}
+        <button 
+          type="button" 
+          className={`btn-primary ${styles.fabTrigger} ${showSaveMenu ? styles.active : ''}`}
+          onClick={() => setShowSaveMenu(!showSaveMenu)}
+          disabled={isSaving}
+        >
+          <div style={{ position: 'relative', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} className={styles.fabIconWrapper}>
+            {/* Checkmark icon (default) */}
+            <svg className={styles.iconDefault} width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            {/* Close (X) icon (active) */}
+            <svg className={styles.iconActive} width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
           </div>
+          <span className={styles.fabText}>{isSaving ? 'Saving...' : 'Save Options'}</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="animate-slideUp">
+      {/* Header Area */}
+      <div className={styles.editCaseHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <Link href="/admin/dashboard/cases" className={`btn-secondary ${styles.backBtn}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          <span className={styles.hideOnMobile}>Back to Cases</span></Link>
+        {mounted && isMobile && typeof document !== 'undefined' ? createPortal(actionButtonsNode, document.body) : actionButtonsNode}
       </div>
 
       {saveSuccess && (
@@ -416,26 +490,7 @@ export default function EditCasePage({ params }) {
             styles={styles}
           />
         </div>
-          {/* Bottom Sticky Action Bar */}
-          <div className={styles.caseActionButtonsSticky}>
-            <button 
-              type="button" 
-              className="btn-secondary" 
-              onClick={(e) => handleSave(e, true)}
-              disabled={isSaving}
-            >
-              {isSaving ? 'Saving...' : 'Save as Draft'}
-            </button>
-            <button 
-              type="button" 
-              className="btn-primary" 
-              onClick={(e) => handleSave(e, false)}
-              disabled={isSaving}
-            >
-              {isSaving ? 'Saving...' : 'Publish Case'}
-            </button>
-          </div>
-        </form>
+      </form>
     </div>
   );
 }
