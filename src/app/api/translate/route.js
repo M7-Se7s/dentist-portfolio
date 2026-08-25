@@ -8,10 +8,16 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
 
-    // Using the free public Google Translate API endpoint
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
+    // Using the Chrome Extension translation endpoint which supports POST and has better rate limits
+    const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=${source}&tl=${target}&dt=t`;
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `q=${encodeURIComponent(text)}`
+    });
     
     if (response.status === 429) {
       return NextResponse.json({ error: 'Google Translate rate limit exceeded. Please try again later.' }, { status: 429 });
@@ -23,15 +29,10 @@ export async function POST(request) {
 
     const data = await response.json();
     
-    // The API returns a nested array where the first element is an array of sentence translations.
-    // data[0] looks like: [ ["translated sentence 1", "original sentence 1", ...], ["translated sentence 2", "original sentence 2", ...] ]
+    // This endpoint returns a simple array: ["translated text"]
     let translatedText = '';
-    if (data && data[0]) {
-      data[0].forEach((item) => {
-        if (item[0]) {
-          translatedText += item[0];
-        }
-      });
+    if (Array.isArray(data) && data.length > 0) {
+      translatedText = data.join(' ');
     }
 
     return NextResponse.json({ translatedText });
