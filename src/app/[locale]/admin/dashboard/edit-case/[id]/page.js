@@ -413,25 +413,25 @@ export default function EditCasePage({ params }) {
 
   return (
     <div className="animate-slideUp">
-      {/* Header Area */}
-      <div className={styles.editCaseHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <Link href="/admin/dashboard/cases" className={`btn-secondary ${styles.backBtn}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          <span className={styles.hideOnMobile}>Back to Cases</span>
-        </Link>
-        {mounted && isMobile && typeof document !== 'undefined' ? createPortal(actionButtonsNode, document.body) : actionButtonsNode}
-      </div>
-
-      {saveSuccess && (
-        <div className={styles.successBanner} style={{ background: '#ECFDF5', color: '#065F46', padding: '1rem', borderRadius: '8px', marginBottom: '2rem', display: 'flex', alignItems: 'center', fontWeight: '500', border: '1px solid #A7F3D0' }}>
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-          Case successfully updated! Saving in background...
+      {/* Sticky Header Container */}
+      <div className={styles.stickyHeaderContainer}>
+        {/* Header Area */}
+        <div className={styles.editCaseHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <Link href="/admin/dashboard/cases" className={`btn-secondary ${styles.backBtn}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span className={styles.hideOnMobile}>Back to Cases</span>
+          </Link>
+          {mounted && isMobile && typeof document !== 'undefined' ? createPortal(actionButtonsNode, document.body) : actionButtonsNode}
         </div>
-      )}
 
-      {/* Main Form Layout */}
-      <form onSubmit={(e) => handleSave(e, false)}>
-        <div className={styles.tabsContainer}>
+        {saveSuccess && (
+          <div className={styles.successBanner} style={{ background: '#ECFDF5', color: '#065F46', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', display: 'flex', alignItems: 'center', fontWeight: '500', border: '1px solid #A7F3D0' }}>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{marginRight: '0.5rem'}}><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+            Case successfully updated! Saving in background...
+          </div>
+        )}
+
+        <div className={styles.tabsContainer} style={{ marginBottom: 0 }}>
           <button type="button" onClick={() => setActiveTab('basic')} className={activeTab === 'basic' ? styles.tabActive : styles.tabInactive}>Basic Info</button>
           {caseType === 'detailed' && (
             <>
@@ -442,6 +442,10 @@ export default function EditCasePage({ params }) {
           )}
           <button type="button" onClick={() => setActiveTab('media')} className={activeTab === 'media' ? styles.tabActive : styles.tabInactive}>Media & Images</button>
         </div>
+      </div>
+
+      {/* Main Form Layout */}
+      <form onSubmit={(e) => handleSave(e, false)} style={{ paddingTop: '1.5rem' }}>
 
         <div style={{ display: activeTab === 'basic' ? 'block' : 'none' }}>
           <BasicInfoSection 

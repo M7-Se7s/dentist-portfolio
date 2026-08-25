@@ -1850,13 +1850,7 @@ input:checked+.toggleSlider:before {
     top: 60px;
   }
 
-  .editCaseHeader {
-    margin-top: -0.5rem;
-    margin-left: -0.5rem;
-    margin-right: -0.5rem;
-    padding: 1.5rem 1rem 1rem 1rem;
-    top: 60px;
-  }
+  
 
   .caseTableWrapper {
     overflow-x: auto;
@@ -2656,7 +2650,7 @@ input:checked+.toggleSlider:before {
     /* [uiux-adjustments] Reduce excessive top spacing (6rem -> 4.5rem) */
     padding-top: 4.5rem !important;
   }
-  .caseManagementHeader, .editCaseHeader, .cvStickyHeader {
+  .caseManagementHeader, .cvStickyHeader {
     position: relative !important;
     top: auto !important;
     margin-top: 0 !important;
@@ -3300,7 +3294,7 @@ input:checked+.toggleSlider:before {
   }
 
   /* Fix for header overflow breaking horizontal layout */
-  .caseManagementHeader, .editCaseHeader, .cvStickyHeader, .profilePageHeader {
+  .caseManagementHeader, .cvStickyHeader, .profilePageHeader {
     /* [uiux-adjustments] Mathematically balance margins to offset 1rem mobile gutter */
     margin-left: -1rem !important;
     margin-right: -1rem !important;
@@ -3318,3 +3312,30 @@ input:checked+.toggleSlider:before {
 }
 
 
+
+
+/* ---------------------------
+   Sticky Header Container for Edit/Create Case
+--------------------------- */
+.stickyHeaderContainer {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background-color: #F8FAFC;
+  padding-top: 1rem;
+  margin-top: -1rem;
+  padding-bottom: 0;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 1025px) {
+  .stickyHeaderContainer {
+    margin-left: -3rem;
+    margin-right: -3rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
