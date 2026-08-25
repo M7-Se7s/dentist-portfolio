@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from '@/i18n/routing';
@@ -304,9 +304,16 @@ export default function EditCasePage({ params }) {
               color: 'var(--primary-color)'
             }}
           >
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
-            </svg>
+            {isTranslatingAll ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="animate-spin">
+                <circle cx="12" cy="12" r="10" strokeWidth="4" stroke="rgba(0,0,0,0.1)"></circle>
+                <path d="M12 2a10 10 0 0110 10" strokeWidth="4" stroke="currentColor"></path>
+              </svg>
+            ) : (
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+              </svg>
+            )}
             <span className={styles.hideOnMobile}>{isTranslatingAll ? 'Translating...' : 'Auto-Translate All'}</span>
           </button>
           </div>
