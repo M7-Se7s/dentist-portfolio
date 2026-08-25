@@ -295,8 +295,6 @@ export default function EditCasePage({ params }) {
     }));
   };
 
-  return (
-    <div className="animate-slideUp">
   const actionButtonsNode = (
     <div className={styles.headerActionButtons}>
       <button 
